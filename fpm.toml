@@ -1,0 +1,24 @@
+name = "sudoku"
+description= "Generates and solves sudokus"
+version = "0.8.0"
+license    = "GPL-3.0-or-later"
+author = "vmagnin"
+copyright = "Copyright 2006, vmagnin"
+maintainer = "https://github.com/vmagnin/sudoku/issues"
+homepage   = "https://github.com/vmagnin/sudoku"
+categories = ["games"]
+keywords   = ["Fortran", "fpm", "sudoku"]
+
+[build]
+auto-executables = true
+auto-tests = true
+auto-examples = true
+module-naming = false
+
+[install]
+library = false
+
+[fortran]
+implicit-typing = false
+implicit-external = false
+source-form = "free"
