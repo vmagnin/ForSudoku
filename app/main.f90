@@ -25,14 +25,14 @@ PROGRAM main
     IMPLICIT NONE
     ! Variables locales :
     INTEGER(1), DIMENSION(1:9, 1:9) :: grille    ! (ligne,colonne)
-    REAL(8)                :: Debut,Fin    ! Pour mesurer la durée de calcul
+    REAL(8)                :: Debut,Fin    ! Pour mesurer la durÃ©e de calcul
     INTEGER(1)            :: choix
-    INTEGER(1)            :: nvides    ! Nombre de cases à vider
+    INTEGER(1)            :: nvides    ! Nombre de cases Ã  vider
     CHARACTER(50)            :: fichier    ! Nom du fichier .txt
 
-    ! Initialisation du générateur de nombres pseudo-aléatoires :
+    ! Initialisation du gÃ©nÃ©rateur de nombres pseudo-alÃ©atoires :
     CALL Initialiser_Random
-    ! Initialisation de la grille avec des cases vides (codées par des 0) :
+    ! Initialisation de la grille avec des cases vides (codÃ©es par des 0) :
     grille=0
 
     PRINT *,"sudoku.f90, version 0.8, copyright (C) 2006 Vincent MAGNIN"
@@ -63,7 +63,7 @@ PROGRAM main
                 PRINT *, "Elle n'est pas valide."
             END IF
         CASE(2)
-            PRINT *,"Entrez le nom du fichier à lire, avec son extension .txt :"
+            PRINT *,"Entrez le nom du fichier Ã  lire, avec son extension .txt :"
             CALL SYSTEM("dir *.txt")
             READ *,fichier
             CALL Lire_grille(grille,TRIM(fichier))
@@ -74,10 +74,10 @@ PROGRAM main
                 PRINT *, "Elle n'est pas valide."
             END IF
         CASE(3)
-            PRINT *,"Entrez le nom du fichier à enregistrer, avec son extension :"
+            PRINT *,"Entrez le nom du fichier Ã  enregistrer, avec son extension :"
             READ *,fichier
             CALL Enregistrer_grille(grille,TRIM(fichier))
-            PRINT *,"Enregistrement effectué."
+            PRINT *,"Enregistrement effectuÃ©."
         CASE(4)
             IF (GrilleValide(grille)) THEN
                 PRINT *, "La grille en memoire est valide."
@@ -96,7 +96,7 @@ PROGRAM main
             Debut=Temps()
             CALL GenererGrillePleine(grille)
             CALL Afficher_grille(grille)
-            ! Vérification par sécurité :
+            ! VÃ©rification par sÃ©curitÃ© :
             IF (GrilleValide(grille)) THEN
                 PRINT *, "Grille valide"
             ELSE
@@ -124,7 +124,7 @@ PROGRAM main
             CALL GenererGrillePleine(grille)
             PRINT *,"Voici la grille pleine :"
             CALL Afficher_grille(grille)
-            ! Vérification par sécurité :
+            ! VÃ©rification par sÃ©curitÃ© :
             IF (GrilleValide(grille)) THEN
                 PRINT *, "Grille valide"
             ELSE

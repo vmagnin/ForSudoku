@@ -26,25 +26,25 @@ contains
 
     SUBROUTINE ResoudreGrille(g)
         IMPLICIT NONE
-        ! Parametre d'entrée/sortie :
+        ! Parametre d'entrÃ©e/sortie :
         INTEGER(1), DIMENSION(1:9, 1:9), INTENT(INOUT)    :: g
         ! Variables locales
         INTEGER(1), DIMENSION(1:9, 1:9)    :: g0        ! Sauvegarde de g
-        REAL(8)                :: alea        ! Nombre aléatoire
+        REAL(8)                :: alea        ! Nombre alÃ©atoire
         INTEGER(1)            :: l,c,l0,c0,i,j
         INTEGER(1)            :: compteurCV    ! Compteur de cases vides
         INTEGER(1), DIMENSION(1:81,1:3)    :: casesVides    ! Liste des cases vides
-        !LOGICAL(1), DIMENSION(0:9)    :: possible    ! Possibilité de chaque chiffre
+        !LOGICAL(1), DIMENSION(0:9)    :: possible    ! PossibilitÃ© de chaque chiffre
         INTEGER(1), DIMENSION(1:9)    :: chiffrePossible    ! Liste des chiffres possibles
         INTEGER(1)            :: compteurCP    ! Compteur de chiffres possibles
 
         chiffrePossible=0
 
-        ! Sauvegarde de la grille de départ :
+        ! Sauvegarde de la grille de dÃ©part :
         g0=g
 
-        ! Parcourir la grille, repérer les cases vides et stocker leurs coordonnées
-        ! dans un tableau de 81 éléments.
+        ! Parcourir la grille, repÃ©rer les cases vides et stocker leurs coordonnÃ©es
+        ! dans un tableau de 81 Ã©lÃ©ments.
         casesVides=0
         compteurCV=0
         DO l=1,9,+1
@@ -64,7 +64,7 @@ contains
         ! Parcourir l'ensemble des cases vides.
         i=1
         DO WHILE (i<=compteurCV)
-            ! Afin d'acc��er l'algorithme, a chaque fois,
+            ! Afin d'accï¿œï¿œer l'algorithme, a chaque fois,
             ! on recompte le nombre de chiffres possibles pour
             ! chaque case vide restante :
             DO j=i,compteurCV,+1
@@ -81,13 +81,13 @@ contains
 
             CALL lister_chiffres_possibles(g,l0,c0,compteurCP,chiffrePossible)
 
-            ! S'il y en a plusieurs, en tirer un au hasard et passer à la case vide suivante :
+            ! S'il y en a plusieurs, en tirer un au hasard et passer Ã  la case vide suivante :
             IF (compteurCP>1) THEN
                 CALL Random_number(alea)
                 j=1+INT(alea*compteurCP)
                 g(l0,c0)=chiffrePossible(j)
                 i=i+1
-            ! S'il n'y en a qu'un, le choisir et passer à la case vide suivante :
+            ! S'il n'y en a qu'un, le choisir et passer Ã  la case vide suivante :
             ELSE IF (compteurCP==1) THEN
                 g(l0,c0)=chiffrePossible(1)
                 i=i+1
@@ -100,10 +100,10 @@ contains
     END SUBROUTINE ResoudreGrille
 
 
-    ! Procédure établissant la liste des chiffres possibles dans une case vide :
+    ! ProcÃ©dure Ã©tablissant la liste des chiffres possibles dans une case vide :
     SUBROUTINE lister_chiffres_possibles(g,l0,c0,compteurCP,chiffrePossible)
         IMPLICIT NONE
-        ! Parametres d'entrée :
+        ! Parametres d'entrÃ©e :
         INTEGER(1), DIMENSION(1:9, 1:9), INTENT(IN)    :: g
         INTEGER(1)                    :: l0,c0
         ! Parametres de sortie :
@@ -111,7 +111,7 @@ contains
         INTEGER(1), INTENT(OUT)            :: compteurCP        ! Compteur de chiffres possibles
         ! Variables locales
         INTEGER(1)            :: l,c,cr,lr,j
-        LOGICAL(1), DIMENSION(0:9)    :: possible    ! Possibilité de chaque chiffre
+        LOGICAL(1), DIMENSION(0:9)    :: possible    ! PossibilitÃ© de chaque chiffre
 
         possible=.TRUE.
         DO j=1,9,+1
@@ -139,8 +139,8 @@ contains
 
     !****************************************************************
     ! Permet de trier les cases vides par ordre croissant en fonction
-    ! du nombre de chiffres possibles, �partir de la position p.
-    ! Tri �bulle.
+    ! du nombre de chiffres possibles, ï¿œpartir de la position p.
+    ! Tri ï¿œbulle.
     !****************************************************************
     SUBROUTINE Trier(casesVides,p,n)
         ! Parametre d'entree :
@@ -172,8 +172,8 @@ contains
     END SUBROUTINE
 
 
-    ! Génération de grilles : on ajoute un chiffre à la fois, on vérifie la validité,
-    ! et on recommence tout si l'on est coincé.
+    ! GÃ©nÃ©ration de grilles : on ajoute un chiffre Ã  la fois, on vÃ©rifie la validitÃ©,
+    ! et on recommence tout si l'on est coincÃ©.
     ! Sur PIII 866 MHZ : environ 0,5 seconde.
     SUBROUTINE GenererGrillePleine(g)
         IMPLICIT NONE
@@ -195,8 +195,8 @@ contains
                 fini=.FALSE.
                 DO WHILE(.NOT.fini)
                     IF (essais>30) THEN
-                        ! On recommence depuis le départ
-                        ! (on ne sait pas jusqu'où revenir en arrière)
+                        ! On recommence depuis le dÃ©part
+                        ! (on ne sait pas jusqu'oÃ¹ revenir en arriÃšre)
                         g=0
                         essais=0
                         c=1
@@ -216,7 +216,7 @@ contains
 
     LOGICAL FUNCTION ChiffreValide(g,l,c)
         IMPLICIT NONE
-        ! Entrée :
+        ! EntrÃ©e :
         INTEGER(1), DIMENSION(1:9, 1:9), INTENT(IN) :: g
         INTEGER(1)            :: l,c
         ! Variables locales
@@ -245,16 +245,16 @@ contains
         INTEGER(1)            :: l,c,i
         LOGICAL(1)            :: vide,unique
 
-        ! Sauvegarde de la grille de départ :
+        ! Sauvegarde de la grille de dÃ©part :
         g0=g
 
         unique=.FALSE.
         DO WHILE(.NOT.unique)
             g=g0
 
-            ! On enlève au hasard les cases vides
+            ! On enlÃšve au hasard les cases vides
             DO i=1, 81-restant
-                    ! On cherche une case à effacer :
+                    ! On cherche une case Ã  effacer :
                     vide=.FALSE.
                     DO WHILE(.NOT.vide)
                         CALL Random_number(alea)
@@ -376,7 +376,7 @@ contains
 
     LOGICAL FUNCTION ColonneOuLigneValide(col)
         IMPLICIT NONE
-        ! Paramètre d'entrée :
+        ! ParamÃštre d'entrÃ©e :
         INTEGER(1), DIMENSION(1:9)     :: col
         ! Variables locales :
         INTEGER(1), DIMENSION(0:9)     :: compteur    !Nb d'apparitions de chaque chiffre
@@ -396,7 +396,7 @@ contains
 
     LOGICAL FUNCTION RegionValide(region)
         IMPLICIT NONE
-        ! Entrée :
+        ! EntrÃ©e :
         INTEGER(1), DIMENSION(1:3, 1:3) :: region
         INTEGER(1), DIMENSION(1:9)     :: col
 
@@ -419,14 +419,14 @@ contains
 
     LOGICAL FUNCTION GrilleValide(g)
         IMPLICIT NONE
-        ! Entrée :
+        ! EntrÃ©e :
         INTEGER(1), DIMENSION(1:9, 1:9) :: g
         ! Variables locales :
         INTEGER(1)            :: l,c
 
         GrilleValide=.TRUE.
 
-        ! Vérification des lignes :
+        ! VÃ©rification des lignes :
         DO l=1,9,+1
             IF (.NOT.ColonneOuLigneValide(g(l,1:9))) THEN
                 GrilleValide=.FALSE.
@@ -435,7 +435,7 @@ contains
             END IF
         END DO
 
-        ! Vérification des colonnes :
+        ! VÃ©rification des colonnes :
         DO c=1,9,+1
             IF (.NOT.ColonneOuLigneValide(g(1:9,c))) THEN
                 GrilleValide=.FALSE.
@@ -444,7 +444,7 @@ contains
             END IF
         END DO
 
-        ! Vérification des régions :
+        ! VÃ©rification des rÃ©gions :
         DO l=1,7,+3
             DO c=1,7,+3
                 IF (.NOT.RegionValide(g(l:l+2,c:c+2))) THEN
@@ -457,8 +457,8 @@ contains
     END FUNCTION GrilleValide
 
     !************************************************************
-    ! Initialisation du générateur de nombres pseudo-aléatoires
-    ! indépendamment du système
+    ! Initialisation du gÃ©nÃ©rateur de nombres pseudo-alÃ©atoires
+    ! indÃ©pendamment du systÃšme
     !************************************************************
     SUBROUTINE Initialiser_Random
         IMPLICIT NONE
@@ -469,11 +469,11 @@ contains
 
         CALL DATE_AND_TIME(VALUES=valeursTemps)
 
-        ! On récupère le nombre d'entiers servant à stocker la graine :
+        ! On rÃ©cupÃšre le nombre d'entiers servant Ã  stocker la graine :
         CALL RANDOM_SEED(SIZE=n)
         ALLOCATE(graine(1:n))
 
-        ! On utilise les millièmes de seconde de l'horloge :
+        ! On utilise les milliÃšmes de seconde de l'horloge :
         DO boucle=1 , n
             graine(boucle)=HUGE(graine(boucle))/1000*valeursTemps(8)
         END DO
@@ -485,7 +485,7 @@ contains
 
     !***********************************************************
     !   Retourne le temps CPU en secondes.
-    !    cpu_time() est définie dans la norme Fortran 95.
+    !    cpu_time() est dÃ©finie dans la norme Fortran 95.
     !***********************************************************
     real(8) FUNCTION Temps()
         IMPLICIT NONE
