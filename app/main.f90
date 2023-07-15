@@ -33,7 +33,7 @@ program main
     ! Initialisation du générateur de nombres pseudo-aléatoires :
     call Initialiser_Random
     ! Initialisation de la grille avec des cases vides (codées par des 0) :
-    grille=0
+    grille = 0
 
     print *,"sudoku.f90, version 0.8, copyright (C) 2006 Vincent MAGNIN"
     ! Boucle infinie du menu :
@@ -93,7 +93,7 @@ program main
                 print *, "Elle n'est pas valide."
             end if
         case(6)
-            Debut=Temps()
+            Debut = Temps()
             call GenererGrillePleine(grille)
             call Afficher_grille(grille)
             ! Vérification par sécurité :
@@ -102,12 +102,12 @@ program main
             else
                 print *, "Grille non valide : probleme de generation !"
             end if
-            Fin=Temps()
+            Fin = Temps()
             print *,"Temps de calcul :", Fin-Debut, "s"
         case(7)
             print *,"Voici la grille de depart :"
             call Afficher_grille(grille)
-            Debut=Temps()
+            Debut = Temps()
             call ResoudreGrille(grille)
             if (GrilleValide(grille)) then
                 print *, "Voici la grille resolue (validite verifiee) :"
@@ -115,7 +115,7 @@ program main
                 print *, "Grille non valide : probleme de resolution..."
             end if
             call Afficher_grille(grille)
-            Fin=Temps()
+            Fin = Temps()
             print *,"Temps de calcul :", Fin-Debut, "s"
         case(8)
             print *,"Nombre de chiffres dans la grille [17,81] ?"
@@ -131,7 +131,7 @@ program main
                 print *, "Grille non valide : probleme de generation !"
             end if
 
-            Debut=Temps()
+            Debut = Temps()
             call GenererGrilleSudoku(grille,nvides)
             print *,"Voici une grille de sudoku admettant probablement une solution unique :"
             call Afficher_grille(grille)
@@ -140,7 +140,7 @@ program main
             else
                 print *, "Grille non valide : probleme de generation"
             end if
-            Fin=Temps()
+            Fin = Temps()
             print *,"Temps de calcul :", Fin-Debut, "s"
         case(9)
             stop
