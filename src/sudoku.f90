@@ -25,7 +25,6 @@ module sudoku
 contains
 
     subroutine ResoudreGrille(g)
-        implicit none
         ! Parametre d'entrée/sortie :
         integer(1), dimension(1:9, 1:9), intent(inout) :: g
         ! Variables locales
@@ -102,7 +101,6 @@ contains
 
     ! Procédure établissant la liste des chiffres possibles dans une case vide :
     subroutine lister_chiffres_possibles(g,l0,c0,compteurCP,chiffrePossible)
-        implicit none
         ! Parametres d'entrée :
         integer(1), dimension(1:9, 1:9), intent(in) :: g
         integer(1) :: l0,c0
@@ -176,7 +174,6 @@ contains
     ! et on recommence tout si l'on est coincé.
     ! Sur PIII 866 MHZ : environ 0,5 seconde.
     subroutine GenererGrillePleine(g)
-        implicit none
         ! Parametre de sortie :
         integer(1), dimension(1:9, 1:9), intent(out) :: g
         ! Variables locales
@@ -215,7 +212,6 @@ contains
 
 
     logical function ChiffreValide(g,l,c)
-        implicit none
         ! Entrée :
         integer(1), dimension(1:9, 1:9), intent(in) :: g
         integer(1) :: l,c
@@ -232,7 +228,6 @@ contains
     ! Remarque : on ne sait pas pour l'instant s'il existe des grilles de sudoku
     ! contenant moins de 17 chiffres tout en ayant une solution unique.
     subroutine GenererGrilleSudoku(g,restant)
-        implicit none
         ! Parametre de sortie :
         integer(1), dimension(1:9, 1:9), intent(inout) :: g
         ! Parametre d'entree :
@@ -297,7 +292,6 @@ contains
 
 
     subroutine Enregistrer_grille(g, nom_fichier)
-        implicit none
         integer(1), dimension(1:9, 1:9) :: g
         character(len=*) :: nom_fichier
         ! Variables locales :
@@ -318,8 +312,6 @@ contains
 
 
     subroutine Lire_grille(g, nom_fichier)
-        implicit none
-
         ! Parametre de sortie :
         integer(1), dimension(1:9, 1:9), intent(out) :: g
         ! Parametre d'entree :
@@ -347,7 +339,6 @@ contains
 
 
     subroutine Afficher_grille(g)
-        implicit none
         integer(1), dimension(1:9, 1:9) :: g
         integer(1) :: l,c    !Numeros lignes et colonnes
 
@@ -361,7 +352,6 @@ contains
 
 
     subroutine Demander_grille(g)
-        implicit none
         ! Entree-sortie :
         integer(1), dimension(1:9, 1:9), intent(inout) :: g
         ! Variables locales :
@@ -375,7 +365,6 @@ contains
 
 
     logical function ColonneOuLigneValide(col)
-        implicit none
         ! ParamÃštre d'entrée :
         integer(1), dimension(1:9) :: col
         ! Variables locales :
@@ -395,7 +384,6 @@ contains
 
 
     logical function RegionValide(region)
-        implicit none
         ! Entrée :
         integer(1), dimension(1:3, 1:3) :: region
         integer(1), dimension(1:9)      :: col
@@ -418,7 +406,6 @@ contains
 
 
     logical function GrilleValide(g)
-        implicit none
         ! Entrée :
         integer(1), dimension(1:9, 1:9) :: g
         ! Variables locales :
@@ -461,7 +448,6 @@ contains
     ! indépendamment du système
     !************************************************************
     subroutine Initialiser_Random
-        implicit none
         integer(4), dimension(1:8) :: valeursTemps
         integer(4), allocatable, dimension (:) :: graine
 
@@ -488,7 +474,6 @@ contains
     !    cpu_time() est définie dans la norme Fortran 95.
     !***********************************************************
     real(8) function Temps()
-        implicit none
         Real(8) :: t
 
         call cpu_time(t)
