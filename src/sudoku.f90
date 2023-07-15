@@ -27,16 +27,16 @@ contains
     subroutine ResoudreGrille(g)
         implicit none
         ! Parametre d'entrée/sortie :
-        integer(1), dimension(1:9, 1:9), intent(inout)    :: g
+        integer(1), dimension(1:9, 1:9), intent(inout) :: g
         ! Variables locales
-        integer(1), dimension(1:9, 1:9)    :: g0        ! Sauvegarde de g
-        real(8)                :: alea        ! Nombre aléatoire
-        integer(1)            :: l,c,l0,c0,i,j
-        integer(1)            :: compteurCV    ! Compteur de cases vides
-        integer(1), dimension(1:81,1:3)    :: casesVides    ! Liste des cases vides
-        !logical(1), dimension(0:9)    :: possible    ! Possibilité de chaque chiffre
-        integer(1), dimension(1:9)    :: chiffrePossible    ! Liste des chiffres possibles
-        integer(1)            :: compteurCP    ! Compteur de chiffres possibles
+        integer(1), dimension(1:9, 1:9) :: g0        ! Sauvegarde de g
+        real(8)     :: alea        ! Nombre aléatoire
+        integer(1)  :: l,c,l0,c0,i,j
+        integer(1)  :: compteurCV    ! Compteur de cases vides
+        integer(1), dimension(1:81,1:3) :: casesVides    ! Liste des cases vides
+        !logical(1), dimension(0:9)     :: possible    ! Possibilité de chaque chiffre
+        integer(1), dimension(1:9)      :: chiffrePossible    ! Liste des chiffres possibles
+        integer(1) :: compteurCP    ! Compteur de chiffres possibles
 
         chiffrePossible=0
 
@@ -104,14 +104,14 @@ contains
     subroutine lister_chiffres_possibles(g,l0,c0,compteurCP,chiffrePossible)
         implicit none
         ! Parametres d'entrée :
-        integer(1), dimension(1:9, 1:9), intent(in)    :: g
-        integer(1)                    :: l0,c0
+        integer(1), dimension(1:9, 1:9), intent(in) :: g
+        integer(1) :: l0,c0
         ! Parametres de sortie :
-        integer(1), dimension(1:9), intent(out)    :: chiffrePossible    ! Liste des chiffres possibles
-        integer(1), intent(out)            :: compteurCP        ! Compteur de chiffres possibles
+        integer(1), dimension(1:9), intent(out) :: chiffrePossible    ! Liste des chiffres possibles
+        integer(1), intent(out) :: compteurCP        ! Compteur de chiffres possibles
         ! Variables locales
-        integer(1)            :: l,c,cr,lr,j
-        logical(1), dimension(0:9)    :: possible    ! Possibilité de chaque chiffre
+        integer(1) :: l,c,cr,lr,j
+        logical(1), dimension(0:9) :: possible    ! Possibilité de chaque chiffre
 
         possible=.true.
         do j=1,9,+1
@@ -144,15 +144,15 @@ contains
     !****************************************************************
     subroutine Trier(casesVides,p,n)
         ! Parametre d'entree :
-        integer(1),intent(in)        :: n    ! Nombre de cases vides
-        integer(1),intent(in)        :: p    ! On trie a partir de la position p
+        integer(1),intent(in) :: n    ! Nombre de cases vides
+        integer(1),intent(in) :: p    ! On trie a partir de la position p
         ! Parametre de sortie :
         integer(1), dimension(1:81,1:3), intent(inout)    :: casesVides    ! Liste des cases vides
         ! Variables locales :
-        integer(1)                        :: i    ! Compteurs de boucle
-        integer(1)                        :: j
-        integer(1), dimension(1:3)        :: c    ! Sauvegarde
-        logical                            :: fini
+        integer(1) :: i    ! Compteurs de boucle
+        integer(1) :: j
+        integer(1), dimension(1:3) :: c    ! Sauvegarde
+        logical :: fini
 
         fini=.false.
         do while (.not.fini)
@@ -178,12 +178,12 @@ contains
     subroutine GenererGrillePleine(g)
         implicit none
         ! Parametre de sortie :
-        integer(1), dimension(1:9, 1:9), intent(out)    :: g
+        integer(1), dimension(1:9, 1:9), intent(out) :: g
         ! Variables locales
-        real(8)                :: alea
-        integer(1)            :: l,c
-        integer(4)             :: essais
-        logical(1)            :: fini
+        real(8)    :: alea
+        integer(1) :: l,c
+        integer(4) :: essais
+        logical(1) :: fini
 
         g=0
 
@@ -218,9 +218,9 @@ contains
         implicit none
         ! Entrée :
         integer(1), dimension(1:9, 1:9), intent(in) :: g
-        integer(1)            :: l,c
+        integer(1) :: l,c
         ! Variables locales
-        integer(1)            :: i,j
+        integer(1) :: i,j
 
         i=(l-1)/3
         j=(c-1)/3
@@ -234,16 +234,16 @@ contains
     subroutine GenererGrilleSudoku(g,restant)
         implicit none
         ! Parametre de sortie :
-        integer(1), dimension(1:9, 1:9), intent(inout)    :: g
+        integer(1), dimension(1:9, 1:9), intent(inout) :: g
         ! Parametre d'entree :
-        integer(1),intent(in)    :: restant
+        integer(1),intent(in) :: restant
         ! Variables locales
-        integer(1), parameter                    :: n=10
-        integer(1), dimension(1:9, 1:9)            :: g0
-        integer(1), dimension(1:n, 1:9, 1:9)    :: solutions
-        real(8)                :: alea
-        integer(1)            :: l,c,i
-        logical(1)            :: vide,unique
+        integer(1), parameter                :: n=10
+        integer(1), dimension(1:9, 1:9)      :: g0
+        integer(1), dimension(1:n, 1:9, 1:9) :: solutions
+        real(8)    :: alea
+        integer(1) :: l,c,i
+        logical(1) :: vide,unique
 
         ! Sauvegarde de la grille de départ :
         g0=g
@@ -299,9 +299,9 @@ contains
     subroutine Enregistrer_grille(g, nom_fichier)
         implicit none
         integer(1), dimension(1:9, 1:9) :: g
-        character(len=*)        :: nom_fichier
+        character(len=*) :: nom_fichier
         ! Variables locales :
-        integer(1)            :: l,c    !Numéros lignes et colonnes
+        integer(1) :: l,c    !Numéros lignes et colonnes
 
         ! Creation du fichier :
         open(unit=1, file=nom_fichier, STATUS="REPLACE")
@@ -323,10 +323,10 @@ contains
         ! Parametre de sortie :
         integer(1), dimension(1:9, 1:9), intent(out) :: g
         ! Parametre d'entree :
-        character(len=*)    :: nom_fichier
+        character(len=*) :: nom_fichier
         ! Variables locales
-        character(len=2)    :: barre1,barre2   !Pour lire les barres
-        integer(1)        :: l    !Numeros lignes
+        character(len=2) :: barre1,barre2   !Pour lire les barres
+        integer(1)       :: l    !Numeros lignes
 
         ! Ouverture et lecture du fichier ligne par ligne :
         open(unit=1, file=nom_fichier)
@@ -349,7 +349,7 @@ contains
     subroutine Afficher_grille(g)
         implicit none
         integer(1), dimension(1:9, 1:9) :: g
-        integer(1)            :: l,c    !Numeros lignes et colonnes
+        integer(1) :: l,c    !Numeros lignes et colonnes
 
         do l=1, 9, +1
             print '(i2,i2,i2," |",i2,i2,i2," |",i2,i2,i2)', (g(l,c) , c=1,9)
@@ -365,7 +365,7 @@ contains
         ! Entree-sortie :
         integer(1), dimension(1:9, 1:9), intent(inout) :: g
         ! Variables locales :
-        integer(1)    :: l,c    !Numeros lignes et colonnes
+        integer(1) :: l,c    !Numeros lignes et colonnes
 
         do l=1, 9, +1
             print *, "Entrez la ligne ",l
@@ -377,10 +377,10 @@ contains
     logical function ColonneOuLigneValide(col)
         implicit none
         ! ParamÃštre d'entrée :
-        integer(1), dimension(1:9)     :: col
+        integer(1), dimension(1:9) :: col
         ! Variables locales :
-        integer(1), dimension(0:9)     :: compteur    !Nb d'apparitions de chaque chiffre
-        integer(1)            :: l        !Compteur de boucle
+        integer(1), dimension(0:9) :: compteur    !Nb d'apparitions de chaque chiffre
+        integer(1) :: l        !Compteur de boucle
 
         ColonneOuLigneValide=.true.
         compteur=0
@@ -398,7 +398,7 @@ contains
         implicit none
         ! Entrée :
         integer(1), dimension(1:3, 1:3) :: region
-        integer(1), dimension(1:9)     :: col
+        integer(1), dimension(1:9)      :: col
 
         col(1)=region(1,1)
         col(2)=region(1,2)
@@ -422,7 +422,7 @@ contains
         ! Entrée :
         integer(1), dimension(1:9, 1:9) :: g
         ! Variables locales :
-        integer(1)            :: l,c
+        integer(1) :: l,c
 
         GrilleValide=.true.
 
