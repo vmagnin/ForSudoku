@@ -63,7 +63,7 @@ program main
                 print *, "Elle n'est pas valide."
             end if
         case(2)
-            print *,"Entrez le nom du fichier Ã  lire, avec son extension .txt :"
+            print *,"Entrez le nom du fichier à lire, avec son extension .txt :"
             call SYSTEM("dir *.txt")
             READ *,fichier
             call Lire_grille(grille,trim(fichier))
@@ -74,10 +74,10 @@ program main
                 print *, "Elle n'est pas valide."
             end if
         case(3)
-            print *,"Entrez le nom du fichier Ã  enregistrer, avec son extension :"
+            print *,"Entrez le nom du fichier à enregistrer, avec son extension :"
             READ *,fichier
             call Enregistrer_grille(grille,trim(fichier))
-            print *,"Enregistrement effectuÃ©."
+            print *,"Enregistrement effectué."
         case(4)
             if (GrilleValide(grille)) then
                 print *, "La grille en memoire est valide."
