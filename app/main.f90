@@ -16,7 +16,7 @@
 ! If not, see <http://www.gnu.org/licenses/>.
 !------------------------------------------------------------------------------
 ! Contributed by Vincent Magnin, 2006-11-27
-! Last modifications: 2023-07-14
+! Last modifications: 2023-07-15
 !------------------------------------------------------------------------------
 
 program main
@@ -96,7 +96,7 @@ program main
             Debut=Temps()
             call GenererGrillePleine(grille)
             call Afficher_grille(grille)
-            ! VÃ©rification par sÃ©curitÃ© :
+            ! Vérification par sécurité :
             if (GrilleValide(grille)) then
                 print *, "Grille valide"
             else
@@ -124,7 +124,7 @@ program main
             call GenererGrillePleine(grille)
             print *,"Voici la grille pleine :"
             call Afficher_grille(grille)
-            ! VÃ©rification par sÃ©curitÃ© :
+            ! Vérification par sécurité :
             if (GrilleValide(grille)) then
                 print *, "Grille valide"
             else
