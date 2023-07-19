@@ -16,7 +16,7 @@
 ! If not, see <http://www.gnu.org/licenses/>.
 !------------------------------------------------------------------------------
 ! Contributed by Vincent Magnin, 2006-11-27
-! Last modifications: 2023-07-14
+! Last modifications: 2023-07-19
 !------------------------------------------------------------------------------
 
 module sudoku
@@ -265,7 +265,7 @@ contains
                     g(l,c) = 0
             end do
 
-            print *,"Je cherche une grille avec une solution unique..."
+            print *,"Search of a grid with unique solution ..."
 
             ! On résout n fois la grille
             unique = .true.
@@ -359,7 +359,7 @@ contains
         integer(1) :: l,c    !Numeros lignes et colonnes
 
         do l = 1, 9, +1
-            print *, "Entrez la ligne ",l
+            print *, "Enter line ",l
             READ *, (g(l,c) , c=1,9)
         end do
     end subroutine Demander_grille
@@ -419,7 +419,7 @@ contains
             if (.not.ColonneOuLigneValide(g(l,1:9))) then
                 GrilleValide = .false.
                 return
-                !print *, "Ligne ",l," non valide"
+                !print *, "Line ",l," is not a valid input"
             end if
         end do
 
@@ -428,7 +428,7 @@ contains
             if (.not.ColonneOuLigneValide(g(1:9,c))) then
                 GrilleValide = .false.
                 return
-                !print *, "Colonne ",c," non valide"
+                !print *, "Column ",c," is not a valid input"
             end if
         end do
 
@@ -438,7 +438,7 @@ contains
                 if (.not.RegionValide(g(l:l+2,c:c+2))) then
                     GrilleValide = .false.
                     return
-                    !print *, "Region ",l,c," non valide"
+                    !print *, "Region ",l,c," is not a  valide input"
                 end if
             end do
         end do
