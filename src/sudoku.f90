@@ -16,7 +16,7 @@
 ! If not, see <http://www.gnu.org/licenses/>.
 !------------------------------------------------------------------------------
 ! Contributed by Vincent Magnin, 2006-11-27
-! Last modifications: 2023-07-19
+! Last modifications: 2023-07-20
 !------------------------------------------------------------------------------
 
 module sudoku
@@ -25,25 +25,25 @@ module sudoku
 contains
 
     subroutine ResoudreGrille(g)
-        ! Parametre d'entrée/sortie :
+        ! input/output parameters:
         integer(1), dimension(1:9, 1:9), intent(inout) :: g
-        ! Variables locales
-        integer(1), dimension(1:9, 1:9) :: g0        ! Sauvegarde de g
-        real(8)     :: alea        ! Nombre aléatoire
+        ! local variables:
+        integer(1), dimension(1:9, 1:9) :: g0        ! save g
+        real(8)     :: alea        ! random number
         integer(1)  :: l,c,l0,c0,i,j
-        integer(1)  :: compteurCV    ! Compteur de cases vides
-        integer(1), dimension(1:81,1:3) :: casesVides    ! Liste des cases vides
-        !logical(1), dimension(0:9)     :: possible    ! Possibilité de chaque chiffre
-        integer(1), dimension(1:9)      :: chiffrePossible    ! Liste des chiffres possibles
-        integer(1) :: compteurCP    ! Compteur de chiffres possibles
+        integer(1)  :: compteurCV    ! counter of empty/non allocated cells
+        integer(1), dimension(1:81,1:3) :: casesVides    ! list of empty cells
+        !logical(1), dimension(0:9)     :: possible    ! Possibility of each number
+        integer(1), dimension(1:9)      :: chiffrePossible    ! list of (still) possible numbers
+        integer(1) :: compteurCP    ! counter of possible numbers
 
         chiffrePossible = 0
 
-        ! Sauvegarde de la grille de départ :
+        ! save the initial grid:
         g0 = g
 
-        ! Parcourir la grille, repérer les cases vides et stocker leurs coordonnées
-        ! dans un tableau de 81 éléments.
+        ! identify the grid coordinates of empty cells in the grid
+        ! in a table of 81 entries
         casesVides = 0
         compteurCV = 0
         do l = 1,9,+1
@@ -57,40 +57,43 @@ contains
             end do
         end do
 
-        ! Trier les cases vides  :
+        ! sort the empty cells:
         !call Trier(casesVides,1,compteurCV)
 
-        ! Parcourir l'ensemble des cases vides.
+        ! iterate over all empty cells:
         i = 1
         do while (i <= compteurCV)
-            ! Afin d'accélèrer l'algorithme, a chaque fois,
-            ! on recompte le nombre de chiffres possibles pour
-            ! chaque case vide restante :
+            ! To accelerate the algorithm, count for each empty cell the numbers
+            ! which yet possibly could be inserted
+            ! in this very cell
             do j = i,compteurCV,+1
                 l0 = casesVides(j,1)
                 c0 = casesVides(j,2)
                 call lister_chiffres_possibles(g,l0,c0,casesVides(j,3),chiffrePossible)
             end do
-            ! Et on retrie les cases vides en fonction du nombre de chiffres possibles
+            ! retrieve the empty cells (which depends on the number of still
+            ! possible numbers)
             call Trier(casesVides,i,compteurCV)
 
-            ! Etablir la liste des chiffres possibles dans la case vide l0,c0 :
+            ! for cell (l0,c0), generate a list of possible numbers:
             l0 = casesVides(i,1)
             c0 = casesVides(i,2)
 
             call lister_chiffres_possibles(g,l0,c0,compteurCP,chiffrePossible)
 
-            ! S'il y en a plusieurs, en tirer un au hasard et passer à la case vide suivante :
+            ! if there are multiple possibilities, choose one (by chance) and
+            ! continue with the next empty cell:
             if (compteurCP > 1) then
                 call Random_number(alea)
                 j = 1+int(alea*compteurCP)
                 g(l0,c0) = chiffrePossible(j)
                 i = i+1
-            ! S'il n'y en a qu'un, le choisir et passer à la case vide suivante :
+            ! if there is only one possibility, use this number now, and then
+            ! continue with the next empty cell
             else if (compteurCP == 1) then
                 g(l0,c0) = chiffrePossible(1)
                 i = i+1
-            ! S'il n'y en a pas, on recommence tout :
+            ! start all over again if there is none:
             else
                 i = 1
                 g = g0
@@ -99,17 +102,17 @@ contains
     end subroutine ResoudreGrille
 
 
-    ! Procédure établissant la liste des chiffres possibles dans une case vide :
+    ! procedure to create a list of allowed numbers in the present empty cell:
     subroutine lister_chiffres_possibles(g,l0,c0,compteurCP,chiffrePossible)
-        ! Parametres d'entrée :
+        ! input parameters:
         integer(1), dimension(1:9, 1:9), intent(in) :: g
         integer(1) :: l0,c0
-        ! Parametres de sortie :
-        integer(1), dimension(1:9), intent(out) :: chiffrePossible    ! Liste des chiffres possibles
-        integer(1), intent(out) :: compteurCP        ! Compteur de chiffres possibles
-        ! Variables locales
+        ! output parameters:
+        integer(1), dimension(1:9), intent(out) :: chiffrePossible    ! list of possible numbers
+        integer(1), intent(out) :: compteurCP        ! counter of possible numbers
+        ! locale variables:
         integer(1) :: l,c,cr,lr,j
-        logical(1), dimension(0:9) :: possible    ! Possibilité de chaque chiffre
+        logical(1), dimension(0:9) :: possible    ! Possibility of each number
 
         possible = .true.
         do j = 1,9,+1
@@ -136,30 +139,30 @@ contains
     end subroutine
 
     !****************************************************************
-    ! Permet de trier les cases vides par ordre croissant en fonction
-    ! du nombre de chiffres possibles, à partir de la position p.
-    ! Tri à bulle.
+    ! Starting from position p, sort the (still) empty cells by
+    ! increasing number of allowed numbers to them.  This is organized
+    ! as a bubble sort.
     !****************************************************************
     subroutine Trier(casesVides,p,n)
-        ! Parametre d'entree :
-        integer(1),intent(in) :: n    ! Nombre de cases vides
-        integer(1),intent(in) :: p    ! On trie a partir de la position p
-        ! Parametre de sortie :
-        integer(1), dimension(1:81,1:3), intent(inout)    :: casesVides    ! Liste des cases vides
-        ! Variables locales :
-        integer(1) :: i    ! Compteurs de boucle
+        ! input parameters:
+        integer(1),intent(in) :: n    ! number of empty lists
+        integer(1),intent(in) :: p    ! sort, start by position p (p inclusive)
+        ! output parameters:
+        integer(1), dimension(1:81,1:3), intent(inout)    :: casesVides    ! list of empty cells
+        ! local variables:
+        integer(1) :: i    ! loop counters
         integer(1) :: j
-        integer(1), dimension(1:3) :: c    ! Sauvegarde
+        integer(1), dimension(1:3) :: c    ! save
         logical :: fini
 
         fini = .false.
         do while (.not.fini)
             fini = .true.
-            ! On compare chaque case avec la suivante :
+            ! let's compare each cell with its succeeding cell
             do i = p, n-1, +1
                 j = i+1
                 if (casesVides(i,3) > casesVides(j,3)) then
-                    ! On echange les deux cases dans la liste :
+                    ! exchange the two cases of this list:
                     c = casesVides(i,:)
                     casesVides(i,:) = casesVides(j,:)
                     casesVides(j,:) = c
@@ -170,13 +173,14 @@ contains
     end subroutine
 
 
-    ! Génération de grilles : on ajoute un chiffre à la fois, on vérifie la validité,
-    ! et on recommence tout si l'on est coincé.
-    ! Sur PIII 866 MHZ : environ 0,5 seconde.
+    ! Grid generation: in each cycle a number is added and the grid is checked
+    ! for validity.  If the grid became invalid, the grid generation is starts
+    ! all over again.
+    ! With a  PIII 866 MHz: about 0.5 s.
     subroutine GenererGrillePleine(g)
-        ! Parametre de sortie :
+        ! output parameter:
         integer(1), dimension(1:9, 1:9), intent(out) :: g
-        ! Variables locales
+        ! local variables:
         real(8)    :: alea
         integer(1) :: l,c
         integer(4) :: essais
@@ -192,8 +196,9 @@ contains
                 fini = .false.
                 do while(.not.fini)
                     if (essais > 30) then
-                        ! On recommence depuis le départ
-                        ! (on ne sait pas jusqu'à revenir en arrière)
+                        ! start from the very beginning
+                        ! (it were impossible to determine how many cycles one
+                        ! has to rewind to identify the erroneous one)
                         g = 0
                         essais = 0
                         c = 1
@@ -212,10 +217,10 @@ contains
 
 
     logical function ChiffreValide(g,l,c)
-        ! Entrée :
+        ! input:
         integer(1), dimension(1:9, 1:9), intent(in) :: g
         integer(1) :: l,c
-        ! Variables locales
+        ! local variables
         integer(1) :: i,j
 
         i = (l-1)/3
@@ -226,14 +231,14 @@ contains
     end function ChiffreValide
 
 
-    ! Remarque : on ne sait pas pour l'instant s'il existe des grilles de sudoku
-    ! contenant moins de 17 chiffres tout en ayant une solution unique.
+    ! Note: at present it is unknown if there are Sudoku grids with less than
+    ! 17 non-zero cells leading to a unique solution.
     subroutine GenererGrilleSudoku(g,restant)
-        ! Parametre de sortie :
+        ! output parameter:
         integer(1), dimension(1:9, 1:9), intent(inout) :: g
-        ! Parametre d'entree :
+        ! input parameter:
         integer(1),intent(in) :: restant
-        ! Variables locales
+        ! local variables:
         integer(1), parameter                :: n = 10
         integer(1), dimension(1:9, 1:9)      :: g0
         integer(1), dimension(1:n, 1:9, 1:9) :: solutions
@@ -241,16 +246,16 @@ contains
         integer(1) :: l,c,i
         logical(1) :: vide,unique
 
-        ! Sauvegarde de la grille de départ :
+        ! save the initial grid:
         g0 = g
 
         unique = .false.
         do while(.not.unique)
             g = g0
 
-            ! On enlève au hasard les cases vides
+            ! remove randomly empty cells
             do i = 1, 81-restant
-                    ! On cherche une case à effacer :
+                    ! by chance, one picks a of the cells to be removed:
                     vide = .false.
                     do while(.not.vide)
                         call Random_number(alea)
@@ -261,13 +266,13 @@ contains
                             vide = .true.
                         end if
                     end do
-                    ! Et on la vide :
+                    ! erase the previously assigned number in this cell:
                     g(l,c) = 0
             end do
 
             print *,"Search of a grid with unique solution ..."
 
-            ! On résout n fois la grille
+            ! the grid is solved n times
             unique = .true.
             i = 1
     sol :        do while((i <= n).and.unique)
@@ -286,8 +291,8 @@ contains
                 i = i+1
             end do sol
 
-            ! Si les n solutions sont identiques, la solution est
-            ! probablement unique. Sinon on avertit l'utilisateur.
+            ! With n identical solutions, one likely identified the wanted
+            ! unique solution.  Else, warn the user.
         end do
     end subroutine GenererGrilleSudoku
 
@@ -295,10 +300,10 @@ contains
     subroutine Enregistrer_grille(g, nom_fichier)
         integer(1), dimension(1:9, 1:9) :: g
         character(len=*) :: nom_fichier
-        ! Variables locales :
-        integer(1) :: l,c    !Numéros lignes et colonnes
+        ! local variables
+        integer(1) :: l,c    ! line numbers and column numbers
 
-        ! Creation du fichier :
+        ! file creation:
         open(unit=1, file=nom_fichier, STATUS="REPLACE")
 
         do l = 1, 9, +1
@@ -313,15 +318,15 @@ contains
 
 
     subroutine Lire_grille(g, nom_fichier)
-        ! Parametre de sortie :
+        ! output parameter:
         integer(1), dimension(1:9, 1:9), intent(out) :: g
-        ! Parametre d'entree :
+        ! input parameter:
         character(len=*) :: nom_fichier
-        ! Variables locales
-        character(len=2) :: barre1,barre2   !Pour lire les barres
-        integer(1)       :: l    !Numeros lignes
+        ! local variables:
+        character(len=2) :: barre1,barre2   ! to read the pipe/the vertical bar
+        integer(1)       :: l    ! line numbers
 
-        ! Ouverture et lecture du fichier ligne par ligne :
+        ! open and read the file, line by line
         open(unit=1, file=nom_fichier)
 
         do l = 1, 9, +1
@@ -329,7 +334,7 @@ contains
                 & g(l,1),g(l,2),g(l,3), barre1,g(l,4),g(l,5),g(l,6), &
                 & barre2,g(l,7),g(l,8),g(l,9)
 
-            ! On saute les lignes de tirets :
+            ! skip the lines of dashes
             if ((l == 3).or.(l == 6)) then
                 READ(1,*)
             end if
@@ -341,7 +346,7 @@ contains
 
     subroutine Afficher_grille(g)
         integer(1), dimension(1:9, 1:9) :: g
-        integer(1) :: l,c    !Numeros lignes et colonnes
+        integer(1) :: l,c    ! line numbers and column numbers
 
         do l = 1, 9, +1
             print '(i2,i2,i2," |",i2,i2,i2," |",i2,i2,i2)', (g(l,c) , c=1,9)
@@ -353,10 +358,10 @@ contains
 
 
     subroutine Demander_grille(g)
-        ! Entree-sortie :
+        ! input/output:
         integer(1), dimension(1:9, 1:9), intent(inout) :: g
-        ! Variables locales :
-        integer(1) :: l,c    !Numeros lignes et colonnes
+        ! local variables:
+        integer(1) :: l,c    ! line numbers and column numbers
 
         do l = 1, 9, +1
             print *, "Enter line ",l
@@ -366,11 +371,11 @@ contains
 
 
     logical function ColonneOuLigneValide(col)
-        ! ParamÃštre d'entrée :
+        ! input parameter:
         integer(1), dimension(1:9) :: col
-        ! Variables locales :
-        integer(1), dimension(0:9) :: compteur    !Nb d'apparitions de chaque chiffre
-        integer(1) :: l        !Compteur de boucle
+        ! local variables:
+        integer(1), dimension(0:9) :: compteur    ! count the occurrence of each number
+        integer(1) :: l        ! loop counter
 
         ColonneOuLigneValide = .true.
         compteur = 0
@@ -378,14 +383,14 @@ contains
             compteur(col(l)) = compteur(col(l))+1
             if ((compteur(col(l)) > 1).and.(col(l) /= 0)) then
                 ColonneOuLigneValide = .false.
-                return        !On quitte la fonction
+                return        ! leave the function
             end if
         end do
     end function ColonneOuLigneValide
 
 
     logical function RegionValide(region)
-        ! Entrée :
+        ! input:
         integer(1), dimension(1:3, 1:3) :: region
         integer(1), dimension(1:9)      :: col
 
@@ -407,14 +412,14 @@ contains
 
 
     logical function GrilleValide(g)
-        ! Entrée :
+        ! input:
         integer(1), dimension(1:9, 1:9) :: g
-        ! Variables locales :
+        ! local variables:
         integer(1) :: l,c
 
         GrilleValide = .true.
 
-        ! Vérification des lignes :
+        ! verification of lines:
         do l = 1,9,+1
             if (.not.ColonneOuLigneValide(g(l,1:9))) then
                 GrilleValide = .false.
@@ -423,7 +428,7 @@ contains
             end if
         end do
 
-        ! Vérification des colonnes :
+        ! verification of columns:
         do c = 1,9,+1
             if (.not.ColonneOuLigneValide(g(1:9,c))) then
                 GrilleValide = .false.
@@ -432,21 +437,20 @@ contains
             end if
         end do
 
-        ! Vérification des régions :
+        ! verification of regions:
         do l = 1,7,+3
             do c = 1,7,+3
                 if (.not.RegionValide(g(l:l+2,c:c+2))) then
                     GrilleValide = .false.
                     return
-                    !print *, "Region ",l,c," is not a  valide input"
+                    !print *, "Region ",l,c," is not a valid input"
                 end if
             end do
         end do
     end function GrilleValide
 
     !************************************************************
-    ! Initialisation du générateur de nombres pseudo-aléatoires
-    ! indépendamment du système
+    ! initialization of a system independent pseudorandom generator
     !************************************************************
     subroutine Initialiser_Random
         integer(4), dimension(1:8) :: valeursTemps
@@ -456,23 +460,23 @@ contains
 
         call date_and_time(VALUES = valeursTemps)
 
-        ! On récupère le nombre d'entiers servant à stocker la graine :
+        ! retrieve the integers to store a seed: !? On récupère le nombre d'entiers servant à stocker la graine :
         call random_seed(SIZE = n)
         allocate(graine(1:n))
 
-        ! On utilise les millièmes de seconde de l'horloge :
+        ! use thousandths of a second by the clock:
         do boucle = 1 , n
             graine(boucle) = huge(graine(boucle))/1000*valeursTemps(8)
         end do
 
-        ! On transmet la graine :
+        ! hand over the seed:
         call random_seed(put = graine(1:n))
     end subroutine Initialiser_Random
 
 
     !***********************************************************
-    !   Retourne le temps CPU en secondes.
-    !    cpu_time() est définie dans la norme Fortran 95.
+    ! return the CPU time (expressed in seconds)
+    ! cpu_time() is defined by standards of Fortran 95, and later.
     !***********************************************************
     real(8) function Temps()
         Real(8) :: t

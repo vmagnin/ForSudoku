@@ -16,7 +16,7 @@
 ! If not, see <http://www.gnu.org/licenses/>.
 !------------------------------------------------------------------------------
 ! Contributed by Vincent Magnin, 2006-11-27
-! Last modifications: 2023-07-19
+! Last modifications: 2023-07-20
 !------------------------------------------------------------------------------
 
 program main
@@ -24,19 +24,19 @@ program main
 
     implicit none
     ! Variables locales :
-    integer(1), dimension(1:9, 1:9) :: grille    ! (ligne,colonne)
-    real(8)       :: Debut,Fin    ! Pour mesurer la durée de calcul
+    integer(1), dimension(1:9, 1:9) :: grille    ! (line, column)
+    real(8)       :: Debut,Fin    ! monitor the duration of computation
     integer(1)    :: choix
-    integer(1)    :: nvides    ! Nombre de cases à vider
-    character(50) :: fichier    ! Nom du fichier .txt
+    integer(1)    :: nvides       ! number of cells to clear
+    character(50) :: fichier      ! name of file (including extension .txt)
 
-    ! Initialisation du générateur de nombres pseudo-aléatoires :
+    ! initialize the pseudorandom number generator
     call Initialiser_Random
-    ! Initialisation de la grille avec des cases vides (codées par des 0) :
+    ! initialize the grid (non allocated cells will be encoded by 0)
     grille = 0
 
     print *,"sudoku.f90, version 0.8, copyright (C) 2006 Vincent MAGNIN"
-    ! Boucle infinie du menu :
+    ! infinite loop to provide the user a menu:
     do
         print *
         print *,"*************************** MENU *****************************************"
@@ -96,7 +96,7 @@ program main
             Debut = Temps()
             call GenererGrillePleine(grille)
             call Afficher_grille(grille)
-            ! Vérification par sécurité :
+            ! grid validation:
             if (GrilleValide(grille)) then
                 print *, "The grid is valid."
             else
@@ -124,7 +124,7 @@ program main
             call GenererGrillePleine(grille)
             print *,"Below, a filled grid:"
             call Afficher_grille(grille)
-            ! Vérification par sécurité :
+            ! grid validation:
             if (GrilleValide(grille)) then
                 print *, "The grid is valid."
             else
