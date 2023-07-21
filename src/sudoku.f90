@@ -16,7 +16,7 @@
 ! If not, see <http://www.gnu.org/licenses/>.
 !------------------------------------------------------------------------------
 ! Contributed by Vincent Magnin, 2006-11-27
-! Last modifications: 2023-07-14
+! Last modifications: 2023-07-21
 !------------------------------------------------------------------------------
 
 module sudoku
@@ -46,8 +46,8 @@ contains
         ! dans un tableau de 81 éléments.
         casesVides = 0
         compteurCV = 0
-        do l = 1,9,+1
-            do c = 1,9,+1
+        do l = 1,9
+            do c = 1,9
                 if (g(l,c) == 0) then
                     compteurCV = compteurCV+1
                     casesVides(compteurCV,1) = l
@@ -66,7 +66,7 @@ contains
             ! Afin d'accélèrer l'algorithme, a chaque fois,
             ! on recompte le nombre de chiffres possibles pour
             ! chaque case vide restante :
-            do j = i,compteurCV,+1
+            do j = i,compteurCV
                 l0 = casesVides(j,1)
                 c0 = casesVides(j,2)
                 call lister_chiffres_possibles(g,l0,c0,casesVides(j,3),chiffrePossible)
@@ -112,22 +112,22 @@ contains
         logical(1), dimension(0:9) :: possible    ! Possibilité de chaque chiffre
 
         possible = .true.
-        do j = 1,9,+1
+        do j = 1,9
             possible(g(j,c0)) = .false.
             possible(g(l0,j)) = .false.
         end do
 
         lr = 1+3*((l0-1)/3)
         cr = 1+3*((c0-1)/3)
-        do l = lr,lr+2,+1
-            do c = cr,cr+2,+1
+        do l = lr,lr+2
+            do c = cr,cr+2
                 possible(g(l,c)) = .false.
             end do
         end do
 
         compteurCP = 0
         chiffrePossible = 0
-        do j = 1,9,+1
+        do j = 1,9
             if (possible(j)) then
                 compteurCP = compteurCP+1
                 chiffrePossible(compteurCP) = j
@@ -156,7 +156,7 @@ contains
         do while (.not.fini)
             fini = .true.
             ! On compare chaque case avec la suivante :
-            do i = p, n-1, +1
+            do i = p, n-1
                 j = i+1
                 if (casesVides(i,3) > casesVides(j,3)) then
                     ! On echange les deux cases dans la liste :
@@ -274,8 +274,8 @@ contains
                 solutions(i,1:9,1:9) = g
                 call ResoudreGrille(solutions(i,1:9,1:9))
                 if (i >= 2) then
-                    do l = 1,9,+1
-                        do c = 1,9,+1
+                    do l = 1,9
+                        do c = 1,9
                             if (solutions(i,l,c) /= solutions(i-1,l,c)) then
                                 unique = .false.
                                 EXIT sol
@@ -301,7 +301,7 @@ contains
         ! Creation du fichier :
         open(unit=1, file=nom_fichier, STATUS="REPLACE")
 
-        do l = 1, 9, +1
+        do l = 1, 9
             write(1,'(i2,i2,i2," |",i2,i2,i2," |",i2,i2,i2)') (g(l,c) , c=1,9)
             if ((l == 3).or.(l == 6)) then
                 write(1,*) "------+-------+------"
@@ -324,7 +324,7 @@ contains
         ! Ouverture et lecture du fichier ligne par ligne :
         open(unit=1, file=nom_fichier)
 
-        do l = 1, 9, +1
+        do l = 1, 9
             READ(1,'(i2,i2,i2,a2,i2,i2,i2,a2,i2,i2,i2)') &
                 & g(l,1),g(l,2),g(l,3), barre1,g(l,4),g(l,5),g(l,6), &
                 & barre2,g(l,7),g(l,8),g(l,9)
@@ -343,7 +343,7 @@ contains
         integer(1), dimension(1:9, 1:9) :: g
         integer(1) :: l,c    !Numeros lignes et colonnes
 
-        do l = 1, 9, +1
+        do l = 1, 9
             print '(i2,i2,i2," |",i2,i2,i2," |",i2,i2,i2)', (g(l,c) , c=1,9)
             if ((l == 3).or.(l == 6)) then
                 print *, "------+-------+------"
@@ -358,7 +358,7 @@ contains
         ! Variables locales :
         integer(1) :: l,c    !Numeros lignes et colonnes
 
-        do l = 1, 9, +1
+        do l = 1, 9
             print *, "Entrez la ligne ",l
             READ *, (g(l,c) , c=1,9)
         end do
@@ -374,7 +374,7 @@ contains
 
         ColonneOuLigneValide = .true.
         compteur = 0
-        do l = 1,9,+1
+        do l = 1,9
             compteur(col(l)) = compteur(col(l))+1
             if ((compteur(col(l)) > 1).and.(col(l) /= 0)) then
                 ColonneOuLigneValide = .false.
@@ -415,7 +415,7 @@ contains
         GrilleValide = .true.
 
         ! Vérification des lignes :
-        do l = 1,9,+1
+        do l = 1,9
             if (.not.ColonneOuLigneValide(g(l,1:9))) then
                 GrilleValide = .false.
                 return
@@ -424,7 +424,7 @@ contains
         end do
 
         ! Vérification des colonnes :
-        do c = 1,9,+1
+        do c = 1,9
             if (.not.ColonneOuLigneValide(g(1:9,c))) then
                 GrilleValide = .false.
                 return
