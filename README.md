@@ -11,7 +11,7 @@ You need:
 
 ## Running the program
 
-```bash
+```shell
 $ fpm run
 sudoku.f90                             done.
 libsudoku.a                            done.
