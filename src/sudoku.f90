@@ -20,6 +20,7 @@
 !------------------------------------------------------------------------------
 
 module sudoku
+    use iso_fortran_env, only: dp => real64
     implicit none
 
 contains
@@ -29,7 +30,7 @@ contains
         integer(1), dimension(1:9, 1:9), intent(inout) :: g
         ! Variables locales
         integer(1), dimension(1:9, 1:9) :: g0        ! Sauvegarde de g
-        real(8)     :: alea        ! Nombre aléatoire
+        real(kind=dp)     :: alea        ! Nombre aléatoire
         integer(1)  :: l,c,l0,c0,i,j
         integer(1)  :: compteurCV    ! Compteur de cases vides
         integer(1), dimension(1:81,1:3) :: casesVides    ! Liste des cases vides
@@ -177,7 +178,7 @@ contains
         ! Parametre de sortie :
         integer(1), dimension(1:9, 1:9), intent(out) :: g
         ! Variables locales
-        real(8)    :: alea
+        real(kind=dp)    :: alea
         integer(1) :: l,c
         integer(4) :: essais
         logical(1) :: fini
@@ -201,7 +202,7 @@ contains
                     end if
                     essais = essais+1
                     call Random_number(alea)
-                    g(l,c) = 1+int(alea*9d0)
+                    g(l,c) = 1+int(alea*9_dp)
                     fini = ChiffreValide(g,l,c)
                 end do
                 c = c+1
@@ -237,7 +238,7 @@ contains
         integer(1), parameter                :: n = 10
         integer(1), dimension(1:9, 1:9)      :: g0
         integer(1), dimension(1:n, 1:9, 1:9) :: solutions
-        real(8)    :: alea
+        real(kind=dp)    :: alea
         integer(1) :: l,c,i
         logical(1) :: vide,unique
 
@@ -474,8 +475,8 @@ contains
     !   Retourne le temps CPU en secondes.
     !    cpu_time() est définie dans la norme Fortran 95.
     !***********************************************************
-    real(8) function Temps()
-        Real(8) :: t
+    real(kind=dp) function Temps()
+        Real(kind=dp) :: t
 
         call cpu_time(t)
         Temps = t

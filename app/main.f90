@@ -16,16 +16,17 @@
 ! If not, see <http://www.gnu.org/licenses/>.
 !------------------------------------------------------------------------------
 ! Contributed by Vincent Magnin, 2006-11-27
-! Last modifications: 2023-07-15
+! Last modifications: 2023-07-21
 !------------------------------------------------------------------------------
 
 program main
+    use iso_fortran_env, only: dp => real64
     use sudoku
 
     implicit none
     ! Variables locales :
     integer(1), dimension(1:9, 1:9) :: grille    ! (ligne,colonne)
-    real(8)       :: Debut,Fin    ! Pour mesurer la durée de calcul
+    real(kind=dp)    :: Debut,Fin    ! Pour mesurer la durée de calcul
     integer(1)    :: choix
     integer(1)    :: nvides    ! Nombre de cases à vider
     character(50) :: fichier    ! Nom du fichier .txt
