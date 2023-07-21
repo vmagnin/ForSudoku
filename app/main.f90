@@ -25,10 +25,10 @@ program main
 
     implicit none
     ! Variables locales :
-    integer(1), dimension(1:9, 1:9) :: grille    ! (ligne,colonne)
+    integer, dimension(1:9, 1:9) :: grille    ! (ligne,colonne)
     real(kind=dp)    :: Debut,Fin    ! Pour mesurer la durée de calcul
-    integer(1)    :: choix
-    integer(1)    :: nvides    ! Nombre de cases à vider
+    integer    :: choix
+    integer    :: nvides    ! Nombre de cases à vider
     character(50) :: fichier    ! Nom du fichier .txt
 
     ! Initialisation du générateur de nombres pseudo-aléatoires :
