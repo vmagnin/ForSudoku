@@ -322,6 +322,11 @@ contains
         character(len=2) :: barre1,barre2   !Pour lire les barres
         integer       :: l    !Numeros lignes
         integer :: fileunit, error
+        logical :: file_exists  ! check for the presence of the file requested
+
+        inquire(file = nom_fichier, exist = file_exists)
+        if (file_exists .eqv. .False.) stop "The requested file is absent."
+
         ! Ouverture et lecture du fichier ligne par ligne :
         open(newunit=fileunit, file=nom_fichier)
 
