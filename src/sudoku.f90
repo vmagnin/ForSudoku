@@ -16,7 +16,7 @@
 ! If not, see <http://www.gnu.org/licenses/>.
 !------------------------------------------------------------------------------
 ! Contributed by Vincent Magnin, 2006-11-27
-! Last modifications: 2023-07-21
+! Last modifications: 2023-07-22
 !------------------------------------------------------------------------------
 
 module sudoku
@@ -298,18 +298,18 @@ contains
         character(len=*) :: nom_fichier
         ! Variables locales :
         integer :: l,c    !Numéros lignes et colonnes
-
+        integer :: fileunit, error
         ! Creation du fichier :
-        open(unit=1, file=nom_fichier, STATUS="REPLACE")
+        open(newunit=fileunit, file=nom_fichier, STATUS="REPLACE")
 
         do l = 1, 9
-            write(1,'(i2,i2,i2," |",i2,i2,i2," |",i2,i2,i2)') (g(l,c) , c=1,9)
+            write(fileunit,'(i2,i2,i2," |",i2,i2,i2," |",i2,i2,i2)') (g(l,c) , c=1,9)
             if ((l == 3).or.(l == 6)) then
-                write(1,*) "------+-------+------"
+                write(fileunit,*) "------+-------+------"
             end if
         end do
 
-        close(1)
+        close(fileunit)
     end subroutine Enregistrer_grille
 
 
@@ -321,22 +321,22 @@ contains
         ! Variables locales
         character(len=2) :: barre1,barre2   !Pour lire les barres
         integer       :: l    !Numeros lignes
-
+        integer :: fileunit, error
         ! Ouverture et lecture du fichier ligne par ligne :
-        open(unit=1, file=nom_fichier)
+        open(newunit=fileunit, file=nom_fichier)
 
         do l = 1, 9
-            READ(1,'(i2,i2,i2,a2,i2,i2,i2,a2,i2,i2,i2)') &
+            READ(fileunit,'(i2,i2,i2,a2,i2,i2,i2,a2,i2,i2,i2)') &
                 & g(l,1),g(l,2),g(l,3), barre1,g(l,4),g(l,5),g(l,6), &
                 & barre2,g(l,7),g(l,8),g(l,9)
 
             ! On saute les lignes de tirets :
             if ((l == 3).or.(l == 6)) then
-                READ(1,*)
+                READ(fileunit,*)
             end if
         end do
 
-        close(1)
+        close(fileunit)
     end subroutine Lire_grille
 
 
