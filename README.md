@@ -88,6 +88,14 @@ equally contains the corresponding solution of the test input (files
 `test_out_01.txt` and `test_out_02.txt`) in the program's format which match
 the topmost example in the English edition of Wikipedia.
 
+### option 6, generation of a randomly filled grid
+
+By this option, the program generates a random grid, filled and passing the
+same validity test which is used to check partially filled grids.  Note,
+similar as either the manual input (option `1`), or the one from a permanent
+record (option `2`), this option equally overwrites the content of the
+program's memory.
+
 ## License
 
 This project is licensed under the [GNU General Public License version 3 or
