@@ -78,7 +78,9 @@ The present form of the program only reliably supports the input of a partially
 filled grid if its own format depicted above.  Folder `check` contains example
 files of a partially filled grid (`test_in_01.txt` and `test_in_02.txt`) as a
 reference, and a grid filled with the explicit place holder zeroes to start
-with (`template.txt`) for you.
+with (`template.txt`) for you.  Then, paste the record into the root of this
+project; only the files which are listed by the program by selection of mode
+`2` can be read and processed.
 
 If the input is considered a valid one, use then option `7` to query for a
 solution, i.e. a completely filled grid.  For comparison, folder `check`
