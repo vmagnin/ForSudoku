@@ -303,7 +303,7 @@ contains
         open(newunit=fileunit, file=nom_fichier, STATUS="REPLACE")
 
         do l = 1, 9
-            write(fileunit,'(i2,i2,i2," |",i2,i2,i2," |",i2,i2,i2)') (g(l,c) , c=1,9)
+            write(fileunit,'(3i2, " |", 3i2, " |", 3i2)') (g(l,c) , c=1,9)
             if ((l == 3).or.(l == 6)) then
                 write(fileunit,*) "------+-------+------"
             end if
@@ -331,7 +331,7 @@ contains
         open(newunit=fileunit, file=nom_fichier)
 
         do l = 1, 9
-            READ(fileunit,'(i2,i2,i2,a2,i2,i2,i2,a2,i2,i2,i2)') &
+            READ(fileunit,'(3i2, a2, 3i2, a2, 3i2)') &
                 & g(l,1),g(l,2),g(l,3), barre1,g(l,4),g(l,5),g(l,6), &
                 & barre2,g(l,7),g(l,8),g(l,9)
 
@@ -350,7 +350,7 @@ contains
         integer :: l,c    !Numeros lignes et colonnes
 
         do l = 1, 9
-            print '(i2,i2,i2," |",i2,i2,i2," |",i2,i2,i2)', (g(l,c) , c=1,9)
+            print '(3i2, " |", 3i2, " |", 3i2)', (g(l,c) , c=1,9)
             if ((l == 3).or.(l == 6)) then
                 print *, "------+-------+------"
             end if
