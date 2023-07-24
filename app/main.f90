@@ -25,124 +25,124 @@ program main
 
     implicit none
     ! Variables locales :
-    integer, dimension(1:9, 1:9) :: grille    ! (ligne,colonne)
-    real(kind=dp)    :: Debut,Fin    ! Pour mesurer la durée de calcul
+    integer, dimension(1:9, 1:9) :: grille    ! (line, column)
+    real(kind=dp)       :: Debut,Fin    ! monitor the duration of computation
     integer    :: choix
-    integer    :: nvides    ! Nombre de cases à vider
-    character(50) :: fichier    ! Nom du fichier .txt
+    integer    :: nvides       ! number of cells to clear
+    character(50) :: fichier      ! name of file (including extension .txt)
 
-    ! Initialisation du générateur de nombres pseudo-aléatoires :
+    ! initialize the pseudorandom number generator
     call Initialiser_Random
-    ! Initialisation de la grille avec des cases vides (codées par des 0) :
+    ! initialize the grid (non allocated cells will be encoded by 0)
     grille = 0
 
     print *,"sudoku.f90, version 0.8.1, copyright (C) 2006 Vincent MAGNIN"
-    ! Boucle infinie du menu :
+    ! infinite loop to provide the user a menu:
     do
         print *
-        print *,"*************************** MENU ********************************"
-        print *,"1) Taper une grille."
-        print *,"2) Lire une grille dans un fichier."
-        print *,"3) Enregistrer une grille dans un fichier."
-        print *,"4) Verifier la validite de la grille en memoire."
-        print *,"5) Afficher la grille en memoire."
-        print *,"6) Generer une grille pleine."
-        print *,"7) Resoudre la grille en memoire."
-        print *,"8) Generer une grille admettant une solution probablement unique."
-        print *,"9) Quitter."
-        print *,"Tapez un de ces numeros et appuyez sur 'Entree' :"
+        print *,"*************************** MENU *****************************************"
+        print *,"1) Manual input (lines of comma separated 1 - 9, or 0 (unallocated cell).)"
+        print *,"2) Input from a text file.  For permitted patterns, see the documentation."
+        print *,"3) Save the currently processed grid as a text file."
+        print *,"4) Check the validity of the grid currently stored in memory."
+        print *,"5) Display the grid currently stored in memory."
+        print *,"6) Create a random, already filled Sudoku grid."
+        print *,"7) Solve the Sudoku grid currently stored in memory."
+        print *,"8) Create a partially allocated grid (conjecture of a likely unique solution)."
+        print *,"9) Quit."
+        print *,"Select one of them and click `Enter`:"
         READ *,choix
 
         select case (choix)
         case (1)
             call Demander_grille(grille)
-            print *,"Vous avez rentre la grille suivante :"
+            print *,"You entered the following Sudoku:"
             call Afficher_grille(grille)
             if (GrilleValide(grille)) then
-                print *, "Elle est valide."
+                print *, "The Sudoku is valid."
             else
-                print *, "Elle n'est pas valide."
+                print *, "The Sudoku is invalid."
             end if
         case(2)
-            print *,"Entrez le nom du fichier à lire, avec son extension .txt :"
+            print *,"Enter complete file name of the file to read (including .txt extension):"
             call SYSTEM("dir *.txt")
             READ *,fichier
             call Lire_grille(grille,trim(fichier))
             call Afficher_grille(grille)
             if (GrilleValide(grille)) then
-                print *, "Elle est valide."
+                print *, "The Sudoku is valid."
             else
-                print *, "Elle n'est pas valide."
+                print *, "The Sudoku is invalid."
             end if
         case(3)
-            print *,"Entrez le nom du fichier à enregistrer, avec son extension :"
+            print *,"Enter complete file name of the file to save (incl. .txt):"
             READ *,fichier
             call Enregistrer_grille(grille,trim(fichier))
-            print *,"Enregistrement effectué."
+            print *,"File saved."
         case(4)
             if (GrilleValide(grille)) then
-                print *, "La grille en memoire est valide."
+                print *, "The grid to process is valid."
             else
-                print *, "La grille en memoire n'est pas valide."
+                print *, "The grid to process is invalid."
             end if
         case(5)
-            print *,"Voici la grille en memoire :"
+            print *,"Below, the grid to process:"
             call Afficher_grille(grille)
             if (GrilleValide(grille)) then
-                print *, "Elle est valide."
+                print *, "The grid is valid."
             else
-                print *, "Elle n'est pas valide."
+                print *, "The grid is invalid."
             end if
         case(6)
             Debut = Temps()
             call GenererGrillePleine(grille)
             call Afficher_grille(grille)
-            ! Vérification par sécurité :
+            ! grid validation:
             if (GrilleValide(grille)) then
-                print *, "Grille valide"
+                print *, "The grid is valid."
             else
-                print *, "Grille non valide : probleme de generation !"
+                print *, "Computational error:  the grid is invalid!"
             end if
             Fin = Temps()
-            print *,"Temps de calcul :", Fin-Debut, "s"
+            print *,"computing time :", Fin-Debut, "s"
         case(7)
-            print *,"Voici la grille de depart :"
+            print *,"Below, the grid submitted:"
             call Afficher_grille(grille)
             Debut = Temps()
             call ResoudreGrille(grille)
             if (GrilleValide(grille)) then
-                print *, "Voici la grille resolue (validite verifiee) :"
+                print *, "Below, the solved grid (validity was verified):"
             else
-                print *, "Grille non valide : probleme de resolution..."
+                print *, "The initial grid was invalid, impossible to solve …"
             end if
             call Afficher_grille(grille)
             Fin = Temps()
-            print *,"Temps de calcul :", Fin-Debut, "s"
+            print *,"computing time", Fin-Debut, "s"
         case(8)
-            print *,"Nombre de chiffres dans la grille [17,81] ?"
-            print *,"Attention, en dessous de 35, la duree de calcul s'allonge rapidement !"
+            print *,"How many numbers should be assigned in advance [17,81]?"
+            print *,"Note: with less than 35 preallocated fields, the computation rapidly takes longer!"
             READ *,nvides
             call GenererGrillePleine(grille)
-            print *,"Voici la grille pleine :"
+            print *,"Below, a filled grid:"
             call Afficher_grille(grille)
-            ! Vérification par sécurité :
+            ! grid validation:
             if (GrilleValide(grille)) then
-                print *, "Grille valide"
+                print *, "The grid is valid."
             else
-                print *, "Grille non valide : probleme de generation !"
+                print *, "The grid is invalid: problem to compute a solution!"
             end if
 
             Debut = Temps()
             call GenererGrilleSudoku(grille,nvides)
-            print *,"Voici une grille de sudoku admettant probablement une solution unique :"
+            print *,"Below a Sudoku grid (assuming a likely unique solution):"
             call Afficher_grille(grille)
             if (GrilleValide(grille)) then
-                print *, "Grille valide"
+                print *, "valid grid"
             else
-                print *, "Grille non valide : probleme de generation"
+                print *, "Invalid grid: problem to compute a solution!"
             end if
             Fin = Temps()
-            print *,"Temps de calcul :", Fin-Debut, "s"
+            print *,"computing time:", Fin-Debut, "s"
         case(9)
             stop
         end select
