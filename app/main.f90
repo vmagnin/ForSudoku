@@ -15,19 +15,20 @@
 ! this program; see the files LICENSE and LICENSE_EXCEPTION respectively.
 ! If not, see <http://www.gnu.org/licenses/>.
 !------------------------------------------------------------------------------
-! Contributed by Vincent Magnin, 2006-11-27
-! Last modifications: 2023-07-15
+! Contributed by Vincent Magnin, 2006-11-27; Norwid Behrnd, 2023
+! Last modifications: 2023-07-21
 !------------------------------------------------------------------------------
 
 program main
+    use iso_fortran_env, only: dp => real64
     use sudoku
 
     implicit none
     ! Variables locales :
-    integer(1), dimension(1:9, 1:9) :: grille    ! (ligne,colonne)
-    real(8)       :: Debut,Fin    ! Pour mesurer la durée de calcul
-    integer(1)    :: choix
-    integer(1)    :: nvides    ! Nombre de cases à vider
+    integer, dimension(1:9, 1:9) :: grille    ! (ligne,colonne)
+    real(kind=dp)    :: Debut,Fin    ! Pour mesurer la durée de calcul
+    integer    :: choix
+    integer    :: nvides    ! Nombre de cases à vider
     character(50) :: fichier    ! Nom du fichier .txt
 
     ! Initialisation du générateur de nombres pseudo-aléatoires :
@@ -35,7 +36,7 @@ program main
     ! Initialisation de la grille avec des cases vides (codées par des 0) :
     grille = 0
 
-    print *,"sudoku.f90, version 0.8, copyright (C) 2006 Vincent MAGNIN"
+    print *,"sudoku.f90, version 0.8.1, copyright (C) 2006 Vincent MAGNIN"
     ! Boucle infinie du menu :
     do
         print *
