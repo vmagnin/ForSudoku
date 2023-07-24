@@ -15,7 +15,7 @@
 ! this program; see the files LICENSE and LICENSE_EXCEPTION respectively.
 ! If not, see <http://www.gnu.org/licenses/>.
 !------------------------------------------------------------------------------
-! Contributed by Vincent Magnin, 2006-11-27
+! Contributed by Vincent Magnin, 2006-11-27; Norwid Behrnd, 2023
 ! Last modifications: 2023-07-22
 !------------------------------------------------------------------------------
 
