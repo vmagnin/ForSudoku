@@ -16,7 +16,7 @@
 ! If not, see <http://www.gnu.org/licenses/>.
 !------------------------------------------------------------------------------
 ! Contributed by Vincent Magnin, 2006-11-27; Norwid Behrnd, 2023
-! Last modifications: 2023-07-21
+! Last modifications: 2023-07-25
 !------------------------------------------------------------------------------
 
 program main
@@ -30,6 +30,9 @@ program main
     integer    :: choix
     integer    :: nvides       ! number of cells to clear
     character(50) :: fichier      ! name of file (including extension .txt)
+
+    select case (command_argument_count())
+    case (0) ! the typical invocation with `fpm run`
 
     ! initialize the pseudorandom number generator
     call Initialiser_Random
@@ -147,4 +150,13 @@ program main
             stop
         end select
     end do
+
+    case (1) ! accessible only by direct invocation of the executable
+    call get_command_argument(1, fichier)
+    call solver(grille, fichier)
+
+    case default
+    print *, "Parameters: enter either one, or none."
+
+    end select
 end program main
