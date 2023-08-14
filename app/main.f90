@@ -104,7 +104,7 @@ program main
                 print *, "Computational error:  the grid is invalid!"
             end if
             Fin = Temps()
-            print *,"computing time :", Fin-Debut, "s"
+            write (*, "(A, F12.3, A)") " computing time: ", Fin - Debut, " s."
         case(7)
             print *,"Below, the grid submitted:"
             call Afficher_grille(grille)
@@ -117,7 +117,7 @@ program main
             end if
             call Afficher_grille(grille)
             Fin = Temps()
-            print *,"computing time", Fin-Debut, "s"
+            write (*, "(A, F12.3, A)") " computing time: ", Fin - Debut, " s."
         case(8)
             print *,"How many numbers should be assigned in advance [17,81]?"
             print *,"Note: with less than 35 preallocated fields, the computation rapidly takes longer!"
@@ -142,7 +142,7 @@ program main
                 print *, "Invalid grid: problem to compute a solution!"
             end if
             Fin = Temps()
-            print *,"computing time:", Fin-Debut, "s"
+            write (*, "(A, F12.3, A)") " computing time: ", Fin - Debut, " s."
         case(9)
             stop
         end select

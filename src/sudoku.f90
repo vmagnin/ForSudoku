@@ -370,7 +370,7 @@ contains
         integer :: l,c    ! line numbers and column numbers
 
         do l = 1, 9
-            print *, "Enter line ",l
+            write (*, "(A, I1, A)") "Enter line ", l, ":"
             READ *, (g(l,c) , c=1,9)
         end do
     end subroutine Demander_grille
