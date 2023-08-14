@@ -16,7 +16,7 @@
 ! If not, see <http://www.gnu.org/licenses/>.
 !------------------------------------------------------------------------------
 ! Contributed by Vincent Magnin, 2006-11-27; Norwid Behrnd, 2023
-! Last modifications: 2023-07-22
+! Last modifications: 2023-07-25
 !------------------------------------------------------------------------------
 
 module sudoku
@@ -491,4 +491,38 @@ contains
         Temps = t
     end function Temps
 
+    subroutine solver(g, fichier)
+    ! ******************************************************************
+    ! provide a solution for a partially filled grid provided as a file
+    !
+    ! Concept study for a direct invocation of the executable by the CLI
+    ! as, for example, by
+    !
+    ! ```shell
+    ! $ ./executable test_in_02.txt
+    ! ```
+    !
+    ! ******************************************************************
+    ! input:
+    character(len = 50), intent(in) :: fichier
+    integer, dimension(1:9, 1:9), intent(inout) :: g
+    ! local variables:
+    logical :: presence
+    presence = .False.
+
+    inquire(file = fichier, exist = presence)
+        if (presence .eqv. .False.) then
+            print *, "The requested file '", trim(fichier), "' is inaccessible."
+        end if
+
+    call Lire_grille(g, fichier)
+
+    if (GrilleValide(g) .eqv. .True.) then
+        call ResoudreGrille(g)
+        call Afficher_grille(g)
+    else
+        print *, "The input by file'", trim(fichier), "' is an invalid grid."
+    end if
+
+    end subroutine solver
 end module sudoku
