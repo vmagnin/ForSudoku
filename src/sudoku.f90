@@ -31,7 +31,7 @@ contains
         ! local variables:
         integer, dimension(9, 9) :: g0        !
         real(kind=dp)     :: alea        ! random number
-        integer  :: ligne,c,l0,c0,i,j
+        integer  :: ligne,colonne,l0,c0,i,j
         integer  :: compteurCV    ! counter of empty/non allocated cells
         integer, dimension(1:81,1:3) :: casesVides    ! list of empty cells
         !logical, dimension(0:9)     :: possible    ! Possibility of each number
@@ -48,12 +48,12 @@ contains
         casesVides = 0
         compteurCV = 0
         do ligne = 1,9
-            do c = 1,9
-                if (grille(ligne,c) == 0) then
+            do colonne =1,9
+                if (grille(ligne,colonne) == 0) then
                     compteurCV = compteurCV+1
                     casesVides(compteurCV,1) = ligne
-                    casesVides(compteurCV,2) = c
-                    !call lister_chiffres_possibles(grille,ligne,c,casesVides(compteurCV,3),chiffrePossible)
+                    casesVides(compteurCV,2) = colonne
+                    !call lister_chiffres_possibles(grille,ligne,colonne,casesVides(compteurCV,3),chiffrePossible)
                 end if
             end do
         end do
@@ -112,7 +112,7 @@ contains
         integer, dimension(1:9), intent(out) :: chiffrePossible    ! list of possible numbers
         integer, intent(out) :: compteurCP        ! counter of possible numbers
         ! locale variables:
-        integer :: ligne,c,cr,lr,j
+        integer :: ligne,colonne,cr,lr,j
         logical, dimension(0:9) :: possible    ! Possibility of each number
 
         possible = .true.
@@ -124,8 +124,8 @@ contains
         lr = 1+3*((l0-1)/3)
         cr = 1+3*((c0-1)/3)
         do ligne = lr,lr+2
-            do c = cr,cr+2
-                possible(grille(ligne,c)) = .false.
+            do colonne =cr,cr+2
+                possible(grille(ligne,colonne)) = .false.
             end do
         end do
 
@@ -153,7 +153,7 @@ contains
         ! local variables:
         integer :: i    ! loop counters
         integer :: j
-        integer, dimension(1:3) :: c    ! save
+        integer, dimension(1:3) :: colonne    ! save
         logical :: fini
 
         fini = .false.
@@ -164,9 +164,9 @@ contains
                 j = i+1
                 if (casesVides(i,3) > casesVides(j,3)) then
                     ! exchange the two cases of this list:
-                    c = casesVides(i,:)
+                    colonne =casesVides(i,:)
                     casesVides(i,:) = casesVides(j,:)
-                    casesVides(j,:) = c
+                    casesVides(j,:) = colonne
                     fini = .false.
                 end if
             end do
@@ -183,7 +183,7 @@ contains
         integer, dimension(9, 9), intent(out) :: grille
         ! local variables:
         real(kind=dp)    :: alea
-        integer :: ligne,c
+        integer :: ligne,colonne
         integer(4) :: essais
         logical :: fini
 
@@ -191,8 +191,8 @@ contains
 
         ligne = 1
         do while(ligne <= 9)
-            c = 1
-            do while(c <= 9)
+            colonne =1
+            do while(colonne <= 9)
                 essais = 0
                 fini = .false.
                 do while(.not.fini)
@@ -202,32 +202,32 @@ contains
                         ! has to rewind to identify the erroneous one)
                         grille = 0
                         essais = 0
-                        c = 1
+                        colonne =1
                         ligne = 1
                     end if
                     essais = essais+1
                     call Random_number(alea)
-                    grille(ligne,c) = 1+int(alea*9_dp)
-                    fini = ChiffreValide(grille,ligne,c)
+                    grille(ligne,colonne) = 1+int(alea*9_dp)
+                    fini = ChiffreValide(grille,ligne,colonne)
                 end do
-                c = c+1
+                colonne =colonne+1
             end do
             ligne = ligne+1
         end do
     end subroutine GenererGrillePleine
 
 
-    logical function ChiffreValide(grille,ligne,c)
+    logical function ChiffreValide(grille,ligne,colonne)
         ! input:
         integer, dimension(9, 9), intent(in) :: grille
-        integer :: ligne,c
+        integer :: ligne,colonne
         ! local variables
         integer :: i,j
 
         i = (ligne-1)/3
-        j = (c-1)/3
+        j = (colonne-1)/3
 
-        ChiffreValide = ColonneOuLigneValide(grille(ligne,1:9)).and.ColonneOuLigneValide(grille(1:9,c)) &
+        ChiffreValide = ColonneOuLigneValide(grille(ligne,1:9)).and.ColonneOuLigneValide(grille(1:9,colonne)) &
             & .and.RegionValide(grille(i*3+1:i*3+3,j*3+1:j*3+3))
     end function ChiffreValide
 
@@ -244,7 +244,7 @@ contains
         integer, dimension(9, 9)      :: g0
         integer, dimension(1:n, 1:9, 1:9) :: solutions
         real(kind=dp)    :: alea
-        integer :: ligne,c,i
+        integer :: ligne,colonne,i
         logical :: vide,unique
 
         ! save the initial grid:
@@ -262,13 +262,13 @@ contains
                         call Random_number(alea)
                         ligne = 1+int(alea*9_dp)
                         call Random_number(alea)
-                        c = 1+int(alea*9_dp)
-                        if (grille(ligne,c) /= 0) then
+                        colonne =1+int(alea*9_dp)
+                        if (grille(ligne,colonne) /= 0) then
                             vide = .true.
                         end if
                     end do
                     ! erase the previously assigned number in this cell:
-                    grille(ligne,c) = 0
+                    grille(ligne,colonne) = 0
             end do
 
             print *,"Search of a grid with unique solution ..."
@@ -281,8 +281,8 @@ contains
                 call ResoudreGrille(solutions(i,1:9,1:9))
                 if (i >= 2) then
                     do ligne = 1,9
-                        do c = 1,9
-                            if (solutions(i,ligne,c) /= solutions(i-1,ligne,c)) then
+                        do colonne =1,9
+                            if (solutions(i,ligne,colonne) /= solutions(i-1,ligne,colonne)) then
                                 unique = .false.
                                 EXIT sol
                             end if
@@ -302,13 +302,13 @@ contains
         integer, dimension(9, 9) :: grille
         character(len=*) :: nom_fichier
         ! local variables
-        integer :: ligne,c    ! line numbers and column numbers
+        integer :: ligne,colonne    ! line numbers and column numbers
         integer :: fileunit, error
         ! file creation:
         open(newunit=fileunit, file=nom_fichier, STATUS="REPLACE")
 
         do ligne = 1, 9
-            write(fileunit,'(3i2, " |", 3i2, " |", 3i2)') (grille(ligne,c) , c=1,9)
+            write(fileunit,'(3i2, " |", 3i2, " |", 3i2)') (grille(ligne,colonne) , colonne=1,9)
             if ((ligne == 3).or.(ligne == 6)) then
                 write(fileunit,*) "------+-------+------"
             end if
@@ -420,7 +420,7 @@ contains
         ! input:
         integer, dimension(9, 9) :: grille
         ! local variables:
-        integer :: ligne,c
+        integer :: ligne,colonne
 
         GrilleValide = .true.
 
@@ -434,21 +434,21 @@ contains
         end do
 
         ! verification of columns:
-        do c = 1,9
-            if (.not.ColonneOuLigneValide(grille(1:9,c))) then
+        do colonne =1,9
+            if (.not.ColonneOuLigneValide(grille(1:9,colonne))) then
                 GrilleValide = .false.
                 return
-                !print *, "Column ",c," is not a valid input"
+                !print *, "Column ",colonne," is not a valid input"
             end if
         end do
 
         ! verification of regions:
         do ligne = 1,7,+3
-            do c = 1,7,+3
-                if (.not.RegionValide(grille(ligne:ligne+2,c:c+2))) then
+            do colonne =1,7,+3
+                if (.not.RegionValide(grille(ligne:ligne+2,colonne:colonne+2))) then
                     GrilleValide = .false.
                     return
-                    !print *, "Region ",ligne,c," is not a valid input"
+                    !print *, "Region ",ligne,colonne," is not a valid input"
                 end if
             end do
         end do
