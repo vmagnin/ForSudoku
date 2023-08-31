@@ -337,8 +337,7 @@ contains
 
         do l = 1, 9
             READ(fileunit,'(3i2, a2, 3i2, a2, 3i2)') &
-                & grille(l,1),grille(l,2),grille(l,3), barre1,grille(l,4),grille(l,5),grille(l,6), &
-                & barre2,grille(l,7),grille(l,8),grille(l,9)
+                grille(l,1:3), barre1, grille(l,4:6), barre2, grille(l,7:9)
 
             ! skip the lines of dashes
             if ((l == 3).or.(l == 6)) then
