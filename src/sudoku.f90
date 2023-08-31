@@ -16,7 +16,7 @@
 ! If not, see <http://www.gnu.org/licenses/>.
 !------------------------------------------------------------------------------
 ! Contributed by Vincent Magnin, 2006-11-27; Norwid Behrnd, 2023
-! Last modifications: 2023-07-25
+! Last modifications: 2023-08-31
 !------------------------------------------------------------------------------
 
 module sudoku
@@ -25,11 +25,11 @@ module sudoku
 
 contains
 
-    subroutine ResoudreGrille(g)
+    subroutine ResoudreGrille(grille)
         ! input/output parameters:
-        integer, dimension(1:9, 1:9), intent(inout) :: g
+        integer, dimension(9, 9), intent(inout) :: grille
         ! local variables:
-        integer, dimension(1:9, 1:9) :: g0        ! save g
+        integer, dimension(9, 9) :: g0        !
         real(kind=dp)     :: alea        ! random number
         integer  :: l,c,l0,c0,i,j
         integer  :: compteurCV    ! counter of empty/non allocated cells
@@ -41,7 +41,7 @@ contains
         chiffrePossible = 0
 
         ! save the initial grid:
-        g0 = g
+        g0 = grille
 
         ! identify the grid coordinates of empty cells in the grid
         ! in a table of 81 entries
@@ -49,11 +49,11 @@ contains
         compteurCV = 0
         do l = 1,9
             do c = 1,9
-                if (g(l,c) == 0) then
+                if (grille(l,c) == 0) then
                     compteurCV = compteurCV+1
                     casesVides(compteurCV,1) = l
                     casesVides(compteurCV,2) = c
-                    !call lister_chiffres_possibles(g,l,c,casesVides(compteurCV,3),chiffrePossible)
+                    !call lister_chiffres_possibles(grille,l,c,casesVides(compteurCV,3),chiffrePossible)
                 end if
             end do
         end do
@@ -70,7 +70,7 @@ contains
             do j = i,compteurCV
                 l0 = casesVides(j,1)
                 c0 = casesVides(j,2)
-                call lister_chiffres_possibles(g,l0,c0,casesVides(j,3),chiffrePossible)
+                call lister_chiffres_possibles(grille,l0,c0,casesVides(j,3),chiffrePossible)
             end do
             ! retrieve the empty cells (which depends on the number of still
             ! possible numbers)
@@ -80,33 +80,33 @@ contains
             l0 = casesVides(i,1)
             c0 = casesVides(i,2)
 
-            call lister_chiffres_possibles(g,l0,c0,compteurCP,chiffrePossible)
+            call lister_chiffres_possibles(grille,l0,c0,compteurCP,chiffrePossible)
 
             ! if there are multiple possibilities, choose one (by chance) and
             ! continue with the next empty cell:
             if (compteurCP > 1) then
                 call Random_number(alea)
                 j = 1+int(alea*compteurCP)
-                g(l0,c0) = chiffrePossible(j)
+                grille(l0,c0) = chiffrePossible(j)
                 i = i+1
             ! if there is only one possibility, use this number now, and then
             ! continue with the next empty cell
             else if (compteurCP == 1) then
-                g(l0,c0) = chiffrePossible(1)
+                grille(l0,c0) = chiffrePossible(1)
                 i = i+1
             ! start all over again if there is none:
             else
                 i = 1
-                g = g0
+                grille = g0
             end if
         end do
     end subroutine ResoudreGrille
 
 
     ! procedure to create a list of allowed numbers in the present empty cell:
-    subroutine lister_chiffres_possibles(g,l0,c0,compteurCP,chiffrePossible)
+    subroutine lister_chiffres_possibles(grille,l0,c0,compteurCP,chiffrePossible)
         ! input parameters:
-        integer, dimension(1:9, 1:9), intent(in) :: g
+        integer, dimension(9, 9), intent(in) :: grille
         integer :: l0,c0
         ! output parameters:
         integer, dimension(1:9), intent(out) :: chiffrePossible    ! list of possible numbers
@@ -117,15 +117,15 @@ contains
 
         possible = .true.
         do j = 1,9
-            possible(g(j,c0)) = .false.
-            possible(g(l0,j)) = .false.
+            possible(grille(j,c0)) = .false.
+            possible(grille(l0,j)) = .false.
         end do
 
         lr = 1+3*((l0-1)/3)
         cr = 1+3*((c0-1)/3)
         do l = lr,lr+2
             do c = cr,cr+2
-                possible(g(l,c)) = .false.
+                possible(grille(l,c)) = .false.
             end do
         end do
 
@@ -178,16 +178,16 @@ contains
     ! for validity.  If the grid became invalid, the grid generation is starts
     ! all over again.
     ! With a  PIII 866 MHz: about 0.5 s.
-    subroutine GenererGrillePleine(g)
+    subroutine GenererGrillePleine(grille)
         ! output parameter:
-        integer, dimension(1:9, 1:9), intent(out) :: g
+        integer, dimension(9, 9), intent(out) :: grille
         ! local variables:
         real(kind=dp)    :: alea
         integer :: l,c
         integer(4) :: essais
         logical :: fini
 
-        g = 0
+        grille = 0
 
         l = 1
         do while(l <= 9)
@@ -200,15 +200,15 @@ contains
                         ! start from the very beginning
                         ! (it were impossible to determine how many cycles one
                         ! has to rewind to identify the erroneous one)
-                        g = 0
+                        grille = 0
                         essais = 0
                         c = 1
                         l = 1
                     end if
                     essais = essais+1
                     call Random_number(alea)
-                    g(l,c) = 1+int(alea*9_dp)
-                    fini = ChiffreValide(g,l,c)
+                    grille(l,c) = 1+int(alea*9_dp)
+                    fini = ChiffreValide(grille,l,c)
                 end do
                 c = c+1
             end do
@@ -217,9 +217,9 @@ contains
     end subroutine GenererGrillePleine
 
 
-    logical function ChiffreValide(g,l,c)
+    logical function ChiffreValide(grille,l,c)
         ! input:
-        integer, dimension(1:9, 1:9), intent(in) :: g
+        integer, dimension(9, 9), intent(in) :: grille
         integer :: l,c
         ! local variables
         integer :: i,j
@@ -227,32 +227,32 @@ contains
         i = (l-1)/3
         j = (c-1)/3
 
-        ChiffreValide = ColonneOuLigneValide(g(l,1:9)).and.ColonneOuLigneValide(g(1:9,c)) &
-            & .and.RegionValide(g(i*3+1:i*3+3,j*3+1:j*3+3))
+        ChiffreValide = ColonneOuLigneValide(grille(l,1:9)).and.ColonneOuLigneValide(grille(1:9,c)) &
+            & .and.RegionValide(grille(i*3+1:i*3+3,j*3+1:j*3+3))
     end function ChiffreValide
 
 
     ! Note: at present it is unknown if there are Sudoku grids with less than
     ! 17 non-zero cells leading to a unique solution.
-    subroutine GenererGrilleSudoku(g,restant)
+    subroutine GenererGrilleSudoku(grille,restant)
         ! output parameter:
-        integer, dimension(1:9, 1:9), intent(inout) :: g
+        integer, dimension(9, 9), intent(inout) :: grille
         ! input parameter:
         integer,intent(in) :: restant
         ! local variables:
         integer, parameter                :: n = 10
-        integer, dimension(1:9, 1:9)      :: g0
+        integer, dimension(9, 9)      :: g0
         integer, dimension(1:n, 1:9, 1:9) :: solutions
         real(kind=dp)    :: alea
         integer :: l,c,i
         logical :: vide,unique
 
         ! save the initial grid:
-        g0 = g
+        g0 = grille
 
         unique = .false.
         do while(.not.unique)
-            g = g0
+            grille = g0
 
             ! remove randomly empty cells
             do i = 1, 81-restant
@@ -263,12 +263,12 @@ contains
                         l = 1+int(alea*9_dp)
                         call Random_number(alea)
                         c = 1+int(alea*9_dp)
-                        if (g(l,c) /= 0) then
+                        if (grille(l,c) /= 0) then
                             vide = .true.
                         end if
                     end do
                     ! erase the previously assigned number in this cell:
-                    g(l,c) = 0
+                    grille(l,c) = 0
             end do
 
             print *,"Search of a grid with unique solution ..."
@@ -277,7 +277,7 @@ contains
             unique = .true.
             i = 1
     sol :        do while((i <= n).and.unique)
-                solutions(i,1:9,1:9) = g
+                solutions(i,1:9,1:9) = grille
                 call ResoudreGrille(solutions(i,1:9,1:9))
                 if (i >= 2) then
                     do l = 1,9
@@ -298,8 +298,8 @@ contains
     end subroutine GenererGrilleSudoku
 
 
-    subroutine Enregistrer_grille(g, nom_fichier)
-        integer, dimension(1:9, 1:9) :: g
+    subroutine Enregistrer_grille(grille, nom_fichier)
+        integer, dimension(9, 9) :: grille
         character(len=*) :: nom_fichier
         ! local variables
         integer :: l,c    ! line numbers and column numbers
@@ -308,7 +308,7 @@ contains
         open(newunit=fileunit, file=nom_fichier, STATUS="REPLACE")
 
         do l = 1, 9
-            write(fileunit,'(3i2, " |", 3i2, " |", 3i2)') (g(l,c) , c=1,9)
+            write(fileunit,'(3i2, " |", 3i2, " |", 3i2)') (grille(l,c) , c=1,9)
             if ((l == 3).or.(l == 6)) then
                 write(fileunit,*) "------+-------+------"
             end if
@@ -318,9 +318,9 @@ contains
     end subroutine Enregistrer_grille
 
 
-    subroutine Lire_grille(g, nom_fichier)
+    subroutine Lire_grille(grille, nom_fichier)
         ! output parameter:
-        integer, dimension(1:9, 1:9), intent(out) :: g
+        integer, dimension(9, 9), intent(out) :: grille
         ! input parameter:
         character(len=*) :: nom_fichier
         ! local variables:
@@ -337,8 +337,8 @@ contains
 
         do l = 1, 9
             READ(fileunit,'(3i2, a2, 3i2, a2, 3i2)') &
-                & g(l,1),g(l,2),g(l,3), barre1,g(l,4),g(l,5),g(l,6), &
-                & barre2,g(l,7),g(l,8),g(l,9)
+                & grille(l,1),grille(l,2),grille(l,3), barre1,grille(l,4),grille(l,5),grille(l,6), &
+                & barre2,grille(l,7),grille(l,8),grille(l,9)
 
             ! skip the lines of dashes
             if ((l == 3).or.(l == 6)) then
@@ -350,12 +350,12 @@ contains
     end subroutine Lire_grille
 
 
-    subroutine Afficher_grille(g)
-        integer, dimension(1:9, 1:9) :: g
+    subroutine Afficher_grille(grille)
+        integer, dimension(9, 9) :: grille
         integer :: l,c    ! line numbers and column numbers
 
         do l = 1, 9
-            print '(3i2, " |", 3i2, " |", 3i2)', (g(l,c) , c=1,9)
+            print '(3i2, " |", 3i2, " |", 3i2)', (grille(l,c) , c=1,9)
             if ((l == 3).or.(l == 6)) then
                 print *, "------+-------+------"
             end if
@@ -363,15 +363,15 @@ contains
     end subroutine Afficher_grille
 
 
-    subroutine Demander_grille(g)
+    subroutine Demander_grille(grille)
         ! input/output:
-        integer, dimension(1:9, 1:9), intent(inout) :: g
+        integer, dimension(9, 9), intent(inout) :: grille
         ! local variables:
         integer :: l,c    ! line numbers and column numbers
 
         do l = 1, 9
             write (*, "(A, I1, A)") "Enter line ", l, ":"
-            READ *, (g(l,c) , c=1,9)
+            READ *, (grille(l,c) , c=1,9)
         end do
     end subroutine Demander_grille
 
@@ -417,9 +417,9 @@ contains
     end function RegionValide
 
 
-    logical function GrilleValide(g)
+    logical function GrilleValide(grille)
         ! input:
-        integer, dimension(1:9, 1:9) :: g
+        integer, dimension(9, 9) :: grille
         ! local variables:
         integer :: l,c
 
@@ -427,7 +427,7 @@ contains
 
         ! verification of lines:
         do l = 1,9
-            if (.not.ColonneOuLigneValide(g(l,1:9))) then
+            if (.not.ColonneOuLigneValide(grille(l,1:9))) then
                 GrilleValide = .false.
                 return
                 !print *, "Line ",l," is not a valid input"
@@ -436,7 +436,7 @@ contains
 
         ! verification of columns:
         do c = 1,9
-            if (.not.ColonneOuLigneValide(g(1:9,c))) then
+            if (.not.ColonneOuLigneValide(grille(1:9,c))) then
                 GrilleValide = .false.
                 return
                 !print *, "Column ",c," is not a valid input"
@@ -446,7 +446,7 @@ contains
         ! verification of regions:
         do l = 1,7,+3
             do c = 1,7,+3
-                if (.not.RegionValide(g(l:l+2,c:c+2))) then
+                if (.not.RegionValide(grille(l:l+2,c:c+2))) then
                     GrilleValide = .false.
                     return
                     !print *, "Region ",l,c," is not a valid input"
@@ -491,7 +491,7 @@ contains
         Temps = t
     end function Temps
 
-    subroutine solver(g, fichier)
+    subroutine solver(grille, fichier)
     ! ******************************************************************
     ! provide a solution for a partially filled grid provided as a file
     !
@@ -505,7 +505,7 @@ contains
     ! ******************************************************************
     ! input:
     character(len = 50), intent(in) :: fichier
-    integer, dimension(1:9, 1:9), intent(inout) :: g
+    integer, dimension(9, 9), intent(inout) :: grille
     ! local variables:
     logical :: presence
     presence = .False.
@@ -515,11 +515,11 @@ contains
             print *, "The requested file '", trim(fichier), "' is inaccessible."
         end if
 
-    call Lire_grille(g, fichier)
+    call Lire_grille(grille, fichier)
 
-    if (GrilleValide(g) .eqv. .True.) then
-        call ResoudreGrille(g)
-        call Afficher_grille(g)
+    if (GrilleValide(grille) .eqv. .True.) then
+        call ResoudreGrille(grille)
+        call Afficher_grille(grille)
     else
         print *, "The input by file'", trim(fichier), "' is an invalid grid."
     end if
