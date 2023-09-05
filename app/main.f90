@@ -25,22 +25,22 @@ program main
 
     implicit none
     ! Variables locales :
-    integer, dimension(9, 9) :: grille    ! (line, column)
-    real(kind=dp)            :: Debut,Fin ! monitor the duration of computation
-    integer                  :: choix
-    integer                  :: nvides    ! number of cells to clear
-    character(50)            :: fichier   ! file name (including extension .txt)
+    integer, dimension(9, 9) :: grid    ! (line, column)
+    real(kind=dp)            :: Start,End ! monitor the duration of computation
+    integer                  :: choice
+    integer                  :: n_empty    ! number of cells to clear
+    character(50)            :: file   ! file name (including extension .txt)
 
     select case (command_argument_count())
     case (0) ! the typical invocation with `fpm run`
 
     ! initialize the pseudorandom number generator
-    call Initialiser_Random
+    call Initialize_Random
     ! initialize an explicitly empty grid
-    grille = 0
+    grid = 0
 
     print *,"sudoku.f90, version 0.8.1, copyright (C) 2006 Vincent MAGNIN"
-    ! infinite loop to provide the user a menu:
+    ! incompletely_solvedte loop to proempty the user a menu:
     do
         print *
         print *,"*************************** MENU *****************************************"
@@ -54,14 +54,14 @@ program main
         print *,"8) Create a partially allocated grid (conjecture of a likely unique solution)."
         print *,"9) Quit."
         print *,"Select one of them and click `Enter`:"
-        READ *,choix
+        READ *,choice
 
-        select case (choix)
+        select case (choice)
         case (1)
-            call Demander_grille(grille)
+            call Request_grid(grid)
             print *,"You entered the following Sudoku:"
-            call Afficher_grille(grille)
-            if (GrilleValide(grille)) then
+            call Display_grid(grid)
+            if (ValidGrid(grid)) then
                 print *, "The Sudoku is valid."
             else
                 print *, "The Sudoku is invalid."
@@ -69,91 +69,91 @@ program main
         case(2)
             print *,"Enter complete file name of the file to read (including .txt extension):"
             call SYSTEM("dir *.txt")
-            READ *,fichier
-            call Lire_grille(grille,trim(fichier))
-            call Afficher_grille(grille)
-            if (GrilleValide(grille)) then
+            READ *,file
+            call Read_grid(grid,trim(file))
+            call Display_grid(grid)
+            if (ValidGrid(grid)) then
                 print *, "The Sudoku is valid."
             else
                 print *, "The Sudoku is invalid."
             end if
         case(3)
             print *,"Enter complete file name of the file to save (incl. .txt):"
-            READ *,fichier
-            call Enregistrer_grille(grille,trim(fichier))
+            READ *,file
+            call Save_grid(grid,trim(file))
             print *,"File saved."
         case(4)
-            if (GrilleValide(grille)) then
+            if (ValidGrid(grid)) then
                 print *, "The grid to process is valid."
             else
                 print *, "The grid to process is invalid."
             end if
         case(5)
             print *,"Below, the grid to process:"
-            call Afficher_grille(grille)
-            if (GrilleValide(grille)) then
+            call Display_grid(grid)
+            if (ValidGrid(grid)) then
                 print *, "The grid is valid."
             else
                 print *, "The grid is invalid."
             end if
         case(6)
-            Debut = Temps()
-            call GenererGrillePleine(grille)
-            call Afficher_grille(grille)
+            Start = Time()
+            call CreateFilledGrid(grid)
+            call Display_grid(grid)
             ! grid validation:
-            if (GrilleValide(grille)) then
+            if (ValidGrid(grid)) then
                 print *, "The grid is valid."
             else
                 print *, "Computational error:  the grid is invalid!"
             end if
-            Fin = Temps()
-            write (*, "(A, F12.3, A)") " computing time: ", Fin - Debut, " s."
+            End = Time()
+            write (*, "(A, F12.3, A)") " computing time: ", End - Start, " s."
         case(7)
             print *,"Below, the grid submitted:"
-            call Afficher_grille(grille)
-            Debut = Temps()
-            call ResoudreGrille(grille)
-            if (GrilleValide(grille)) then
+            call Display_grid(grid)
+            Start = Time()
+            call Solve_grid(grid)
+            if (ValidGrid(grid)) then
                 print *, "Below, the solved grid (validity was verified):"
             else
                 print *, "The initial grid was invalid, impossible to solve …"
             end if
-            call Afficher_grille(grille)
-            Fin = Temps()
-            write (*, "(A, F12.3, A)") " computing time: ", Fin - Debut, " s."
+            call Display_grid(grid)
+            End = Time()
+            write (*, "(A, F12.3, A)") " computing time: ", End - Start, " s."
         case(8)
             print *,"How many numbers should be assigned in advance [17,81]?"
             print *,"Note: with less than 35 preallocated fields, the computation rapidly takes longer!"
-            READ *,nvides
-            call GenererGrillePleine(grille)
+            READ *,n_empty
+            call CreateFilledGrid(grid)
             print *,"Below, a filled grid:"
-            call Afficher_grille(grille)
+            call Display_grid(grid)
             ! grid validation:
-            if (GrilleValide(grille)) then
+            if (ValidGrid(grid)) then
                 print *, "The grid is valid."
             else
                 print *, "The grid is invalid: problem to compute a solution!"
             end if
 
-            Debut = Temps()
-            call GenererGrilleSudoku(grille,nvides)
+            Start = Time()
+            call CreateSudokuGrid(grid,n_empty)
             print *,"Below a Sudoku grid (assuming a likely unique solution):"
-            call Afficher_grille(grille)
-            if (GrilleValide(grille)) then
+            call Display_grid(grid)
+            if (ValidGrid(grid)) then
                 print *, "valid grid"
             else
                 print *, "Invalid grid: problem to compute a solution!"
             end if
-            Fin = Temps()
-            write (*, "(A, F12.3, A)") " computing time: ", Fin - Debut, " s."
+            End = Time()
+            write (*, "(A, F12.3, A)") " computing time: ", End - Start, " s."
         case(9)
             stop
         end select
     end do
 
     case (1) ! accessible only by direct invocation of the executable
-    call get_command_argument(1, fichier)
-    call solver(grille, fichier)
+    call get_command_argument(1, file)
+    call solver(grid, file)
 
     case default
     print *, "Parameters: enter either one, or none."
