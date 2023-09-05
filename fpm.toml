@@ -22,3 +22,6 @@ library = false
 implicit-typing = false
 implicit-external = false
 source-form = "free"
+
+[test]
+program = "test/check.f90"

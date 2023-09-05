@@ -16,7 +16,7 @@
 ! If not, see <http://www.gnu.org/licenses/>.
 !------------------------------------------------------------------------------
 ! Contributed by Vincent Magnin, 2006-11-27; Norwid Behrnd, 2023
-! Last modifications: 2023-07-25
+! Last modifications: 2023-08-31
 !------------------------------------------------------------------------------
 
 program main
@@ -25,18 +25,18 @@ program main
 
     implicit none
     ! Variables locales :
-    integer, dimension(1:9, 1:9) :: grille    ! (line, column)
-    real(kind=dp)       :: Debut,Fin    ! monitor the duration of computation
-    integer    :: choix
-    integer    :: nvides       ! number of cells to clear
-    character(50) :: fichier      ! name of file (including extension .txt)
+    integer, dimension(9, 9) :: grille    ! (line, column)
+    real(kind=dp)            :: Debut,Fin ! monitor the duration of computation
+    integer                  :: choix
+    integer                  :: nvides    ! number of cells to clear
+    character(50)            :: fichier   ! file name (including extension .txt)
 
     select case (command_argument_count())
     case (0) ! the typical invocation with `fpm run`
 
     ! initialize the pseudorandom number generator
     call Initialiser_Random
-    ! initialize the grid (non allocated cells will be encoded by 0)
+    ! initialize an explicitly empty grid
     grille = 0
 
     print *,"sudoku.f90, version 0.8.1, copyright (C) 2006 Vincent MAGNIN"
@@ -44,7 +44,7 @@ program main
     do
         print *
         print *,"*************************** MENU *****************************************"
-        print *,"1) Manual input (lines of comma separated 1 - 9, or 0 (unallocated cell).)"
+        print *,"1) Manual input (lines of comma separated 1 - 9, or 0 (empty cell).)"
         print *,"2) Input from a text file.  For permitted patterns, see the documentation."
         print *,"3) Save the currently processed grid as a text file."
         print *,"4) Check the validity of the grid currently stored in memory."
