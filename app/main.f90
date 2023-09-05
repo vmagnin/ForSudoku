@@ -16,7 +16,7 @@
 ! If not, see <http://www.gnu.org/licenses/>.
 !------------------------------------------------------------------------------
 ! Contributed by Vincent Magnin, 2006-11-27; Norwid Behrnd, 2023
-! Last modifications: 2023-08-31
+! Last modifications: 2023-09-05
 !------------------------------------------------------------------------------
 
 program main
@@ -40,7 +40,7 @@ program main
     grid = 0
 
     print *,"sudoku.f90, version 0.8.1, copyright (C) 2006 Vincent MAGNIN"
-    ! incompletely_solvedte loop to proempty the user a menu:
+    ! provide a user menue
     do
         print *
         print *,"*************************** MENU *****************************************"

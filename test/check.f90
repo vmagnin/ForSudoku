@@ -1,3 +1,9 @@
+! file:  check.f90
+! date:  [2023-08-24 Thu]
+! edit:  [2023-09-05 Tue]
+
+! This file contains tests to be launched by `fpm test`.
+
 program check
    use sudoku, only: Read_grid, Solve_grid
    implicit none
@@ -9,7 +15,7 @@ program check
 contains
 
    subroutine assert_readtest01()
-   ! lecture d'une grid a compléter structurée, cases emptys
+   ! read an incomplete Sudoku grid with implicitly empty cases
    integer :: reference_grid(9,9), grid_from_file(9,9)
    integer :: i, j
    logical :: array_equality
@@ -36,9 +42,9 @@ contains
          inner: do j = 1, 9
             if (reference_grid(i, j) /= grid_from_file(i, j)) then
                array_equality = .false.
-               print *, "À i : ", i, "j : ", j, &
+               print *, "At i : ", i, "j : ", j, &
                   "reference_grid : ", reference_grid(i,j), &
-                  "n'est pas égale à grid_from_file :", grid_from_file(i,j)
+                  "differs from grid_from_file :", grid_from_file(i,j)
                exit outer
            end if
          end do inner
@@ -53,7 +59,7 @@ contains
 
 
    subroutine assert_readtest02()
-   ! lecture d'une grid structurée à compléter, chaque case [0-9]
+   ! read an incomplete Sudoku grid with explicitly empty cases
    integer :: reference_grid(9,9), grid_from_file(9,9)
    integer :: i, j
    logical :: array_equality
@@ -80,9 +86,9 @@ contains
          inner: do j = 1, 9
             if (reference_grid(i, j) /= grid_from_file(i, j)) then
                array_equality = .false.
-               print *, "À i : ", i, "j : ", j, &
+               print *, "At i : ", i, "j : ", j, &
                   "reference_grid : ", reference_grid(i,j), &
-                  "n'est pas égale à grid_from_file :", grid_from_file(i,j)
+                  "differs from grid_from_file :", grid_from_file(i,j)
                exit outer
            end if
          end do inner
@@ -98,15 +104,15 @@ contains
 
 
    subroutine assert_wikipedia_solution()
-      ! voir : https://en.wikipedia.org/wiki/Sudoku
-      ! tous les variables sont locales
+      ! see the reference grids on https://en.wikipedia.org/wiki/Sudoku
+      ! local variables:
       integer :: grid_a(9,9), grid_b(9,9)
       integer :: i, j
       logical :: array_equality
 
       array_equality = .true.
 
-      ! la grid à résoudre
+      ! Wikipedia's incomplete Sudoku grid
       grid_a(:, 1) = [5, 3, 0,  0, 7, 0,  0, 0, 0]
       grid_a(:, 2) = [6, 0, 0,  1, 9, 5,  0, 0, 0]
       grid_a(:, 3) = [0, 9, 8,  0, 0, 0,  0, 6, 0]
@@ -119,9 +125,9 @@ contains
       grid_a(:, 8) = [0, 0, 0,  4, 1, 9,  0, 0, 5]
       grid_a(:, 9) = [0, 0, 0,  0, 8, 0,  0, 7, 9]
 
-      call Solve_grid(grid_a)
+      call Solve_grid(grid_a) ! this fills (hence modifies) grid_a
 
-      ! la grid complétée (juste à côté de l'autre)
+      ! Wikipedia's complete Sudoku grid
       grid_b(:, 1) = [5, 3, 4,  6, 7, 8,  9, 1, 2]
       grid_b(:, 2) = [6, 7, 2,  1, 9, 5,  3, 4, 8]
       grid_b(:, 3) = [1, 9, 8,  3, 4, 2,  5, 6, 7]
@@ -134,13 +140,13 @@ contains
       grid_b(:, 8) = [2, 8, 7,  4, 1, 9,  6, 3, 5]
       grid_b(:, 9) = [3, 4, 5,  2, 8, 6,  1, 7, 9]
 
-      ! pour comparer les deux
+      ! comparison of computed solution with Wikipedia's reference solution
       outer: do i = 1, 9
          do j = 1, 9
             if (grid_a(i, j) /= grid_b(i, j)) then
                array_equality = .false.
-               print *, "À i : ", i, "j : ", j, "grid_a : ", grid_a(i,j), &
-                  "n'est pas égale à grid_b :", grid_b(i,j)
+               print *, "At i : ", i, "j : ", j, "grid_a : ", grid_a(i,j), &
+                  "the solution differs from expected value of grid_b :", grid_b(i,j)
                exit outer
             end if
          end do
