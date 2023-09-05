@@ -16,7 +16,7 @@
 ! If not, see <http://www.gnu.org/licenses/>.
 !------------------------------------------------------------------------------
 ! Contributed by Vincent Magnin, 2006-11-27; Norwid Behrnd, 2023
-! Last modifications: 2023-08-31
+! Last modifications: 2023-09-05
 !------------------------------------------------------------------------------
 
 module sudoku
@@ -351,10 +351,10 @@ contains
 
     subroutine Afficher_grille(grille)
         integer, dimension(9, 9) :: grille
-        integer :: ligne,c    ! line numbers and column numbers
+        integer :: ligne,colonne  ! line numbers and column numbers
 
         do ligne = 1, 9
-            print '(3i2, " |", 3i2, " |", 3i2)', (grille(ligne,c) , c=1,9)
+            print '(3i2, " |", 3i2, " |", 3i2)', (grille(ligne,colonne) , colonne=1,9)
             if ((ligne == 3).or.(ligne == 6)) then
                 print *, "------+-------+------"
             end if
@@ -366,11 +366,11 @@ contains
         ! input/output:
         integer, dimension(9, 9), intent(inout) :: grille
         ! local variables:
-        integer :: ligne,c    ! line numbers and column numbers
+        integer :: ligne,colonne  ! line numbers and column numbers
 
         do ligne = 1, 9
             write (*, "(A, I1, A)") "Enter line ", ligne, ":"
-            READ *, (grille(ligne,c) , c=1,9)
+            READ *, (grille(ligne,colonne) , colonne=1,9)
         end do
     end subroutine Demander_grille
 
