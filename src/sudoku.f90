@@ -34,9 +34,9 @@ contains
     integer :: row, column, line_0, row_0, i, j
     integer :: counter_empty_cells  ! counter of empty/non allocated cells
     integer, dimension(1:81, 1:3) :: empty_cells  ! list of empty cells
-    ! logical, dimension(0:9)     :: possible    ! Possibility of each number
-    integer, dimension(1:9) :: possible_digit  ! list of (still) possible numbers
-    integer :: counter_possible_digits  ! counter of possible numbers
+    ! logical, dimension(0:9)     :: possible
+    integer, dimension(1:9) :: possible_digit  ! list of (still) possible digits
+    integer :: counter_possible_digits
 
     possible_digit = 0
 
@@ -65,9 +65,8 @@ contains
     ! iterate over all empty cells:
     i = 1
     do while (i <= counter_empty_cells)
-      ! To accelerate the algorithm, count for each empty cell the numbers
-      ! which yet possibly could be inserted
-      ! in this very cell
+      ! To accelerate the algorithm, count for each empty cell the digits
+      ! which yet possibly could be inserted in this very cell
       do j = i, counter_empty_cells
         line_0 = empty_cells(j, 1)
         row_0 = empty_cells(j, 2)
@@ -75,10 +74,10 @@ contains
                                   empty_cells(j, 3), possible_digit)
       end do
       ! retrieve the empty cells (which depends on the number of still
-      ! possible numbers)
+      ! possible digits)
       call Draw(empty_cells, i, counter_empty_cells)
 
-      ! for cell (line_0,row_0), generate a list of possible numbers:
+      ! for cell (line_0,row_0), generate a list of possible digits:
       line_0 = empty_cells(i, 1)
       row_0 = empty_cells(i, 2)
 
@@ -92,7 +91,7 @@ contains
         j = 1 + int(random * counter_possible_digits)
         grid(line_0, row_0) = possible_digit(j)
         i = i + 1
-        ! if there is only one possibility, use this number now, and then
+        ! if there is only one possibility, use this digit now, and then
         ! continue with the next empty cell
       else if (counter_possible_digits == 1) then
         grid(line_0, row_0) = possible_digit(1)
@@ -105,7 +104,7 @@ contains
     end do
   end subroutine Solve_grid
 
-  ! procedure to create a list of allowed numbers in the present empty cell:
+  ! procedure to create a list of allowed digits in the present empty cell:
   subroutine list_possible_digits(grid, line_0, row_0, &
                                   counter_possible_digits, possible_digit)
     ! input parameters:
@@ -144,7 +143,7 @@ contains
 
   !****************************************************************
   ! Starting from position p, sort the (still) empty cells by
-  ! increasing number of allowed numbers to them.  This is organized
+  ! increasing number of allowed digits to them.  This is organized
   ! as a bubble sort.
   !****************************************************************
   subroutine Draw(empty_cells, p, n)
@@ -175,8 +174,8 @@ contains
     end do
   end subroutine
 
-  ! Grid generation: in each cycle a number is added and the grid is checked
-  ! for validity.  If the grid became invalid, the grid generation is starts
+  ! Grid generation: in each cycle a digit is added and the grid is checked
+  ! for validity.  If the grid became invalid, the grid generation is started
   ! all over again.
   ! With a  PIII 866 MHz: about 0.5 s.
   subroutine CreateFilledGrid(grid)
@@ -233,7 +232,7 @@ contains
   end function ValidDigit
 
   ! Note: at present it is unknown if there are Sudoku grids with less than
-  ! 17 non-zero cells leading to a unique solution.
+  ! 17 non-zero cells yield a unique solution.
   subroutine CreateSudokuGrid(grid, remainder)
     ! output parameter:
     integer, dimension(9, 9), intent(inout) :: grid
@@ -267,7 +266,7 @@ contains
             empty = .true.
           end if
         end do
-        ! erase the previously assigned number in this cell:
+        ! erase the previously assigned digit in this cell:
         grid(row, column) = 0
       end do
 
@@ -301,7 +300,7 @@ contains
     integer, dimension(9, 9) :: grid
     character(len=*) :: filename
     ! local variables
-    integer :: row, column    ! line numbers and column numbers
+    integer :: row, column
     integer :: fileunit, error
     ! file creation:
     open (newunit=fileunit, file=filename, STATUS="REPLACE")
@@ -323,7 +322,7 @@ contains
     character(len=*) :: filename
     ! local variables:
     character(len=2) :: pipe1, pipe2   ! to read the pipe/the vertical bar
-    integer :: row    ! line
+    integer :: row
     integer :: fileunit, error
     logical :: file_exists  ! check for the presence of the file requested
 
@@ -348,7 +347,7 @@ contains
 
   subroutine Display_grid(grid)
     integer, dimension(9, 9) :: grid
-    integer :: row, column  ! line numbers and column numbers
+    integer :: row, column
 
     do row = 1, 9
       print '(3I2, " |", 3I2, " |", 3I2)', (grid(row, column), column=1, 9)
@@ -362,7 +361,7 @@ contains
     ! input/output:
     integer, dimension(9, 9), intent(inout) :: grid
     ! local variables:
-    integer :: row, column  ! line numbers and column numbers
+    integer :: row, column
 
     do row = 1, 9
       write (*, "(A, I1, A)") "Enter line ", row, ":"
@@ -374,7 +373,7 @@ contains
     ! input parameter:
     integer, dimension(1:9) :: col
     ! local variables:
-    integer, dimension(0:9) :: counter  ! count the occurrence of each number
+    integer, dimension(0:9) :: counter  ! count the occurrence of each digit
     integer :: row
 
     ValidColumOrRow = .true.
@@ -422,7 +421,7 @@ contains
       if (.not. ValidColumOrRow(grid(row, 1:9))) then
         ValidGrid = .false.
         return
-        !print *, "Line ",row," is not a valid input"
+        ! print *, "Line ", row, " is not a valid input"
       end if
     end do
 
@@ -431,7 +430,7 @@ contains
       if (.not. ValidColumOrRow(grid(1:9, column))) then
         ValidGrid = .false.
         return
-        !print *, "Column ",column," is not a valid input"
+        ! print *, "Column ", column, " is not a valid input"
       end if
     end do
 
@@ -441,7 +440,7 @@ contains
         if (.not. ValidZone(grid(row:row + 2, column:column + 2))) then
           ValidGrid = .false.
           return
-          !print *, "Region ",row,column," is not a valid input"
+          ! print *, "Region ", row, column," is not a valid input"
         end if
       end do
     end do
