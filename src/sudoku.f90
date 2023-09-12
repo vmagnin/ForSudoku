@@ -16,483 +16,475 @@
 ! If not, see <http://www.gnu.org/licenses/>.
 !------------------------------------------------------------------------------
 ! Contributed by Vincent Magnin, 2006-11-27; Norwid Behrnd, 2023
-! Last modifications: 2023-09-05
+! Last modifications: 2023-09-12
 !------------------------------------------------------------------------------
 
 module sudoku
-    use iso_fortran_env, only: dp => real64
-    implicit none
+  use iso_fortran_env, only: dp => real64
+  implicit none
 
 contains
 
-    subroutine Solve_grid(grid)
-        ! input/output parameters:
-        integer, dimension(9, 9), intent(inout) :: grid
-        ! local variables:
-        integer, dimension(9, 9) :: grid_0        !
-        real(kind=dp)     :: random        ! random number
-        integer  :: row,column,line_0,row_0,i,j
-        integer  :: counter_empty_cells    ! counter of empty/non allocated cells
-        integer, dimension(1:81,1:3) :: empty_cells    ! list of empty cells
-        !logical, dimension(0:9)     :: possible    ! Possibility of each number
-        integer, dimension(1:9)      :: possible_digit    ! list of (still) possible numbers
-        integer :: counter_possible_digits    ! counter of possible numbers
+  subroutine Solve_grid(grid)
+    ! input/output parameters:
+    integer, dimension(9, 9), intent(inout) :: grid
+    ! local variables:
+    integer, dimension(9, 9) :: grid_0  ! empty grid
+    real(kind=dp) :: random  ! random number
+    integer :: row, column, line_0, row_0, i, j
+    integer :: counter_empty_cells  ! counter of empty/non allocated cells
+    integer, dimension(1:81, 1:3) :: empty_cells  ! list of empty cells
+    ! logical, dimension(0:9)     :: possible    ! Possibility of each number
+    integer, dimension(1:9) :: possible_digit  ! list of (still) possible numbers
+    integer :: counter_possible_digits  ! counter of possible numbers
 
-        possible_digit = 0
+    possible_digit = 0
 
-        ! save the initial grid:
-        grid_0 = grid
+    ! save the initial grid:
+    grid_0 = grid
 
-        ! identify the grid coordinates of empty cells in the grid
-        ! in a table of 81 entries
-        empty_cells = 0
-        counter_empty_cells = 0
-        do row = 1,9
-            do column =1,9
-                if (grid(row,column) == 0) then
-                    counter_empty_cells = counter_empty_cells+1
-                    empty_cells(counter_empty_cells,1) = row
-                    empty_cells(counter_empty_cells,2) = column
-                    !call list_possible_digits(grid,row,column,empty_cells(counter_empty_cells,3),possible_digit)
-                end if
-            end do
-        end do
-
-        ! sort the empty cells:
-        !call Draw(empty_cells,1,counter_empty_cells)
-
-        ! iterate over all empty cells:
-        i = 1
-        do while (i <= counter_empty_cells)
-            ! To accelerate the algorithm, count for each empty cell the numbers
-            ! which yet possibly could be inserted
-            ! in this very cell
-            do j = i,counter_empty_cells
-                line_0 = empty_cells(j,1)
-                row_0 = empty_cells(j,2)
-                call list_possible_digits(grid,line_0,row_0,empty_cells(j,3),possible_digit)
-            end do
-            ! retrieve the empty cells (which depends on the number of still
-            ! possible numbers)
-            call Draw(empty_cells,i,counter_empty_cells)
-
-            ! for cell (line_0,row_0), generate a list of possible numbers:
-            line_0 = empty_cells(i,1)
-            row_0 = empty_cells(i,2)
-
-            call list_possible_digits(grid,line_0,row_0,counter_possible_digits,possible_digit)
-
-            ! if there are multiple possibilities, choose one (by chance) and
-            ! continue with the next empty cell:
-            if (counter_possible_digits > 1) then
-                call Random_number(random)
-                j = 1+int(random*counter_possible_digits)
-                grid(line_0,row_0) = possible_digit(j)
-                i = i+1
-            ! if there is only one possibility, use this number now, and then
-            ! continue with the next empty cell
-            else if (counter_possible_digits == 1) then
-                grid(line_0,row_0) = possible_digit(1)
-                i = i+1
-            ! start all over again if there is none:
-            else
-                i = 1
-                grid = grid_0
-            end if
-        end do
-    end subroutine Solve_grid
-
-
-    ! procedure to create a list of allowed numbers in the present empty cell:
-    subroutine list_possible_digits(grid,line_0,row_0,counter_possible_digits,possible_digit)
-        ! input parameters:
-        integer, dimension(9, 9), intent(in) :: grid
-        integer :: line_0,row_0
-        ! output parameters:
-        integer, dimension(1:9), intent(out) :: possible_digit    ! list of possible numbers
-        integer, intent(out) :: counter_possible_digits        ! counter of possible numbers
-        ! locale variables:
-        integer :: row,column,cr,lr,j
-        logical, dimension(0:9) :: possible    ! Possibility of each number
-
-        possible = .true.
-        do j = 1,9
-            possible(grid(j,row_0)) = .false.
-            possible(grid(line_0,j)) = .false.
-        end do
-
-        lr = 1+3*((line_0-1)/3)
-        cr = 1+3*((row_0-1)/3)
-        do row = lr,lr+2
-            do column =cr,cr+2
-                possible(grid(row,column)) = .false.
-            end do
-        end do
-
-        counter_possible_digits = 0
-        possible_digit = 0
-        do j = 1,9
-            if (possible(j)) then
-                counter_possible_digits = counter_possible_digits+1
-                possible_digit(counter_possible_digits) = j
-            end if
-        end do
-    end subroutine
-
-    !****************************************************************
-    ! Starting from position p, sort the (still) empty cells by
-    ! increasing number of allowed numbers to them.  This is organized
-    ! as a bubble sort.
-    !****************************************************************
-    subroutine Draw(empty_cells,p,n)
-        ! input parameters:
-        integer,intent(in) :: n    ! number of empty lists
-        integer,intent(in) :: p    ! sort, start by position p (p inclusive)
-        ! output parameters:
-        integer, dimension(1:81,1:3), intent(inout)    :: empty_cells    ! list of empty cells
-        ! local variables:
-        integer :: i    ! loop counters
-        integer :: j
-        integer, dimension(1:3) :: column    ! save
-        logical :: completely_solved
-
-        completely_solved = .false.
-        do while (.not.completely_solved)
-            completely_solved = .true.
-            ! let's compare each cell with its succeeding cell
-            do i = p, n-1
-                j = i+1
-                if (empty_cells(i,3) > empty_cells(j,3)) then
-                    ! exchange the two cases of this list:
-                    column =empty_cells(i,:)
-                    empty_cells(i,:) = empty_cells(j,:)
-                    empty_cells(j,:) = column
-                    completely_solved = .false.
-                end if
-            end do
-        end do
-    end subroutine
-
-
-    ! Grid generation: in each cycle a number is added and the grid is checked
-    ! for validity.  If the grid became invalid, the grid generation is starts
-    ! all over again.
-    ! With a  PIII 866 MHz: about 0.5 s.
-    subroutine CreateFilledGrid(grid)
-        ! output parameter:
-        integer, dimension(9, 9), intent(out) :: grid
-        ! local variables:
-        real(kind=dp)    :: random
-        integer :: row,column
-        integer(4) :: tests
-        logical :: completely_solved
-
-        grid = 0
-
-        row = 1
-        do while(row <= 9)
-            column =1
-            do while(column <= 9)
-                tests = 0
-                completely_solved = .false.
-                do while(.not.completely_solved)
-                    if (tests > 30) then
-                        ! start from the very beginning
-                        ! (it were impossible to determine how many cycles one
-                        ! has to rewind to identify the erroneous one)
-                        grid = 0
-                        tests = 0
-                        column =1
-                        row = 1
-                    end if
-                    tests = tests+1
-                    call Random_number(random)
-                    grid(row,column) = 1+int(random*9_dp)
-                    completely_solved = ValidDigit(grid,row,column)
-                end do
-                column =column+1
-            end do
-            row = row+1
-        end do
-    end subroutine CreateFilledGrid
-
-
-    logical function ValidDigit(grid,row,column)
-        ! input:
-        integer, dimension(9, 9), intent(in) :: grid
-        integer :: row,column
-        ! local variables
-        integer :: i,j
-
-        i = (row-1)/3
-        j = (column-1)/3
-
-        ValidDigit = ValidColumOrRow(grid(row,1:9)).and.ValidColumOrRow(grid(1:9,column)) &
-            & .and.ValidZone(grid(i*3+1:i*3+3,j*3+1:j*3+3))
-    end function ValidDigit
-
-
-    ! Note: at present it is unknown if there are Sudoku grids with less than
-    ! 17 non-zero cells leading to a unique solution.
-    subroutine CreateSudokuGrid(grid,remainder)
-        ! output parameter:
-        integer, dimension(9, 9), intent(inout) :: grid
-        ! input parameter:
-        integer,intent(in) :: remainder
-        ! local variables:
-        integer, parameter                :: n = 10
-        integer, dimension(9, 9)      :: grid_0
-        integer, dimension(1:n, 1:9, 1:9) :: solutions
-        real(kind=dp)    :: random
-        integer :: row,column,i
-        logical :: empty,unique
-
-        ! save the initial grid:
-        grid_0 = grid
-
-        unique = .false.
-        do while(.not.unique)
-            grid = grid_0
-
-            ! remove randomly empty cells
-            do i = 1, 81-remainder
-                    ! by chance, one picks a of the cells to be removed:
-                    empty = .false.
-                    do while(.not.empty)
-                        call Random_number(random)
-                        row = 1+int(random*9_dp)
-                        call Random_number(random)
-                        column =1+int(random*9_dp)
-                        if (grid(row,column) /= 0) then
-                            empty = .true.
-                        end if
-                    end do
-                    ! erase the previously assigned number in this cell:
-                    grid(row,column) = 0
-            end do
-
-            print *,"Search of a grid with unique solution ..."
-
-            ! the grid is solved n times
-            unique = .true.
-            i = 1
-    sol :        do while((i <= n).and.unique)
-                solutions(i,1:9,1:9) = grid
-                call Solve_grid(solutions(i,1:9,1:9))
-                if (i >= 2) then
-                    do row = 1,9
-                        do column =1,9
-                            if (solutions(i,row,column) /= solutions(i-1,row,column)) then
-                                unique = .false.
-                                EXIT sol
-                            end if
-                        end do
-                    end do
-                end if
-                i = i+1
-            end do sol
-
-            ! With n identical solutions, one likely identified the wanted
-            ! unique solution.  Else, warn the user.
-        end do
-    end subroutine CreateSudokuGrid
-
-
-    subroutine Save_grid(grid, filename)
-        integer, dimension(9, 9) :: grid
-        character(len=*) :: filename
-        ! local variables
-        integer :: row,column    ! line numbers and column numbers
-        integer :: fileunit, error
-        ! file creation:
-        open(newunit=fileunit, file=filename, STATUS="REPLACE")
-
-        do row = 1, 9
-            write(fileunit,'(3i2, " |", 3i2, " |", 3i2)') (grid(row,column) , column=1,9)
-            if ((row == 3).or.(row == 6)) then
-                write(fileunit,*) "------+-------+------"
-            end if
-        end do
-
-        close(fileunit)
-    end subroutine Save_grid
-
-
-    subroutine Read_grid(grid, filename)
-        ! output parameter:
-        integer, dimension(9, 9), intent(out) :: grid
-        ! input parameter:
-        character(len=*) :: filename
-        ! local variables:
-        character(len=2) :: pipe1,pipe2   ! to read the pipe/the vertical bar
-        integer          :: row    ! line
-        integer :: fileunit, error
-        logical :: file_exists  ! check for the presence of the file requested
-
-        inquire(file = filename, exist = file_exists)
-        if (file_exists .eqv. .False.) stop "The requested file is absent."
-
-        ! open and read the file, line by line
-        open(newunit=fileunit, file=filename)
-
-        do row = 1, 9
-            READ(fileunit,'(3i2, a2, 3i2, a2, 3i2)') &
-                grid(row,1:3), pipe1, grid(row,4:6), pipe2, grid(row,7:9)
-
-            ! skip the lines of dashes
-            if ((row == 3).or.(row == 6)) then
-                READ(fileunit,*)
-            end if
-        end do
-
-        close(fileunit)
-    end subroutine Read_grid
-
-
-    subroutine Display_grid(grid)
-        integer, dimension(9, 9) :: grid
-        integer :: row,column  ! line numbers and column numbers
-
-        do row = 1, 9
-            print '(3i2, " |", 3i2, " |", 3i2)', (grid(row,column) , column=1,9)
-            if ((row == 3).or.(row == 6)) then
-                print *, "------+-------+------"
-            end if
-        end do
-    end subroutine Display_grid
-
-
-    subroutine Request_grid(grid)
-        ! input/output:
-        integer, dimension(9, 9), intent(inout) :: grid
-        ! local variables:
-        integer :: row,column  ! line numbers and column numbers
-
-        do row = 1, 9
-            write (*, "(A, I1, A)") "Enter line ", row, ":"
-            READ *, (grid(row,column) , column=1,9)
-        end do
-    end subroutine Request_grid
-
-
-    logical function ValidColumOrRow(col)
-        ! input parameter:
-        integer, dimension(1:9) :: col
-        ! local variables:
-        integer, dimension(0:9) :: counter    ! count the occurrence of each number
-        integer :: row        ! loop counter
-
-        ValidColumOrRow = .true.
-        counter = 0
-        do row = 1,9
-            counter(col(row)) = counter(col(row))+1
-            if ((counter(col(row)) > 1).and.(col(row) /= 0)) then
-                ValidColumOrRow = .false.
-                return        ! leave the function
-            end if
-        end do
-    end function ValidColumOrRow
-
-
-    logical function ValidZone(region)
-        ! input:
-        integer, dimension(1:3, 1:3) :: region
-        integer, dimension(1:9)      :: col
-
-        col(1) = region(1,1)
-        col(2) = region(1,2)
-        col(3) = region(1,3)
-        col(4) = region(2,1)
-        col(5) = region(2,2)
-        col(6) = region(2,3)
-        col(7) = region(3,1)
-        col(8) = region(3,2)
-        col(9) = region(3,3)
-        if (ValidColumOrRow(col)) then
-            ValidZone = .true.
-        else
-            ValidZone = .false.
+    ! identify the grid coordinates of empty cells in the grid
+    ! in a table of 81 entries
+    empty_cells = 0
+    counter_empty_cells = 0
+    do row = 1, 9
+      do column = 1, 9
+        if (grid(row, column) == 0) then
+          counter_empty_cells = counter_empty_cells + 1
+          empty_cells(counter_empty_cells, 1) = row
+          empty_cells(counter_empty_cells, 2) = column
+          ! call list_possible_digits(grid, row, column, &
+          ! empty_cells(counter_empty_cells,3), possible_digit)
         end if
-    end function ValidZone
+      end do
+    end do
 
+    ! sort the empty cells:
+    ! call Draw(empty_cells,1,counter_empty_cells)
 
-    logical function ValidGrid(grid)
-        ! input:
-        integer, dimension(9, 9) :: grid
-        ! local variables:
-        integer :: row,column
+    ! iterate over all empty cells:
+    i = 1
+    do while (i <= counter_empty_cells)
+      ! To accelerate the algorithm, count for each empty cell the numbers
+      ! which yet possibly could be inserted
+      ! in this very cell
+      do j = i, counter_empty_cells
+        line_0 = empty_cells(j, 1)
+        row_0 = empty_cells(j, 2)
+        call list_possible_digits(grid, line_0, row_0, &
+                                  empty_cells(j, 3), possible_digit)
+      end do
+      ! retrieve the empty cells (which depends on the number of still
+      ! possible numbers)
+      call Draw(empty_cells, i, counter_empty_cells)
 
-        ValidGrid = .true.
+      ! for cell (line_0,row_0), generate a list of possible numbers:
+      line_0 = empty_cells(i, 1)
+      row_0 = empty_cells(i, 2)
 
-        ! verification of lines:
-        do row = 1,9
-            if (.not.ValidColumOrRow(grid(row,1:9))) then
-                ValidGrid = .false.
-                return
-                !print *, "Line ",row," is not a valid input"
-            end if
+      call list_possible_digits(grid, line_0, row_0, &
+                                counter_possible_digits, possible_digit)
+
+      ! if there are multiple possibilities, choose one (by chance) and
+      ! continue with the next empty cell:
+      if (counter_possible_digits > 1) then
+        call Random_number(random)
+        j = 1 + int(random * counter_possible_digits)
+        grid(line_0, row_0) = possible_digit(j)
+        i = i + 1
+        ! if there is only one possibility, use this number now, and then
+        ! continue with the next empty cell
+      else if (counter_possible_digits == 1) then
+        grid(line_0, row_0) = possible_digit(1)
+        i = i + 1
+        ! start all over again if there is none:
+      else
+        i = 1
+        grid = grid_0
+      end if
+    end do
+  end subroutine Solve_grid
+
+  ! procedure to create a list of allowed numbers in the present empty cell:
+  subroutine list_possible_digits(grid, line_0, row_0, &
+                                  counter_possible_digits, possible_digit)
+    ! input parameters:
+    integer, dimension(9, 9), intent(in) :: grid
+    integer :: line_0, row_0
+    ! output parameters:
+    integer, dimension(1:9), intent(out) :: possible_digit
+    integer, intent(out) :: counter_possible_digits
+    ! locale variables:
+    integer :: row, column, cr, lr, j
+    logical, dimension(0:9) :: possible  ! Plausibility of each digit
+
+    possible = .true.
+    do j = 1, 9
+      possible(grid(j, row_0)) = .false.
+      possible(grid(line_0, j)) = .false.
+    end do
+
+    lr = 1 + 3 * ((line_0 - 1) / 3)
+    cr = 1 + 3 * ((row_0 - 1) / 3)
+    do row = lr, lr + 2
+      do column = cr, cr + 2
+        possible(grid(row, column)) = .false.
+      end do
+    end do
+
+    counter_possible_digits = 0
+    possible_digit = 0
+    do j = 1, 9
+      if (possible(j)) then
+        counter_possible_digits = counter_possible_digits + 1
+        possible_digit(counter_possible_digits) = j
+      end if
+    end do
+  end subroutine list_possible_digits
+
+  !****************************************************************
+  ! Starting from position p, sort the (still) empty cells by
+  ! increasing number of allowed numbers to them.  This is organized
+  ! as a bubble sort.
+  !****************************************************************
+  subroutine Draw(empty_cells, p, n)
+    ! input parameters:
+    integer, intent(in) :: n    ! number of empty lists
+    integer, intent(in) :: p    ! sort, start by position p (p inclusive)
+    ! output parameters:
+    integer, dimension(1:81, 1:3), intent(inout) :: empty_cells
+    ! local variables:
+    integer :: i, j ! loop counters
+    integer, dimension(1:3) :: column
+    logical :: completely_solved
+
+    completely_solved = .false.
+    do while (.not. completely_solved)
+      completely_solved = .true.
+      ! let's compare each cell with its succeeding cell
+      do i = p, n - 1
+        j = i + 1
+        if (empty_cells(i, 3) > empty_cells(j, 3)) then
+          ! exchange the two cases of this list:
+          column = empty_cells(i, :)
+          empty_cells(i, :) = empty_cells(j, :)
+          empty_cells(j, :) = column
+          completely_solved = .false.
+        end if
+      end do
+    end do
+  end subroutine
+
+  ! Grid generation: in each cycle a number is added and the grid is checked
+  ! for validity.  If the grid became invalid, the grid generation is starts
+  ! all over again.
+  ! With a  PIII 866 MHz: about 0.5 s.
+  subroutine CreateFilledGrid(grid)
+    ! output parameter:
+    integer, dimension(9, 9), intent(out) :: grid
+    ! local variables:
+    real(kind=dp) :: random
+    integer :: row, column
+    integer(4) :: tests
+    logical :: completely_solved
+
+    grid = 0
+
+    row = 1
+    do while (row <= 9)
+      column = 1
+      do while (column <= 9)
+        tests = 0
+        completely_solved = .false.
+        do while (.not. completely_solved)
+          if (tests > 30) then
+            ! start from the very beginning
+            ! (it were impossible to determine how many cycles one
+            ! has to rewind to identify the erroneous one)
+            grid = 0
+            tests = 0
+            column = 1
+            row = 1
+          end if
+          tests = tests + 1
+          call Random_number(random)
+          grid(row, column) = 1 + int(random * 9_dp)
+          completely_solved = ValidDigit(grid, row, column)
         end do
+        column = column + 1
+      end do
+      row = row + 1
+    end do
+  end subroutine CreateFilledGrid
 
-        ! verification of columns:
-        do column =1,9
-            if (.not.ValidColumOrRow(grid(1:9,column))) then
-                ValidGrid = .false.
-                return
-                !print *, "Column ",column," is not a valid input"
-            end if
+  logical function ValidDigit(grid, row, column)
+    ! input:
+    integer, dimension(9, 9), intent(in) :: grid
+    integer :: row, column
+    ! local variables
+    integer :: i, j
+
+    i = (row - 1) / 3
+    j = (column - 1) / 3
+
+    ValidDigit = ValidColumOrRow(grid(row, 1:9)) .and. &
+                 ValidColumOrRow(grid(1:9, column)) .and. &
+                 ValidZone(grid(i * 3 + 1:i * 3 + 3, j * 3 + 1:j * 3 + 3))
+  end function ValidDigit
+
+  ! Note: at present it is unknown if there are Sudoku grids with less than
+  ! 17 non-zero cells leading to a unique solution.
+  subroutine CreateSudokuGrid(grid, remainder)
+    ! output parameter:
+    integer, dimension(9, 9), intent(inout) :: grid
+    ! input parameter:
+    integer, intent(in) :: remainder
+    ! local variables:
+    integer, parameter :: n = 10
+    integer, dimension(9, 9) :: grid_0
+    integer, dimension(1:n, 1:9, 1:9) :: solutions
+    real(kind=dp) :: random
+    integer :: row, column, i
+    logical :: empty, unique
+
+    ! save the initial grid:
+    grid_0 = grid
+
+    unique = .false.
+    do while (.not. unique)
+      grid = grid_0
+
+      ! remove randomly empty cells
+      do i = 1, 81 - remainder
+        ! by chance, one picks a of the cells to be removed:
+        empty = .false.
+        do while (.not. empty)
+          call Random_number(random)
+          row = 1 + int(random * 9_dp)
+          call Random_number(random)
+          column = 1 + int(random * 9_dp)
+          if (grid(row, column) /= 0) then
+            empty = .true.
+          end if
         end do
+        ! erase the previously assigned number in this cell:
+        grid(row, column) = 0
+      end do
 
-        ! verification of regions:
-        do row = 1,7,+3
-            do column =1,7,+3
-                if (.not.ValidZone(grid(row:row+2,column:column+2))) then
-                    ValidGrid = .false.
-                    return
-                    !print *, "Region ",row,column," is not a valid input"
-                end if
+      print *, "Search of a grid with unique solution ..."
+
+      ! the grid is solved n times
+      unique = .true.
+      i = 1
+      sol: do while ((i <= n) .and. unique)
+        solutions(i, 1:9, 1:9) = grid
+        call Solve_grid(solutions(i, 1:9, 1:9))
+        if (i >= 2) then
+          do row = 1, 9
+            do column = 1, 9
+              if (solutions(i, row, column) /= solutions(i - 1, row, column)) then
+                unique = .false.
+                EXIT sol
+              end if
             end do
-        end do
-    end function ValidGrid
+          end do
+        end if
+        i = i + 1
+      end do sol
 
-    !************************************************************
-    ! initialization of a system independent pseudorandom generator
-    !************************************************************
-    subroutine Initialize_Random
-        integer(4), dimension(1:8) :: timeValues
-        integer(4), allocatable, dimension (:) :: random_seede
+      ! With n identical solutions, one likely identified the wanted
+      ! unique solution.  Else, warn the user.
+    end do
+  end subroutine CreateSudokuGrid
 
-        integer(4) :: loop , n
+  subroutine Save_grid(grid, filename)
+    integer, dimension(9, 9) :: grid
+    character(len=*) :: filename
+    ! local variables
+    integer :: row, column    ! line numbers and column numbers
+    integer :: fileunit, error
+    ! file creation:
+    open (newunit=fileunit, file=filename, STATUS="REPLACE")
 
-        call date_and_time(VALUES = timeValues)
+    do row = 1, 9
+      write (fileunit, '(3I2, " |", 3I2, " |", 3I2)') (grid(row, column), column=1, 9)
+      if ((row == 3) .or. (row == 6)) then
+        write (fileunit, *) "------+-------+------"
+      end if
+    end do
 
-        ! retrieve the integers to store a seed: !? On récupère le nombre d'entiers servant à stocker la random_seede :
-        call random_seed(SIZE = n)
-        allocate(random_seede(1:n))
+    close (fileunit)
+  end subroutine Save_grid
 
-        ! use thousandths of a second by the clock:
-        do loop = 1 , n
-            random_seede(loop) = huge(random_seede(loop))/1000*timeValues(8)
-        end do
+  subroutine Read_grid(grid, filename)
+    ! output parameter:
+    integer, dimension(9, 9), intent(out) :: grid
+    ! input parameter:
+    character(len=*) :: filename
+    ! local variables:
+    character(len=2) :: pipe1, pipe2   ! to read the pipe/the vertical bar
+    integer :: row    ! line
+    integer :: fileunit, error
+    logical :: file_exists  ! check for the presence of the file requested
 
-        ! hand over the seed:
-        call random_seed(put = random_seede(1:n))
-    end subroutine Initialize_Random
+    inquire (file=filename, exist=file_exists)
+    if (file_exists .eqv. .False.) stop "The requested file is absent."
 
+    ! open and read the file, line by line
+    open (newunit=fileunit, file=filename)
 
-    !***********************************************************
-    ! return the CPU time (expressed in seconds)
-    ! cpu_time() is defined by standards of Fortran 95, and later.
-    !***********************************************************
-    real(kind=dp) function Time()
-        Real(kind=dp) :: t
+    do row = 1, 9
+      READ (fileunit, '(3I2, A2, 3I2, A2, 3I2)') &
+        grid(row, 1:3), pipe1, grid(row, 4:6), pipe2, grid(row, 7:9)
 
-        call cpu_time(t)
-        Time = t
-    end function Time
+      ! skip the lines of dashes
+      if ((row == 3) .or. (row == 6)) then
+        READ (fileunit, *)
+      end if
+    end do
 
-    subroutine solver(grid, file)
+    close (fileunit)
+  end subroutine Read_grid
+
+  subroutine Display_grid(grid)
+    integer, dimension(9, 9) :: grid
+    integer :: row, column  ! line numbers and column numbers
+
+    do row = 1, 9
+      print '(3I2, " |", 3I2, " |", 3I2)', (grid(row, column), column=1, 9)
+      if ((row == 3) .or. (row == 6)) then
+        print *, "------+-------+------"
+      end if
+    end do
+  end subroutine Display_grid
+
+  subroutine Request_grid(grid)
+    ! input/output:
+    integer, dimension(9, 9), intent(inout) :: grid
+    ! local variables:
+    integer :: row, column  ! line numbers and column numbers
+
+    do row = 1, 9
+      write (*, "(A, I1, A)") "Enter line ", row, ":"
+      READ *, (grid(row, column), column=1, 9)
+    end do
+  end subroutine Request_grid
+
+  logical function ValidColumOrRow(col)
+    ! input parameter:
+    integer, dimension(1:9) :: col
+    ! local variables:
+    integer, dimension(0:9) :: counter  ! count the occurrence of each number
+    integer :: row
+
+    ValidColumOrRow = .true.
+    counter = 0
+    do row = 1, 9
+      counter(col(row)) = counter(col(row)) + 1
+      if ((counter(col(row)) > 1) .and. (col(row) /= 0)) then
+        ValidColumOrRow = .false.
+        return        ! leave the function
+      end if
+    end do
+  end function ValidColumOrRow
+
+  logical function ValidZone(region)
+    ! input:
+    integer, dimension(1:3, 1:3) :: region
+    integer, dimension(1:9) :: col
+
+    col(1) = region(1, 1)
+    col(2) = region(1, 2)
+    col(3) = region(1, 3)
+    col(4) = region(2, 1)
+    col(5) = region(2, 2)
+    col(6) = region(2, 3)
+    col(7) = region(3, 1)
+    col(8) = region(3, 2)
+    col(9) = region(3, 3)
+    if (ValidColumOrRow(col)) then
+      ValidZone = .true.
+    else
+      ValidZone = .false.
+    end if
+  end function ValidZone
+
+  logical function ValidGrid(grid)
+    ! input:
+    integer, dimension(9, 9) :: grid
+    ! local variables:
+    integer :: row, column
+
+    ValidGrid = .true.
+
+    ! verification of lines:
+    do row = 1, 9
+      if (.not. ValidColumOrRow(grid(row, 1:9))) then
+        ValidGrid = .false.
+        return
+        !print *, "Line ",row," is not a valid input"
+      end if
+    end do
+
+    ! verification of columns:
+    do column = 1, 9
+      if (.not. ValidColumOrRow(grid(1:9, column))) then
+        ValidGrid = .false.
+        return
+        !print *, "Column ",column," is not a valid input"
+      end if
+    end do
+
+    ! verification of regions:
+    do row = 1, 7, +3
+      do column = 1, 7, +3
+        if (.not. ValidZone(grid(row:row + 2, column:column + 2))) then
+          ValidGrid = .false.
+          return
+          !print *, "Region ",row,column," is not a valid input"
+        end if
+      end do
+    end do
+  end function ValidGrid
+
+  !************************************************************
+  ! initialization of a system independent pseudorandom generator
+  !************************************************************
+  subroutine Initialize_Random
+    integer(4), dimension(1:8) :: timeValues
+    integer(4), allocatable, dimension(:) :: random_seede
+
+    integer(4) :: loop, n
+
+    call date_and_time(VALUES=timeValues)
+
+    ! retrieve the integers to store a seed: !? On récupère le nombre d'entiers servant à stocker la random_seede :
+    call random_seed(SIZE=n)
+    allocate (random_seede(1:n))
+
+    ! use thousandths of a second by the clock:
+    do loop = 1, n
+      random_seede(loop) = huge(random_seede(loop)) / 1000 * timeValues(8)
+    end do
+
+    ! hand over the seed:
+    call random_seed(put=random_seede(1:n))
+  end subroutine Initialize_Random
+
+  !***********************************************************
+  ! return the CPU time (expressed in seconds)
+  ! cpu_time() is defined by standards of Fortran 95, and later.
+  !***********************************************************
+  real(kind=dp) function Time()
+    Real(kind=dp) :: t
+
+    call cpu_time(t)
+    Time = t
+  end function Time
+
+  subroutine solver(grid, file)
     ! ******************************************************************
-    ! proempty a solution for a partially filled grid proemptyd as a file
+    ! provide a solution for a partially filled grid entered as a file
     !
     ! Concept study for a direct invocation of the executable by the CLI
     ! as, for example, by
@@ -503,25 +495,25 @@ contains
     !
     ! ******************************************************************
     ! input:
-    character(len = 50), intent(in) :: file
+    character(len=50), intent(in) :: file
     integer, dimension(9, 9), intent(inout) :: grid
     ! local variables:
     logical :: presence
     presence = .False.
 
-    inquire(file = file, exist = presence)
-        if (presence .eqv. .False.) then
-            print *, "The requested file '", trim(file), "' is inaccessible."
-        end if
+    inquire (file=file, exist=presence)
+    if (presence .eqv. .False.) then
+      print *, "The requested file '", trim(file), "' is inaccessible."
+    end if
 
     call Read_grid(grid, file)
 
     if (ValidGrid(grid) .eqv. .True.) then
-        call Solve_grid(grid)
-        call Display_grid(grid)
+      call Solve_grid(grid)
+      call Display_grid(grid)
     else
-        print *, "The input by file'", trim(file), "' is an invalid grid."
+      print *, "The input by file'", trim(file), "' is an invalid grid."
     end if
 
-    end subroutine solver
+  end subroutine solver
 end module sudoku
