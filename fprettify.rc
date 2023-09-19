@@ -1,0 +1,38 @@
+# name:  fprettify.rc
+# date:  [2023-09-12 Tue]
+
+# This is a style file for fprettify (`fprettify -c fprettify.fc source.f90`)
+# to compile all its parameters explicitly in one spot.  The sequence of the
+# entries below follows the one reported by the call of `fprettify -h` for
+# fprettify version 0.3.7 published [2020-11-20 Fri].
+
+indent=2  # This pattern is seen in gtk-fortran-gtk4, it replaces the default 3.
+line-length=132
+whitespace=2
+whitespace-comma=True  # default: None
+whitespace-assignment=True  # default: None
+
+whitespace-decl=True  # default: None
+whitespace-relational=True  # default: None
+whitespace-logical=True  # default: None
+whitespace-plusminus=True  # default: None
+whitespace-multdiv=True  # default: None
+
+whitespace-print=True  # default: None
+whitespace-type=True  # default: None
+whitespace-intrinsics=True  # default: None
+strict-indent=True  # default: None
+enable-decl=True  # default: None
+
+disable-indent=False
+disable-whitespace=False
+enable-replacements=False  # This is to substitute for example a `.gt.` by `>`.
+c-relations=False
+case=[0,0,0,0]  # Which is: do not change to lowercase (1), or uppercase (2)
+                # keywords, procedures/modules, operators, constants. 
+
+strip-comments=no
+disable-fypp=no
+disable-indent-mod=no
+
+# END

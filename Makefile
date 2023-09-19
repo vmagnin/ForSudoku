@@ -14,6 +14,9 @@ default:
 
 	./executable
 
+
+# Provide an optional check: if `diff` reports the computed solution and the
+# reference solution file as identical, the program probably is in good shape.
 check:
 	gfortran -O3 -c ./src/sudoku.f90
 	gfortran -O3 -c ./app/main.f90
@@ -24,5 +27,10 @@ check:
 	./executable ./test/test_in_01.txt > probe
 	diff -s ./probe ./test/test_out_01.txt
 	rm ./probe
+
+
+# Assuming fprettify is available, apply the reformatter.
+fprettify:
+	fprettify -c ./fprettify.rc --recursive ./*
 # END
 
