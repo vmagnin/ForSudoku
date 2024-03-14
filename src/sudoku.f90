@@ -249,6 +249,7 @@ contains
     ! save the initial grid:
     grid_0 = grid
 
+    print *, "Search of a grid with unique solution ..."
     unique = .false.
     do while (.not. unique)
       grid = grid_0
@@ -269,8 +270,6 @@ contains
         ! erase the previously assigned digit in this cell:
         grid(row, column) = 0
       end do
-
-      print *, "Search of a grid with unique solution ..."
 
       ! the grid is solved n times
       unique = .true.
@@ -293,6 +292,9 @@ contains
 
       ! With n identical solutions, one likely identified the wanted
       ! unique solution.  Else, warn the user.
+
+      ! Show the advancement of the algorithm:
+      write(*, '(".")', advance='no')
     end do
   end subroutine CreateSudokuGrid
 
