@@ -54,7 +54,7 @@ program main
       print *, "8) Create a partially allocated grid (conjecture of a likely unique solution)."
       print *, "9) Quit."
       print *, "Select one of them and click `Enter`:"
-      READ *, choice
+      read *, choice
 
       select case (choice)
       case (1)
@@ -69,7 +69,7 @@ program main
       case (2)
         print *, "Enter complete file name of the file to read (including .txt extension):"
         call execute_command_line("dir *.txt")
-        READ *, file
+        read *, file
         call Read_grid(grid, trim(file))
         call Display_grid(grid)
         if (ValidGrid(grid)) then
@@ -79,7 +79,7 @@ program main
         end if
       case (3)
         print *, "Enter complete file name of the file to save (incl. .txt):"
-        READ *, file
+        read *, file
         call Save_grid(grid, trim(file))
         print *, "File saved."
       case (4)
@@ -124,7 +124,7 @@ program main
       case (8)
         print *, "How many numbers should be assigned in advance [17,81]?"
         print *, "Note: with less than 35 preallocated fields, the computation rapidly takes longer!"
-        READ *, n_empty
+        read *, n_empty
         call CreateFilledGrid(grid)
         print *, "Below, a filled grid:"
         call Display_grid(grid)

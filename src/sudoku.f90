@@ -87,7 +87,7 @@ contains
       ! if there are multiple possibilities, choose one (by chance) and
       ! continue with the next empty cell:
       if (counter_possible_digits > 1) then
-        call Random_number(random)
+        call random_number(random)
         j = 1 + int(random * counter_possible_digits)
         grid(line_0, row_0) = possible_digit(j)
         i = i + 1
@@ -206,7 +206,7 @@ contains
             row = 1
           end if
           tests = tests + 1
-          call Random_number(random)
+          call random_number(random)
           grid(row, column) = 1 + int(random * 9_dp)
           completely_solved = ValidDigit(grid, row, column)
         end do
@@ -258,9 +258,9 @@ contains
         ! by chance, one picks a of the cells to be removed:
         empty = .false.
         do while (.not. empty)
-          call Random_number(random)
+          call random_number(random)
           row = 1 + int(random * 9_dp)
-          call Random_number(random)
+          call random_number(random)
           column = 1 + int(random * 9_dp)
           if (grid(row, column) /= 0) then
             empty = .true.
@@ -303,7 +303,7 @@ contains
     integer :: row, column
     integer :: fileunit, error
     ! file creation:
-    open (newunit=fileunit, file=filename, STATUS="REPLACE")
+    open (newunit=fileunit, file=filename, status="REPLACE")
 
     do row = 1, 9
       write (fileunit, '(3I2, " |", 3I2, " |", 3I2)') (grid(row, column), column=1, 9)
@@ -327,18 +327,18 @@ contains
     logical :: file_exists  ! check for the presence of the file requested
 
     inquire (file=filename, exist=file_exists)
-    if (file_exists .eqv. .False.) stop "The requested file is absent."
+    if (file_exists .eqv. .false.) stop "The requested file is absent."
 
     ! open and read the file, line by line
     open (newunit=fileunit, file=filename)
 
     do row = 1, 9
-      READ (fileunit, '(3I2, A2, 3I2, A2, 3I2)') &
+      read (fileunit, '(3I2, A2, 3I2, A2, 3I2)') &
         grid(row, 1:3), pipe1, grid(row, 4:6), pipe2, grid(row, 7:9)
 
       ! skip the lines of dashes
       if ((row == 3) .or. (row == 6)) then
-        READ (fileunit, *)
+        read (fileunit, *)
       end if
     end do
 
@@ -365,7 +365,7 @@ contains
 
     do row = 1, 9
       write (*, "(A, I1, A)") "Enter line ", row, ":"
-      READ *, (grid(row, column), column=1, 9)
+      read *, (grid(row, column), column=1, 9)
     end do
   end subroutine Request_grid
 
@@ -455,10 +455,10 @@ contains
 
     integer(4) :: loop, n
 
-    call date_and_time(VALUES=timeValues)
+    call date_and_time(values=timeValues)
 
     ! retrieve the integers to store a seed: !? On récupère le nombre d'entiers servant à stocker la random_seede :
-    call random_seed(SIZE=n)
+    call random_seed(size=n)
     allocate (random_seede(1:n))
 
     ! use thousandths of a second by the clock:
@@ -498,16 +498,16 @@ contains
     integer, dimension(9, 9), intent(inout) :: grid
     ! local variables:
     logical :: presence
-    presence = .False.
+    presence = .false.
 
     inquire (file=file, exist=presence)
-    if (presence .eqv. .False.) then
+    if (presence .eqv. .false.) then
       print *, "The requested file '", trim(file), "' is inaccessible."
     end if
 
     call Read_grid(grid, file)
 
-    if (ValidGrid(grid) .eqv. .True.) then
+    if (ValidGrid(grid) .eqv. .true.) then
       call Solve_grid(grid)
       call Display_grid(grid)
     else
