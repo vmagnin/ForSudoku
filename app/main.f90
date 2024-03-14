@@ -68,7 +68,7 @@ program main
         end if
       case (2)
         print *, "Enter complete file name of the file to read (including .txt extension):"
-        call SYSTEM("dir *.txt")
+        call execute_command_line("dir *.txt")
         READ *, file
         call Read_grid(grid, trim(file))
         call Display_grid(grid)
