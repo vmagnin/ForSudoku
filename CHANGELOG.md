@@ -3,12 +3,9 @@
 All notable changes to the gtk-fortran project are documented in this file. The
 format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [sudoku dev]
+## [sudoku 0.8.2] 2024-03-14
 
-
-## [sudoku 0.8] 2006-11-27
-
-- The original version.
+- Minor code improvements
 
 ## [sudoku 0.8.1] 2023-07-22
 
@@ -25,3 +22,7 @@ format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - The fpm environment allows both compilation and subsequent execution of
   Fortran source code, as well as testing of the procedures implemented.  The
   current version of the program does not yet use this quality control.
+
+## [sudoku 0.8] 2006-11-27
+
+- The original version.
