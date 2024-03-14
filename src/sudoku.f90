@@ -239,7 +239,7 @@ contains
     ! input parameter:
     integer, intent(in) :: remainder
     ! local variables:
-    integer, parameter :: n = 10
+    integer, parameter :: n = 1000    ! Nb of times we try to solve a grid
     integer, dimension(9, 9) :: grid_0
     integer, dimension(1:n, 1:9, 1:9) :: solutions
     real(kind=dp) :: random
@@ -249,7 +249,7 @@ contains
     ! save the initial grid:
     grid_0 = grid
 
-    print *, "Search of a grid with unique solution ..."
+    print *, "Search of a grid with a probably unique solution ..."
     unique = .false.
     do while (.not. unique)
       grid = grid_0
@@ -271,31 +271,25 @@ contains
         grid(row, column) = 0
       end do
 
-      ! the grid is solved n times
+      ! The grid is solved up to n times to try to see if the solution is unique
       unique = .true.
       i = 1
       sol: do while ((i <= n) .and. unique)
-        solutions(i, 1:9, 1:9) = grid
-        call Solve_grid(solutions(i, 1:9, 1:9))
-        if (i >= 2) then
-          do row = 1, 9
-            do column = 1, 9
-              if (solutions(i, row, column) /= solutions(i - 1, row, column)) then
-                unique = .false.
-                EXIT sol
-              end if
-            end do
-          end do
+        solutions(i, :, :) = grid
+        call Solve_grid(solutions(i, :, :))
+
+        if ((i >= 2) .and. any(solutions(i, :, :) /= solutions(i-1, :, :))) then
+          unique = .false.
+          exit sol
         end if
+
         i = i + 1
       end do sol
-
-      ! With n identical solutions, one likely identified the wanted
-      ! unique solution.  Else, warn the user.
 
       ! Show the advancement of the algorithm:
       write(*, '(".")', advance='no')
     end do
+    write(*,*)
   end subroutine CreateSudokuGrid
 
   subroutine Save_grid(grid, filename)
