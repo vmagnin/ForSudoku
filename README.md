@@ -23,6 +23,12 @@ sudoku                                 done.
 [100%] Project compiled successfully.
 ```
 
+If you want to generate a sudoku with many void cells, it is better to use the
+optimization flags of your compiler, for example:
+```shell
+$ fpm run --flag "-O3"
+```
+
 Especially if your current interest only aims to use the program, the included
 `Makefile` equally provides you with the executable with no difference down the
 road.
