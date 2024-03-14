@@ -1,9 +1,9 @@
 name = "sudoku"
 description= "Generates and solves sudokus"
-version = "0.8.0"
+version = "0.8.1"
 license    = "GPL-3.0-or-later"
-author = "vmagnin"
-copyright = "Copyright 2006, vmagnin"
+author = "vmagnin, nbehrnd"
+copyright = "Copyright 2006-2024, vmagnin & nbehrnd"
 maintainer = "https://github.com/vmagnin/sudoku/issues"
 homepage   = "https://github.com/vmagnin/sudoku"
 categories = ["games"]

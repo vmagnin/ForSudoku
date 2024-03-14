@@ -1,5 +1,5 @@
 ! This file is part of the sudoku Fortran project.
-! Copyright (C) 2006 Vincent MAGNIN
+! Copyright (C) 2006-2024 Vincent Magnin & Norwid Behrnd
 !
 ! This is free software; you can redistribute it and/or modify
 ! it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 ! If not, see <http://www.gnu.org/licenses/>.
 !------------------------------------------------------------------------------
 ! Contributed by Vincent Magnin, 2006-11-27; Norwid Behrnd, 2023
-! Last modifications: 2023-09-12
+! Last modifications: 2024-03-14
 !------------------------------------------------------------------------------
 
 program main
@@ -39,7 +39,7 @@ program main
     ! initialize an explicitly empty grid
     grid = 0
 
-    print *, "sudoku.f90, version 0.8.1, copyright (C) 2006 Vincent MAGNIN"
+    print *, "sudoku.f90, version 0.8.1, copyright (C) 2006-2024 Vincent Magnin and Norwid Behrnd"
     ! provide a user menu
     do
       print *
