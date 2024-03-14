@@ -28,7 +28,7 @@ program main
   integer, dimension(9, 9) :: grid
   real(kind=dp) :: Start, End  ! monitor the duration of computation
   integer :: choice
-  integer :: n_empty  ! number of cells to clear
+  integer :: remainder  ! number of filled cells when creating a grid
   character(50) :: file  ! file name (including extension .txt)
 
   select case (command_argument_count())
@@ -124,7 +124,7 @@ program main
       case (8)
         print *, "How many numbers should be assigned in advance [17,81]?"
         print *, "Note: with less than 35 preallocated fields, the computation rapidly takes longer!"
-        read *, n_empty
+        read *, remainder
         call CreateFilledGrid(grid)
         print *, "Below, a filled grid:"
         call Display_grid(grid)
@@ -136,7 +136,7 @@ program main
         end if
 
         Start = Time()
-        call CreateSudokuGrid(grid, n_empty)
+        call CreateSudokuGrid(grid, remainder)
         print *, "Below a Sudoku grid (assuming a likely unique solution):"
         call Display_grid(grid)
         if (ValidGrid(grid)) then
