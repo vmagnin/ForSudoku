@@ -57,9 +57,6 @@ contains
       end do
     end do
 
-    ! sort the empty cells:
-    ! call Draw(empty_cells,1,counter_empty_cells)
-
     ! iterate over all empty cells:
     i = 1
     do while (i <= counter_empty_cells)
@@ -406,7 +403,6 @@ contains
       if (.not. ValidColumOrRow(grid(row, 1:9))) then
         ValidGrid = .false.
         return
-        ! print *, "Line ", row, " is not a valid input"
       end if
     end do
 
@@ -415,7 +411,6 @@ contains
       if (.not. ValidColumOrRow(grid(1:9, column))) then
         ValidGrid = .false.
         return
-        ! print *, "Column ", column, " is not a valid input"
       end if
     end do
 
@@ -425,7 +420,6 @@ contains
         if (.not. ValidZone(grid(row:row + 2, column:column + 2))) then
           ValidGrid = .false.
           return
-          ! print *, "Region ", row, column," is not a valid input"
         end if
       end do
     end do
