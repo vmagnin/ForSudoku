@@ -5,10 +5,12 @@
 ! This file contains tests to be launched by `fpm test`.
 
 program check
-  use sudoku, only: Read_grid, Solve_grid
+  use sudoku, only: Read_grid, Solve_grid, ValidColumOrRow
 
   implicit none
   integer :: ref_grid(9, 9)
+
+  call unit_tests()
 
   ! An incomplete Sudoku grid with implicitly empty cases:
   !&<
@@ -27,9 +29,15 @@ program check
 
   call assert_readtest01()
   call assert_readtest02()
-  call assert_wikipedia_solution()    !&<
+  call assert_wikipedia_solution()
 
 contains
+
+  subroutine unit_tests
+    if (.not.ValidColumOrRow([1,2,3,4,5,6,7,8,9])) error stop "ValidColumOrRow() not working!"
+    if (ValidColumOrRow([1,2,3,4,5,6,7,8,1])) error stop "ValidColumOrRow() not working!"
+    if (ValidColumOrRow([4,2,3,4,9,8,7,6,5])) error stop "ValidColumOrRow() not working!"
+  end subroutine unit_tests
 
   subroutine assert_readtest01()
     ! read an incomplete Sudoku grid with implicitly empty cases
