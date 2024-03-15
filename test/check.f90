@@ -1,16 +1,33 @@
 ! file:  check.f90
-! date:  [2023-08-24 Thu]
-! edit:  [2023-09-12 Tue]
+! date:  nbehrnd [2023-08-24 Thu]
+! edit:  vmagnin [2024-03-15 Fri]
 
 ! This file contains tests to be launched by `fpm test`.
 
 program check
   use sudoku, only: Read_grid, Solve_grid
+
   implicit none
+  integer :: ref_grid(9, 9)
+
+  ! An incomplete Sudoku grid with implicitly empty cases:
+  !&<
+  ref_grid(:, 1) = [5, 3, 0,  0, 7, 0,  0, 0, 0]
+  ref_grid(:, 2) = [6, 0, 0,  1, 9, 5,  0, 0, 0]
+  ref_grid(:, 3) = [0, 9, 8,  0, 0, 0,  0, 6, 0]
+
+  ref_grid(:, 4) = [8, 0, 0,  0, 6, 0,  0, 0, 3]
+  ref_grid(:, 5) = [4, 0, 0,  8, 0, 3,  0, 0, 1]
+  ref_grid(:, 6) = [7, 0, 0,  0, 2, 0,  0, 0, 6]
+
+  ref_grid(:, 7) = [0, 6, 0,  0, 0, 0,  2, 8, 0]
+  ref_grid(:, 8) = [0, 0, 0,  4, 1, 9,  0, 0, 5]
+  ref_grid(:, 9) = [0, 0, 0,  0, 8, 0,  0, 7, 9]
+  !&>
 
   call assert_readtest01()
   call assert_readtest02()
-  call assert_wikipedia_solution()
+  call assert_wikipedia_solution()    !&<
 
 contains
 
@@ -22,19 +39,7 @@ contains
 
     array_equality = .true.
 
-    !&<
-    reference_grid(:, 1) = [5, 3, 0,  0, 7, 0,  0, 0, 0]
-    reference_grid(:, 2) = [6, 0, 0,  1, 9, 5,  0, 0, 0]
-    reference_grid(:, 3) = [0, 9, 8,  0, 0, 0,  0, 6, 0]
-
-    reference_grid(:, 4) = [8, 0, 0,  0, 6, 0,  0, 0, 3]
-    reference_grid(:, 5) = [4, 0, 0,  8, 0, 3,  0, 0, 1]
-    reference_grid(:, 6) = [7, 0, 0,  0, 2, 0,  0, 0, 6]
-
-    reference_grid(:, 7) = [0, 6, 0,  0, 0, 0,  2, 8, 0]
-    reference_grid(:, 8) = [0, 0, 0,  4, 1, 9,  0, 0, 5]
-    reference_grid(:, 9) = [0, 0, 0,  0, 8, 0,  0, 7, 9]
-    !&>
+    reference_grid = ref_grid
 
     call Read_grid(grid_from_file, "./test/test_in_01.txt")
     grid_from_file = transpose(grid_from_file)
@@ -67,19 +72,7 @@ contains
 
     array_equality = .true.
 
-    !&<
-    reference_grid(:, 1) = [5, 3, 0,  0, 7, 0,  0, 0, 0]
-    reference_grid(:, 2) = [6, 0, 0,  1, 9, 5,  0, 0, 0]
-    reference_grid(:, 3) = [0, 9, 8,  0, 0, 0,  0, 6, 0]
-
-    reference_grid(:, 4) = [8, 0, 0,  0, 6, 0,  0, 0, 3]
-    reference_grid(:, 5) = [4, 0, 0,  8, 0, 3,  0, 0, 1]
-    reference_grid(:, 6) = [7, 0, 0,  0, 2, 0,  0, 0, 6]
-
-    reference_grid(:, 7) = [0, 6, 0,  0, 0, 0,  2, 8, 0]
-    reference_grid(:, 8) = [0, 0, 0,  4, 1, 9,  0, 0, 5]
-    reference_grid(:, 9) = [0, 0, 0,  0, 8, 0,  0, 7, 9]
-    !&>
+    reference_grid = ref_grid
 
     call Read_grid(grid_from_file, "./test/test_in_02.txt")
     grid_from_file = transpose(grid_from_file)
@@ -114,19 +107,7 @@ contains
     array_equality = .true.
 
     ! Wikipedia's incomplete Sudoku grid
-    !&<
-    grid_a(:, 1) = [5, 3, 0,  0, 7, 0,  0, 0, 0]
-    grid_a(:, 2) = [6, 0, 0,  1, 9, 5,  0, 0, 0]
-    grid_a(:, 3) = [0, 9, 8,  0, 0, 0,  0, 6, 0]
-
-    grid_a(:, 4) = [8, 0, 0,  0, 6, 0,  0, 0, 3]
-    grid_a(:, 5) = [4, 0, 0,  8, 0, 3,  0, 0, 1]
-    grid_a(:, 6) = [7, 0, 0,  0, 2, 0,  0, 0, 6]
-
-    grid_a(:, 7) = [0, 6, 0,  0, 0, 0,  2, 8, 0]
-    grid_a(:, 8) = [0, 0, 0,  4, 1, 9,  0, 0, 5]
-    grid_a(:, 9) = [0, 0, 0,  0, 8, 0,  0, 7, 9]
-    !&>
+    grid_a = ref_grid
 
     call Solve_grid(grid_a) ! this fills (hence modifies) grid_a
 
