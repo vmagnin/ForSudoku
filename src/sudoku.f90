@@ -278,9 +278,11 @@ contains
         solutions(i, :, :) = grid
         call Solve_grid(solutions(i, :, :))
 
-        if ((i >= 2) .and. any(solutions(i, :, :) /= solutions(i-1, :, :))) then
-          unique = .false.
-          exit sol
+        if (i >= 2) then
+          if (any(solutions(i, :, :) /= solutions(i-1, :, :))) then
+            unique = .false.
+            exit sol
+          end if
         end if
 
         i = i + 1
