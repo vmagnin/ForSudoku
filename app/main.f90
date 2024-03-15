@@ -16,7 +16,7 @@
 ! If not, see <http://www.gnu.org/licenses/>.
 !------------------------------------------------------------------------------
 ! Contributed by Vincent Magnin, 2006-11-27; Norwid Behrnd, 2023
-! Last modifications: 2024-03-14
+! Last modifications: 2024-03-15
 !------------------------------------------------------------------------------
 
 program main
@@ -24,12 +24,11 @@ program main
   use sudoku
 
   implicit none
-  ! Variables locales :
   integer, dimension(9, 9) :: grid
   real(kind=dp) :: Start, End  ! monitor the duration of computation
-  integer :: choice
-  integer :: remainder  ! number of filled cells when creating a grid
-  character(50) :: file  ! file name (including extension .txt)
+  integer       :: choice
+  integer       :: remainder   ! number of filled cells when creating a grid
+  character(50) :: file        ! file name (including extension .txt)
 
   select case (command_argument_count())
   case (0) ! the typical invocation with `fpm run`
