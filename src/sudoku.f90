@@ -357,22 +357,26 @@ contains
   !*****************************************************************************
   ! Validation routines
   !*****************************************************************************
-  ! Verify that each digit in the 1D array appears only once:
-  logical function ValidColumOrRow(col)
-    integer, dimension(1:9), intent(in) :: col
+  ! Returns true if each digit in the 1D array appears only once:
+  pure logical function ValidColumOrRow(vector)
+    integer, dimension(1:9), intent(in) :: vector   ! A row or a column
 
-    integer, dimension(0:9) :: counter  ! count the occurrence of each digit
-    integer :: row
+    ! The number of occurrences of each digit:
+    integer, dimension(1:9) :: counter
+    integer :: i
 
-    ValidColumOrRow = .true.
     counter = 0
-    do row = 1, 9
-      counter(col(row)) = counter(col(row)) + 1
-      if ((counter(col(row)) > 1) .and. (col(row) /= 0)) then
-        ValidColumOrRow = .false.
-        return        ! leave the function
+    do i = 1, 9
+      if (vector(i) /= 0) then
+        counter(vector(i)) = counter(vector(i)) + 1
+        if (counter(vector(i)) > 1) then
+          ValidColumOrRow = .false.
+          return        ! We leave immediately the function and return false
+        end if
       end if
     end do
+
+    ValidColumOrRow = .true.
   end function ValidColumOrRow
 
   logical function ValidZone(region)
