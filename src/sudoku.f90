@@ -51,8 +51,6 @@ contains
           counter_empty_cells = counter_empty_cells + 1
           empty_cells(counter_empty_cells, 1) = row
           empty_cells(counter_empty_cells, 2) = column
-          ! call list_possible_digits(grid, row, column, &
-          ! empty_cells(counter_empty_cells,3), possible_digit)
         end if
       end do
     end do
