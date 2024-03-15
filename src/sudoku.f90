@@ -379,25 +379,17 @@ contains
     ValidColumOrRow = .true.
   end function ValidColumOrRow
 
-  logical function ValidZone(region)
+  ! Returns true if each digit in the 3x3 region appears only once.
+  ! We reuse the ValidColumOrRow() function.
+  pure logical function ValidZone(region)
     integer, dimension(1:3, 1:3), intent(in) :: region
 
-    integer, dimension(1:9) :: col
+    integer, dimension(1:9) :: vector
+    vector(1:3) = region(1, 1:3)
+    vector(4:6) = region(2, 1:3)
+    vector(7:9) = region(3, 1:3)
 
-    col(1) = region(1, 1)
-    col(2) = region(1, 2)
-    col(3) = region(1, 3)
-    col(4) = region(2, 1)
-    col(5) = region(2, 2)
-    col(6) = region(2, 3)
-    col(7) = region(3, 1)
-    col(8) = region(3, 2)
-    col(9) = region(3, 3)
-    if (ValidColumOrRow(col)) then
-      ValidZone = .true.
-    else
-      ValidZone = .false.
-    end if
+    ValidZone = ValidColumOrRow(vector)
   end function ValidZone
 
   logical function ValidGrid(grid)

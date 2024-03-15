@@ -5,7 +5,7 @@
 ! This file contains tests to be launched by `fpm test`.
 
 program check
-  use sudoku, only: Read_grid, Solve_grid, ValidColumOrRow
+  use sudoku, only: Read_grid, Solve_grid, ValidColumOrRow, ValidZone
 
   implicit none
   integer :: ref_grid(9, 9)
@@ -34,9 +34,23 @@ program check
 contains
 
   subroutine unit_tests
+    integer, dimension(1:3, 1:3) :: region
+
     if (.not.ValidColumOrRow([1,2,3,4,5,6,7,8,9])) error stop "ValidColumOrRow() not working!"
     if (ValidColumOrRow([1,2,3,4,5,6,7,8,1])) error stop "ValidColumOrRow() not working!"
     if (ValidColumOrRow([4,2,3,4,9,8,7,6,5])) error stop "ValidColumOrRow() not working!"
+
+    region = reshape([ &
+       1, 2, 3, &
+       4, 5, 6, &
+       7, 8, 9  &
+      ], shape(region), order=[2,1])
+    if (.not.ValidZone(region)) error stop "ValidZone() not working!"
+
+    region(2, 2) = 2
+    if (ValidZone(region)) error stop "ValidZone() not working!"
+    region(1, 1) = 9
+    if (ValidZone(region)) error stop "ValidZone() not working!"
   end subroutine unit_tests
 
   subroutine assert_readtest01()
