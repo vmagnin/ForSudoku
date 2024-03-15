@@ -26,9 +26,7 @@ module sudoku
 contains
 
   subroutine Solve_grid(grid)
-    ! input/output parameters:
     integer, dimension(9, 9), intent(inout) :: grid
-    ! local variables:
     integer, dimension(9, 9) :: grid_0  ! empty grid
     real(kind=dp) :: random  ! random number
     integer :: row, column, line_0, row_0, i, j
@@ -107,13 +105,11 @@ contains
   ! procedure to create a list of allowed digits in the present empty cell:
   subroutine list_possible_digits(grid, line_0, row_0, &
                                   counter_possible_digits, possible_digit)
-    ! input parameters:
     integer, dimension(9, 9), intent(in) :: grid
-    integer :: line_0, row_0
-    ! output parameters:
-    integer, dimension(1:9), intent(out) :: possible_digit
+    integer, intent(in) :: line_0, row_0
     integer, intent(out) :: counter_possible_digits
-    ! locale variables:
+    integer, dimension(1:9), intent(out) :: possible_digit
+
     integer :: row, column, cr, lr, j
     logical, dimension(0:9) :: possible  ! Plausibility of each digit
 
@@ -147,12 +143,10 @@ contains
   ! as a bubble sort.
   !****************************************************************
   subroutine Draw(empty_cells, p, n)
-    ! input parameters:
+    integer, dimension(1:81, 1:3), intent(inout) :: empty_cells
     integer, intent(in) :: n    ! number of empty lists
     integer, intent(in) :: p    ! sort, start by position p (p inclusive)
-    ! output parameters:
-    integer, dimension(1:81, 1:3), intent(inout) :: empty_cells
-    ! local variables:
+
     integer :: i, j ! loop counters
     integer, dimension(1:3) :: column
     logical :: completely_solved
@@ -179,9 +173,8 @@ contains
   ! all over again.
   ! With a  PIII 866 MHz: about 0.5 s.
   subroutine CreateFilledGrid(grid)
-    ! output parameter:
     integer, dimension(9, 9), intent(out) :: grid
-    ! local variables:
+
     real(kind=dp) :: random
     integer :: row, column
     integer(4) :: tests
@@ -217,10 +210,9 @@ contains
   end subroutine CreateFilledGrid
 
   logical function ValidDigit(grid, row, column)
-    ! input:
     integer, dimension(9, 9), intent(in) :: grid
-    integer :: row, column
-    ! local variables
+    integer, intent(in) :: row, column
+
     integer :: i, j
 
     i = (row - 1) / 3
@@ -234,11 +226,9 @@ contains
   ! Note: at present it is unknown if there are Sudoku grids with less than
   ! 17 non-zero cells yield a unique solution.
   subroutine CreateSudokuGrid(grid, remainder)
-    ! output parameter:
     integer, dimension(9, 9), intent(inout) :: grid
-    ! input parameter:
     integer, intent(in) :: remainder
-    ! local variables:
+
     integer, parameter :: n = 1000    ! Nb of times we try to solve a grid
     integer, dimension(9, 9) :: grid_0
     integer, dimension(1:n, 1:9, 1:9) :: solutions
@@ -295,11 +285,12 @@ contains
   end subroutine CreateSudokuGrid
 
   subroutine Save_grid(grid, filename)
-    integer, dimension(9, 9) :: grid
-    character(len=*) :: filename
-    ! local variables
+    integer, dimension(9, 9), intent(in) :: grid
+    character(*), intent(in) :: filename
+
     integer :: row, column
     integer :: fileunit, error
+
     ! file creation:
     open (newunit=fileunit, file=filename, status="REPLACE")
 
@@ -314,11 +305,9 @@ contains
   end subroutine Save_grid
 
   subroutine Read_grid(grid, filename)
-    ! output parameter:
     integer, dimension(9, 9), intent(out) :: grid
-    ! input parameter:
-    character(len=*) :: filename
-    ! local variables:
+    character(*), intent(in) :: filename
+
     character(len=2) :: pipe1, pipe2   ! to read the pipe/the vertical bar
     integer :: row
     integer :: fileunit, error
@@ -344,7 +333,8 @@ contains
   end subroutine Read_grid
 
   subroutine Display_grid(grid)
-    integer, dimension(9, 9) :: grid
+    integer, dimension(9, 9), intent(in) :: grid
+
     integer :: row, column
 
     do row = 1, 9
@@ -356,9 +346,8 @@ contains
   end subroutine Display_grid
 
   subroutine Request_grid(grid)
-    ! input/output:
     integer, dimension(9, 9), intent(inout) :: grid
-    ! local variables:
+
     integer :: row, column
 
     do row = 1, 9
@@ -368,9 +357,8 @@ contains
   end subroutine Request_grid
 
   logical function ValidColumOrRow(col)
-    ! input parameter:
-    integer, dimension(1:9) :: col
-    ! local variables:
+    integer, dimension(1:9), intent(in) :: col
+
     integer, dimension(0:9) :: counter  ! count the occurrence of each digit
     integer :: row
 
@@ -386,8 +374,8 @@ contains
   end function ValidColumOrRow
 
   logical function ValidZone(region)
-    ! input:
-    integer, dimension(1:3, 1:3) :: region
+    integer, dimension(1:3, 1:3), intent(in) :: region
+
     integer, dimension(1:9) :: col
 
     col(1) = region(1, 1)
@@ -407,9 +395,8 @@ contains
   end function ValidZone
 
   logical function ValidGrid(grid)
-    ! input:
-    integer, dimension(9, 9) :: grid
-    ! local variables:
+    integer, dimension(9, 9), intent(in) :: grid
+
     integer :: row, column
 
     ValidGrid = .true.
@@ -481,10 +468,9 @@ contains
     ! ```
     !
     ! ******************************************************************
-    ! input:
-    character(len=50), intent(in) :: file
     integer, dimension(9, 9), intent(inout) :: grid
-    ! local variables:
+    character(len=50), intent(in) :: file
+
     logical :: presence
     presence = .false.
 
