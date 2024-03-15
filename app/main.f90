@@ -59,66 +59,50 @@ program main
         call Request_grid(grid)
         print *, "You entered the following Sudoku:"
         call Display_grid(grid)
-        if (ValidGrid(grid)) then
-          print *, "The Sudoku is valid."
-        else
-          print *, "The Sudoku is invalid."
-        end if
+        call print_validity(grid, "The Sudoku is valid.", "The Sudoku is invalid.")
+
       case (2)
         print *, "Enter complete file name of the file to read (including .txt extension):"
         call execute_command_line("dir *.txt")
         read *, file
         call Read_grid(grid, trim(file))
         call Display_grid(grid)
-        if (ValidGrid(grid)) then
-          print *, "The Sudoku is valid."
-        else
-          print *, "The Sudoku is invalid."
-        end if
+        call print_validity(grid, "The Sudoku is valid.", "The Sudoku is invalid.")
+
       case (3)
         print *, "Enter complete file name of the file to save (incl. .txt):"
         read *, file
         call Save_grid(grid, trim(file))
         print *, "File saved."
+
       case (4)
-        if (ValidGrid(grid)) then
-          print *, "The grid to process is valid."
-        else
-          print *, "The grid to process is invalid."
-        end if
+        call print_validity(grid, "The grid to process is valid.", "The grid to process is invalid.")
+
       case (5)
         print *, "Below, the grid to process:"
         call Display_grid(grid)
-        if (ValidGrid(grid)) then
-          print *, "The grid is valid."
-        else
-          print *, "The grid is invalid."
-        end if
+        call print_validity(grid, "The grid is valid.", "The grid is invalid.")
+
       case (6)
         call cpu_time(Start)
         call CreateFilledGrid(grid)
         call Display_grid(grid)
         ! grid validation:
-        if (ValidGrid(grid)) then
-          print *, "The grid is valid."
-        else
-          print *, "Computational error:  the grid is invalid!"
-        end if
+        call print_validity(grid, "The grid is valid.", "Computational error:  the grid is invalid!")
         call cpu_time(End)
         write (*, "(A, F12.3, A)") " computing time: ", End - Start, " s."
+
       case (7)
         print *, "Below, the grid submitted:"
         call Display_grid(grid)
         call cpu_time(Start)
         call Solve_grid(grid)
-        if (ValidGrid(grid)) then
-          print *, "Below, the solved grid (validity was verified):"
-        else
-          print *, "The initial grid was invalid, impossible to solve …"
-        end if
+        call print_validity(grid, "Below, the solved grid (validity was verified):", &
+                                & "The initial grid was invalid, impossible to solve...")
         call Display_grid(grid)
         call cpu_time(End)
         write (*, "(A, F12.3, A)") " computing time: ", End - Start, " s."
+
       case (8)
         print *, "How many numbers should be assigned in advance [17,81]?"
         print *, "Note: with less than 35 preallocated fields, the computation rapidly takes longer!"
@@ -127,23 +111,16 @@ program main
         print *, "Below, a filled grid:"
         call Display_grid(grid)
         ! grid validation:
-        if (ValidGrid(grid)) then
-          print *, "The grid is valid."
-        else
-          print *, "The grid is invalid: problem to compute a solution!"
-        end if
+        call print_validity(grid, "The grid is valid.", "The grid is invalid: problem to compute a solution!")
 
         call cpu_time(Start)
         call CreateSudokuGrid(grid, remainder)
         print *, "Below a Sudoku grid (assuming a likely unique solution):"
         call Display_grid(grid)
-        if (ValidGrid(grid)) then
-          print *, "valid grid"
-        else
-          print *, "Invalid grid: problem to compute a solution!"
-        end if
+        call print_validity(grid, "valid grid", "Invalid grid: problem to compute a solution!")
         call cpu_time(End)
         write (*, "(A, F12.3, A)") " computing time: ", End - Start, " s."
+
       case (9)
         stop
       end select
@@ -157,4 +134,18 @@ program main
     print *, "Parameters: enter either one, or none."
 
   end select
+
+contains
+
+  ! Prints a message depending on the validity of the grid:
+  subroutine print_validity(grid, yes, no)
+    integer, dimension(9, 9), intent(in) :: grid
+    character(*), intent(in) :: yes, no
+
+    if (ValidGrid(grid)) then
+      print *, yes
+    else
+      print *, no
+    end if
+  end subroutine
 end program main
