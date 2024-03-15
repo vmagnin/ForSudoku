@@ -32,13 +32,12 @@ program main
 
   select case (command_argument_count())
   case (0) ! the typical invocation with `fpm run`
-
     ! initialize the pseudorandom number generator
     call Initialize_Random
     ! initialize an explicitly empty grid
     grid = 0
 
-    print *, "sudoku.f90, version 0.8.1, copyright (C) 2006-2024 Vincent Magnin and Norwid Behrnd"
+    print *, "sudoku.f90, version 0.8.2, copyright (C) 2006-2024 Vincent Magnin and Norwid Behrnd"
     ! provide a user menu
     do
       print *
@@ -96,7 +95,7 @@ program main
           print *, "The grid is invalid."
         end if
       case (6)
-        Start = Time()
+        call cpu_time(Start)
         call CreateFilledGrid(grid)
         call Display_grid(grid)
         ! grid validation:
@@ -105,12 +104,12 @@ program main
         else
           print *, "Computational error:  the grid is invalid!"
         end if
-        End = Time()
+        call cpu_time(End)
         write (*, "(A, F12.3, A)") " computing time: ", End - Start, " s."
       case (7)
         print *, "Below, the grid submitted:"
         call Display_grid(grid)
-        Start = Time()
+        call cpu_time(Start)
         call Solve_grid(grid)
         if (ValidGrid(grid)) then
           print *, "Below, the solved grid (validity was verified):"
@@ -118,7 +117,7 @@ program main
           print *, "The initial grid was invalid, impossible to solve …"
         end if
         call Display_grid(grid)
-        End = Time()
+        call cpu_time(End)
         write (*, "(A, F12.3, A)") " computing time: ", End - Start, " s."
       case (8)
         print *, "How many numbers should be assigned in advance [17,81]?"
@@ -134,7 +133,7 @@ program main
           print *, "The grid is invalid: problem to compute a solution!"
         end if
 
-        Start = Time()
+        call cpu_time(Start)
         call CreateSudokuGrid(grid, remainder)
         print *, "Below a Sudoku grid (assuming a likely unique solution):"
         call Display_grid(grid)
@@ -143,7 +142,7 @@ program main
         else
           print *, "Invalid grid: problem to compute a solution!"
         end if
-        End = Time()
+        call cpu_time(End)
         write (*, "(A, F12.3, A)") " computing time: ", End - Start, " s."
       case (9)
         stop

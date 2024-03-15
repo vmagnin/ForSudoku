@@ -16,7 +16,7 @@
 ! If not, see <http://www.gnu.org/licenses/>.
 !------------------------------------------------------------------------------
 ! Contributed by Vincent Magnin, 2006-11-27; Norwid Behrnd, 2023
-! Last modifications: 2023-09-12
+! Last modifications: 2023-09-12, vmagnin 2024-03-15
 !------------------------------------------------------------------------------
 
 module sudoku
@@ -466,16 +466,6 @@ contains
     call random_seed(put=random_seede(1:n))
   end subroutine Initialize_Random
 
-  !***********************************************************
-  ! return the CPU time (expressed in seconds)
-  ! cpu_time() is defined by standards of Fortran 95, and later.
-  !***********************************************************
-  real(kind=dp) function Time()
-    Real(kind=dp) :: t
-
-    call cpu_time(t)
-    Time = t
-  end function Time
 
   subroutine solver(grid, file)
     ! ******************************************************************
