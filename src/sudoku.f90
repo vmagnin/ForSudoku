@@ -279,6 +279,9 @@ contains
     write(*,*)
   end subroutine CreateSudokuGrid
 
+  !*****************************************************************************
+  ! Input/Output routines
+  !*****************************************************************************
   subroutine Save_grid(grid, filename)
     integer, dimension(9, 9), intent(in) :: grid
     character(*), intent(in) :: filename
@@ -351,6 +354,10 @@ contains
     end do
   end subroutine Request_grid
 
+  !*****************************************************************************
+  ! Validation routines
+  !*****************************************************************************
+  ! Verify that each digit in the 1D array appears only once:
   logical function ValidColumOrRow(col)
     integer, dimension(1:9), intent(in) :: col
 
