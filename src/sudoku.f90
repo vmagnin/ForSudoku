@@ -232,7 +232,7 @@ contains
     integer, parameter :: n = 1000
     ! To store and compare the n solutions:
     integer, dimension(1:n, 1:9, 1:9) :: solutions
-    real    :: r
+    real    :: r(2)
     integer :: row, col, i
     logical :: unique
 
@@ -251,9 +251,8 @@ contains
         ! Choose randomly a non-empty cell:
         do
           call random_number(r)
-          row = 1 + int(r * 9)
-          call random_number(r)
-          col = 1 + int(r * 9)
+          row = 1 + int(r(1) * 9)
+          col = 1 + int(r(2) * 9)
 
           if (grid(row, col) /= 0) exit
         end do
