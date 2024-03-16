@@ -41,7 +41,7 @@ program main
     do
       print *
       print *, "*************************** MENU *****************************************"
-      print *, "1) Manual input (lines of comma separated 1 - 9, or 0 (empty cell).)"
+      print *, "1) Manual input (lines of comma separated 1 - 9, or 0 (empty cell))."
       print *, "2) Input from a text file.  For permitted patterns, see the documentation."
       print *, "3) Save the currently processed grid as a text file."
       print *, "4) Check the validity of the grid currently stored in memory."
@@ -50,8 +50,9 @@ program main
       print *, "7) Solve the Sudoku grid currently stored in memory."
       print *, "8) Create a puzzle grid (with some probability that the solution is unique)."
       print *, "9) Quit."
-      print *, "Select one of them and click `Enter`:"
+      print *, "Select one of them and type `Enter`:"
       read *, choice
+      print *
 
       select case (choice)
       case (1)
@@ -89,7 +90,7 @@ program main
         ! grid validation:
         call print_validity(grid, "The grid is valid.", "Computational error:  the grid is invalid!")
         call cpu_time(End)
-        write (*, "(A, F12.3, A)") " computing time: ", End - Start, " s."
+        write (*, "(A, F12.3, A)") " Computing time: ", End - Start, " s."
 
       case (7)
         print *, "Below, the grid submitted:"
@@ -100,7 +101,7 @@ program main
                                 & "The initial grid was invalid, impossible to solve...")
         call Display_grid(grid)
         call cpu_time(End)
-        write (*, "(A, F12.3, A)") " computing time: ", End - Start, " s."
+        write (*, "(A, F12.3, A)") " Computing time: ", End - Start, " s."
 
       case (8)
         print *, "How many digits in [17, 81] do you want in the puzzle grid?"
@@ -114,11 +115,11 @@ program main
 
         call cpu_time(Start)
         call CreateSudokuGrid(grid, remainder)
-        print *, "Below a Sudoku grid (assuming a likely unique solution):"
+        print *, "Below a Sudoku puzzle (with probably a unique solution):"
         call Display_grid(grid)
         call print_validity(grid, "valid grid", "Invalid grid: problem to compute a solution!")
         call cpu_time(End)
-        write (*, "(A, F12.3, A)") " computing time: ", End - Start, " s."
+        write (*, "(A, F12.3, A)") " Computing time: ", End - Start, " s."
 
       case (9)
         stop
