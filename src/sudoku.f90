@@ -366,7 +366,7 @@ contains
 
     ! The number of occurrences of each digit:
     integer, dimension(1:9) :: counters
-    integer :: i, d
+    integer :: i
 
     counters = 0
     do i = 1, 9
@@ -390,7 +390,7 @@ contains
 
     ! The number of occurrences of each digit:
     integer, dimension(1:9) :: counters
-    integer :: row, col, d
+    integer :: row, col
 
     counters = 0
     do row = 1, 3
