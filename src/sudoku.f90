@@ -449,10 +449,9 @@ contains
   ! initialization of a system independent pseudorandom generator
   !************************************************************
   subroutine Initialize_Random
-    integer(4), dimension(1:8) :: timeValues
-    integer(4), allocatable, dimension(:) :: random_seede
-
-    integer(4) :: loop, n
+    integer, dimension(1:8) :: timeValues
+    integer, allocatable, dimension(:) :: random_seede
+    integer :: i, n
 
     call date_and_time(values=timeValues)
 
@@ -461,8 +460,8 @@ contains
     allocate (random_seede(1:n))
 
     ! use thousandths of a second by the clock:
-    do loop = 1, n
-      random_seede(loop) = huge(random_seede(loop)) / 1000 * timeValues(8)
+    do i = 1, n
+      random_seede(i) = huge(random_seede(i)) / 1000 * timeValues(8)
     end do
 
     ! hand over the seed:
