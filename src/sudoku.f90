@@ -287,7 +287,7 @@ contains
     character(*), intent(in) :: filename
 
     integer :: row, column
-    integer :: fileunit, error
+    integer :: fileunit
 
     ! file creation:
     open (newunit=fileunit, file=filename, status="REPLACE")
@@ -308,7 +308,7 @@ contains
 
     character(len=2) :: pipe1, pipe2   ! to read the pipe/the vertical bar
     integer :: row
-    integer :: fileunit, error
+    integer :: fileunit
     logical :: file_exists  ! check for the presence of the file requested
 
     inquire (file=filename, exist=file_exists)
