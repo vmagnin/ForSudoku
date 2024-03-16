@@ -6,7 +6,7 @@
 
 program check
   use sudoku, only: Read_grid, Solve_grid, ValidColumOrRow, ValidZone, &
-                  & ValidGrid
+                  & ValidGrid, ValidDigit
 
   implicit none
   integer, dimension(9, 9) :: full_grid, ref_grid
@@ -52,6 +52,7 @@ contains
   subroutine unit_tests
     integer, dimension(9, 9)     :: grid
     integer, dimension(1:3, 1:3) :: region
+    integer :: i, j
 
     if (.not.ValidColumOrRow([1,2,3,4,5,6,7,8,9])) error stop "ValidColumOrRow() not working!"
     if (ValidColumOrRow([1,2,3,4,5,6,7,8,1])) error stop "ValidColumOrRow() not working!"
@@ -73,6 +74,15 @@ contains
     if (.not.ValidGrid(grid)) error stop "ValidGrid() not working! (1)"
     grid(2, 2) = 8
     if (ValidGrid(grid)) error stop "ValidGrid() not working! (2)"
+
+    grid = full_grid
+    do i = 1, 9
+      do j = 1, 9
+        if (.not.ValidDigit(grid, i, j)) error stop "ValidDigit() not working! (1)"
+      end do
+    end do
+    grid(4, 4) = 1
+    if (ValidDigit(grid, 4, 4)) error stop "ValidDigit() not working! (2)"
   end subroutine unit_tests
 
   subroutine assert_readtest01()
