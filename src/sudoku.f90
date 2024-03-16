@@ -29,7 +29,7 @@ contains
     integer, dimension(9, 9), intent(inout) :: grid
     integer, dimension(9, 9) :: grid_0  ! empty grid
     real(kind=dp) :: random  ! random number
-    integer :: row, column, line_0, row_0, i, j
+    integer :: row, col, line_0, row_0, i, j
     integer :: counter_empty_cells  ! counter of empty/non allocated cells
     integer, dimension(1:81, 1:3) :: empty_cells  ! list of empty cells
     ! logical, dimension(0:9)     :: possible
@@ -46,11 +46,11 @@ contains
     empty_cells = 0
     counter_empty_cells = 0
     do row = 1, 9
-      do column = 1, 9
-        if (grid(row, column) == 0) then
+      do col = 1, 9
+        if (grid(row, col) == 0) then
           counter_empty_cells = counter_empty_cells + 1
           empty_cells(counter_empty_cells, 1) = row
-          empty_cells(counter_empty_cells, 2) = column
+          empty_cells(counter_empty_cells, 2) = col
         end if
       end do
     end do
@@ -105,7 +105,7 @@ contains
     integer, intent(out) :: counter_possible_digits
     integer, dimension(1:9), intent(out) :: possible_digit
 
-    integer :: row, column, cr, lr, j
+    integer :: row, col, cr, lr, j
     logical, dimension(0:9) :: possible  ! Plausibility of each digit
 
     possible = .true.
@@ -117,8 +117,8 @@ contains
     lr = 1 + 3 * ((line_0 - 1) / 3)
     cr = 1 + 3 * ((row_0 - 1) / 3)
     do row = lr, lr + 2
-      do column = cr, cr + 2
-        possible(grid(row, column)) = .false.
+      do col = cr, cr + 2
+        possible(grid(row, col)) = .false.
       end do
     end do
 
@@ -143,7 +143,7 @@ contains
     integer, intent(in) :: p    ! sort, start by position p (p inclusive)
 
     integer :: i, j ! loop counters
-    integer, dimension(1:3) :: column
+    integer, dimension(1:3) :: col
     logical :: completely_solved
 
     completely_solved = .false.
@@ -154,9 +154,9 @@ contains
         j = i + 1
         if (empty_cells(i, 3) > empty_cells(j, 3)) then
           ! exchange the two cases of this list:
-          column = empty_cells(i, :)
+          col = empty_cells(i, :)
           empty_cells(i, :) = empty_cells(j, :)
-          empty_cells(j, :) = column
+          empty_cells(j, :) = col
           completely_solved = .false.
         end if
       end do
@@ -171,7 +171,7 @@ contains
     integer, dimension(9, 9), intent(out) :: grid
 
     real(kind=dp) :: random
-    integer :: row, column
+    integer :: row, col
     integer(4) :: tests
     logical :: completely_solved
 
@@ -179,8 +179,8 @@ contains
 
     row = 1
     do while (row <= 9)
-      column = 1
-      do while (column <= 9)
+      col = 1
+      do while (col <= 9)
         tests = 0
         completely_solved = .false.
         do while (.not. completely_solved)
@@ -190,31 +190,31 @@ contains
             ! has to rewind to identify the erroneous one)
             grid = 0
             tests = 0
-            column = 1
+            col = 1
             row = 1
           end if
           tests = tests + 1
           call random_number(random)
-          grid(row, column) = 1 + int(random * 9_dp)
-          completely_solved = ValidDigit(grid, row, column)
+          grid(row, col) = 1 + int(random * 9_dp)
+          completely_solved = ValidDigit(grid, row, col)
         end do
-        column = column + 1
+        col = col + 1
       end do
       row = row + 1
     end do
   end subroutine CreateFilledGrid
 
-  logical function ValidDigit(grid, row, column)
+  logical function ValidDigit(grid, row, col)
     integer, dimension(9, 9), intent(in) :: grid
-    integer, intent(in) :: row, column
+    integer, intent(in) :: row, col
 
     integer :: i, j
 
     i = (row - 1) / 3
-    j = (column - 1) / 3
+    j = (col - 1) / 3
 
     ValidDigit = ValidColumOrRow(grid(row, 1:9)) .and. &
-                 ValidColumOrRow(grid(1:9, column)) .and. &
+                 ValidColumOrRow(grid(1:9, col)) .and. &
                  ValidZone(grid(i * 3 + 1:i * 3 + 3, j * 3 + 1:j * 3 + 3))
   end function ValidDigit
 
@@ -228,7 +228,7 @@ contains
     integer, dimension(9, 9) :: grid_0
     integer, dimension(1:n, 1:9, 1:9) :: solutions
     real(kind=dp) :: random
-    integer :: row, column, i
+    integer :: row, col, i
     logical :: empty, unique
 
     ! save the initial grid:
@@ -247,13 +247,13 @@ contains
           call random_number(random)
           row = 1 + int(random * 9_dp)
           call random_number(random)
-          column = 1 + int(random * 9_dp)
-          if (grid(row, column) /= 0) then
+          col = 1 + int(random * 9_dp)
+          if (grid(row, col) /= 0) then
             empty = .true.
           end if
         end do
         ! erase the previously assigned digit in this cell:
-        grid(row, column) = 0
+        grid(row, col) = 0
       end do
 
       ! The grid is solved up to n times to try to see if the solution is unique
@@ -286,14 +286,14 @@ contains
     integer, dimension(9, 9), intent(in) :: grid
     character(*), intent(in) :: filename
 
-    integer :: row, column
+    integer :: row, col
     integer :: fileunit
 
     ! file creation:
     open (newunit=fileunit, file=filename, status="REPLACE")
 
     do row = 1, 9
-      write (fileunit, '(3I2, " |", 3I2, " |", 3I2)') (grid(row, column), column=1, 9)
+      write (fileunit, '(3I2, " |", 3I2, " |", 3I2)') (grid(row, col), col=1, 9)
       if ((row == 3) .or. (row == 6)) then
         write (fileunit, *) "------+-------+------"
       end if
@@ -333,10 +333,10 @@ contains
   subroutine Display_grid(grid)
     integer, dimension(9, 9), intent(in) :: grid
 
-    integer :: row, column
+    integer :: row, col
 
     do row = 1, 9
-      print '(3I2, " |", 3I2, " |", 3I2)', (grid(row, column), column=1, 9)
+      print '(3I2, " |", 3I2, " |", 3I2)', (grid(row, col), col=1, 9)
       if ((row == 3) .or. (row == 6)) then
         print *, "------+-------+------"
       end if
@@ -346,11 +346,11 @@ contains
   subroutine Request_grid(grid)
     integer, dimension(9, 9), intent(inout) :: grid
 
-    integer :: row, column
+    integer :: row, col
 
     do row = 1, 9
       write (*, "(A, I1, A)") "Enter line ", row, ":"
-      read *, (grid(row, column), column=1, 9)
+      read *, (grid(row, col), col=1, 9)
     end do
   end subroutine Request_grid
 
@@ -411,7 +411,7 @@ contains
   pure logical function ValidGrid(grid)
     integer, dimension(9, 9), intent(in) :: grid
 
-    integer :: row, column
+    integer :: row, col
 
     ! Verification of the 9 lines:
     do row = 1, 9
@@ -422,8 +422,8 @@ contains
     end do
 
     ! Verification of the 9 columns:
-    do column = 1, 9
-      if (.not. ValidColumOrRow(grid(1:9, column))) then
+    do col = 1, 9
+      if (.not. ValidColumOrRow(grid(1:9, col))) then
         ValidGrid = .false.
         return
       end if
@@ -431,8 +431,8 @@ contains
 
     ! Verification of the 9 regions:
     do row = 1, 7, +3
-      do column = 1, 7, +3
-        if (.not. ValidZone(grid(row:row+2, column:column+2))) then
+      do col = 1, 7, +3
+        if (.not. ValidZone(grid(row:row+2, col:col+2))) then
           ValidGrid = .false.
           return
         end if
