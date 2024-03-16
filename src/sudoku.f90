@@ -163,49 +163,47 @@ contains
     end do
   end subroutine
 
-  ! Grid generation by brute force: in each cycle a digit is added and the grid
-  ! is checked for validity.  If the grid became invalid, the grid generation
+  ! Grid generation by brute force: in each cycle a digit is added and checked
+  ! for validity.  If the grid became invalid, the grid generation
   ! is started all over again.
   subroutine CreateFilledGrid(grid)
     integer, dimension(9, 9), intent(out) :: grid
 
-    real(dp) :: random
+    real(dp) :: r
     integer  :: row, col
     integer  :: tests
-    logical  :: completely_solved
 
-    ! We start with an empty grid:
-    grid = 0
+    restart:do
+      ! We start with an empty grid:
+      grid = 0
 
-    ! We use while loops because the counters can be modified inside the loop:
-    row = 1
-    do while (row <= 9)
-      col = 1
-      do while (col <= 9)
-        tests = 0
-        completely_solved = .false.
+      try:do row = 1, 9
+        do col = 1, 9
+          tests = 0
 
-        do while (.not. completely_solved)
-          if (tests > 30) then
-            ! It is probably impossible to have a valid digit,
-            ! and we therefore restart from the very beginning:
-            grid = 0
-            tests = 0
-            col = 1
-            row = 1
-          end if
-
-          tests = tests + 1
-          ! We add a random digit in the grid:
-          call random_number(random)
-          grid(row, col) = 1 + int(random * 9_dp)
-          ! and check if it is valid:
-          completely_solved = ValidDigit(grid, row, col)
+          digit: do
+            tests = tests + 1
+            ! We add a random digit in the grid:
+            call random_number(r)
+            grid(row, col) = 1 + int(r * 9_dp)
+            ! and check if the Sudoku constraints are OK:
+            if (ValidDigit(grid, row, col)) then
+              ! Let's continue with other cells:
+              exit digit
+            else
+              if (tests > 30) then
+                ! The probability of finding a valid digit is low,
+                ! and we therefore restart a new grid:
+                cycle restart
+              end if
+            end if
+          end do digit
         end do
-        col = col + 1
-      end do
-      row = row + 1
-    end do
+      end do try
+      ! We have left naturally the "try" loop 
+      ! and have therefore found a valid grid:
+      exit
+    end do restart
   end subroutine CreateFilledGrid
 
   ! Returns true if the row, column and region of a cell are all valid:
