@@ -6,7 +6,7 @@
 
 program check
   use sudoku, only: Read_grid, Solve_grid, ValidColumOrRow, ValidZone, &
-                  & ValidGrid, ValidDigit
+                  & ValidGrid, ValidDigit, list_possible_digits
 
   implicit none
   integer, dimension(9, 9) :: full_grid, ref_grid
@@ -26,8 +26,6 @@ program check
   full_grid(:, 9) = [3, 4, 5,  2, 8, 6,  1, 7, 9]
   !&>
 
-  call unit_tests()
-
   ! An incomplete Sudoku grid with implicitly empty cases:
   !&<
   ref_grid(:, 1) = [5, 3, 0,  0, 7, 0,  0, 0, 0]
@@ -43,6 +41,7 @@ program check
   ref_grid(:, 9) = [0, 0, 0,  0, 8, 0,  0, 7, 9]
   !&>
 
+  call unit_tests()
   call assert_readtest01()
   call assert_readtest02()
   call assert_wikipedia_solution()
@@ -83,6 +82,14 @@ contains
     end do
     grid(4, 4) = 1
     if (ValidDigit(grid, 4, 4)) error stop "ValidDigit() not working! (2)"
+
+    block
+      integer :: nb_possible
+      integer, dimension(1:9) :: possible_digit
+      call list_possible_digits(ref_grid, 8, 2, nb_possible, possible_digit)
+      if (nb_possible /= 3) error stop "list_possible_digits() not working! (1)"
+      if (.not. all(possible_digit == [2, 3, 4, 0, 0, 0, 0, 0, 0])) error stop "list_possible_digits() not working! (2)"
+    end block
   end subroutine unit_tests
 
   subroutine assert_readtest01()
