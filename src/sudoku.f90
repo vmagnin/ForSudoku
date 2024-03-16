@@ -16,7 +16,7 @@
 ! If not, see <http://www.gnu.org/licenses/>.
 !------------------------------------------------------------------------------
 ! Contributed by Vincent Magnin, 2006-11-27; Norwid Behrnd, 2023
-! Last modifications: 2023-09-12, vmagnin 2024-03-15
+! Last modifications: 2023-09-12, vmagnin 2024-03-16
 !------------------------------------------------------------------------------
 
 module sudoku
@@ -392,14 +392,13 @@ contains
     ValidZone = ValidColumOrRow(vector)
   end function ValidZone
 
-  logical function ValidGrid(grid)
+  ! Returns true if a full grid is valid:
+  pure logical function ValidGrid(grid)
     integer, dimension(9, 9), intent(in) :: grid
 
     integer :: row, column
 
-    ValidGrid = .true.
-
-    ! verification of lines:
+    ! Verification of the 9 lines:
     do row = 1, 9
       if (.not. ValidColumOrRow(grid(row, 1:9))) then
         ValidGrid = .false.
@@ -407,7 +406,7 @@ contains
       end if
     end do
 
-    ! verification of columns:
+    ! Verification of the 9 columns:
     do column = 1, 9
       if (.not. ValidColumOrRow(grid(1:9, column))) then
         ValidGrid = .false.
@@ -415,15 +414,17 @@ contains
       end if
     end do
 
-    ! verification of regions:
+    ! Verification of the 9 regions:
     do row = 1, 7, +3
       do column = 1, 7, +3
-        if (.not. ValidZone(grid(row:row + 2, column:column + 2))) then
+        if (.not. ValidZone(grid(row:row+2, column:column+2))) then
           ValidGrid = .false.
           return
         end if
       end do
     end do
+
+    ValidGrid = .true.
   end function ValidGrid
 
   !************************************************************

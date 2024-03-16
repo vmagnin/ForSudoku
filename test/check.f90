@@ -1,14 +1,30 @@
 ! file:  check.f90
 ! date:  nbehrnd [2023-08-24 Thu]
-! edit:  vmagnin [2024-03-15 Fri]
+! edit:  vmagnin [2024-03-16 Fri]
 
 ! This file contains tests to be launched by `fpm test`.
 
 program check
-  use sudoku, only: Read_grid, Solve_grid, ValidColumOrRow, ValidZone
+  use sudoku, only: Read_grid, Solve_grid, ValidColumOrRow, ValidZone, &
+                  & ValidGrid
 
   implicit none
-  integer :: ref_grid(9, 9)
+  integer, dimension(9, 9) :: full_grid, ref_grid
+
+  ! Wikipedia's complete Sudoku grid:
+  !&<
+  full_grid(:, 1) = [5, 3, 4,  6, 7, 8,  9, 1, 2]
+  full_grid(:, 2) = [6, 7, 2,  1, 9, 5,  3, 4, 8]
+  full_grid(:, 3) = [1, 9, 8,  3, 4, 2,  5, 6, 7]
+
+  full_grid(:, 4) = [8, 5, 9,  7, 6, 1,  4, 2, 3]
+  full_grid(:, 5) = [4, 2, 6,  8, 5, 3,  7, 9, 1]
+  full_grid(:, 6) = [7, 1, 3,  9, 2, 4,  8, 5, 6]
+
+  full_grid(:, 7) = [9, 6, 1,  5, 3, 7,  2, 8, 4]
+  full_grid(:, 8) = [2, 8, 7,  4, 1, 9,  6, 3, 5]
+  full_grid(:, 9) = [3, 4, 5,  2, 8, 6,  1, 7, 9]
+  !&>
 
   call unit_tests()
 
@@ -34,6 +50,7 @@ program check
 contains
 
   subroutine unit_tests
+    integer, dimension(9, 9)     :: grid
     integer, dimension(1:3, 1:3) :: region
 
     if (.not.ValidColumOrRow([1,2,3,4,5,6,7,8,9])) error stop "ValidColumOrRow() not working!"
@@ -51,6 +68,11 @@ contains
     if (ValidZone(region)) error stop "ValidZone() not working!"
     region(1, 1) = 9
     if (ValidZone(region)) error stop "ValidZone() not working!"
+
+    grid = full_grid
+    if (.not.ValidGrid(grid)) error stop "ValidGrid() not working!"
+    grid(2, 2) = 8
+    if (ValidGrid(grid)) error stop "ValidGrid() not working!"
   end subroutine unit_tests
 
   subroutine assert_readtest01()
@@ -134,19 +156,7 @@ contains
     call Solve_grid(grid_a) ! this fills (hence modifies) grid_a
 
     ! Wikipedia's complete Sudoku grid
-    !&<
-    grid_b(:, 1) = [5, 3, 4,  6, 7, 8,  9, 1, 2]
-    grid_b(:, 2) = [6, 7, 2,  1, 9, 5,  3, 4, 8]
-    grid_b(:, 3) = [1, 9, 8,  3, 4, 2,  5, 6, 7]
-
-    grid_b(:, 4) = [8, 5, 9,  7, 6, 1,  4, 2, 3]
-    grid_b(:, 5) = [4, 2, 6,  8, 5, 3,  7, 9, 1]
-    grid_b(:, 6) = [7, 1, 3,  9, 2, 4,  8, 5, 6]
-
-    grid_b(:, 7) = [9, 6, 1,  5, 3, 7,  2, 8, 4]
-    grid_b(:, 8) = [2, 8, 7,  4, 1, 9,  6, 3, 5]
-    grid_b(:, 9) = [3, 4, 5,  2, 8, 6,  1, 7, 9]
-    !&>
+    grid_b = full_grid
 
     ! comparison of computed solution with Wikipedia's reference solution
     outer: do i = 1, 9
