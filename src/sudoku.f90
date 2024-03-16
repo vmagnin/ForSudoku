@@ -221,63 +221,64 @@ contains
                  ValidZone(grid(i*3+1:i*3+3, j*3+1:j*3+3))
   end function ValidDigit
 
-  ! Note: at present it is unknown if there are Sudoku grids with less than
-  ! 17 non-zero cells yield a unique solution.
+  ! Creates a Sudoku puzzle by brute force.
+  ! But we are not 100% sure that the solution is unique
+  ! (just a high probability).
   subroutine CreateSudokuGrid(grid, remainder)
     integer, dimension(9, 9), intent(inout) :: grid
     integer, intent(in) :: remainder
 
-    integer, parameter :: n = 1000    ! Nb of times we try to solve a grid
     integer, dimension(9, 9) :: grid_0
+    ! Nb of times we try to solve a grid:
+    integer, parameter :: n = 1000
+    ! To store and compare the n solutions:
     integer, dimension(1:n, 1:9, 1:9) :: solutions
-    real(kind=dp) :: random
-    integer :: row, col, i
-    logical :: empty, unique
+    real(dp) :: r
+    integer  :: row, col, i
+    logical  :: unique
 
-    ! save the initial grid:
+    ! Save the initial grid:
     grid_0 = grid
 
-    print *, "Search of a grid with a probably unique solution ..."
-    unique = .false.
-    do while (.not. unique)
-      grid = grid_0
+    print *, "Search of a grid with a probably unique solution..."
 
-      ! remove randomly empty cells
+    do
+      grid = grid_0
+      ! Show the advancement of the algorithm:
+      write(*, '(".")', advance='no')
+
+      ! Remove digits:
       do i = 1, 81 - remainder
-        ! by chance, one picks a of the cells to be removed:
-        empty = .false.
-        do while (.not. empty)
-          call random_number(random)
-          row = 1 + int(random * 9_dp)
-          call random_number(random)
-          col = 1 + int(random * 9_dp)
-          if (grid(row, col) /= 0) then
-            empty = .true.
-          end if
+        ! Choose randomly a non-empty cell:
+        do
+          call random_number(r)
+          row = 1 + int(r * 9_dp)
+          call random_number(r)
+          col = 1 + int(r * 9_dp)
+
+          if (grid(row, col) /= 0) exit
         end do
-        ! erase the previously assigned digit in this cell:
+        ! Erase the digit in this cell:
         grid(row, col) = 0
       end do
 
-      ! The grid is solved up to n times to try to see if the solution is unique
+      ! The grid is solved up to n times to evaluate the probability that
+      ! the solution be unique:
       unique = .true.
-      i = 1
-      sol: do while ((i <= n) .and. unique)
+      solve: do i = 1, n
         solutions(i, :, :) = grid
         call Solve_grid(solutions(i, :, :))
 
+        ! Is that solution identical to all previous ones?
         if (i >= 2) then
           if (any(solutions(i, :, :) /= solutions(i-1, :, :))) then
             unique = .false.
-            exit sol
+            exit solve
           end if
         end if
+      end do solve
 
-        i = i + 1
-      end do sol
-
-      ! Show the advancement of the algorithm:
-      write(*, '(".")', advance='no')
+      if (unique) exit
     end do
     write(*,*)
   end subroutine CreateSudokuGrid

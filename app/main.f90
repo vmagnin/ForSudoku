@@ -49,7 +49,7 @@ program main
       print *, "5) Display the grid currently stored in memory."
       print *, "6) Create a random, already filled Sudoku grid."
       print *, "7) Solve the Sudoku grid currently stored in memory."
-      print *, "8) Create a partially allocated grid (conjecture of a likely unique solution)."
+      print *, "8) Create a puzzle grid (with some probability that the solution is unique)."
       print *, "9) Quit."
       print *, "Select one of them and click `Enter`:"
       read *, choice
@@ -104,8 +104,8 @@ program main
         write (*, "(A, F12.3, A)") " computing time: ", End - Start, " s."
 
       case (8)
-        print *, "How many numbers should be assigned in advance [17,81]?"
-        print *, "Note: with less than 35 preallocated fields, the computation rapidly takes longer!"
+        print *, "How many digits in [17, 81] do you want in the puzzle grid?"
+        print *, "Below 28, the computation can be longer!"
         read *, remainder
         call CreateFilledGrid(grid)
         print *, "Below, a filled grid:"
