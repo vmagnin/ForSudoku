@@ -163,39 +163,43 @@ contains
     end do
   end subroutine
 
-  ! Grid generation: in each cycle a digit is added and the grid is checked
-  ! for validity.  If the grid became invalid, the grid generation is started
-  ! all over again.
-  ! With a  PIII 866 MHz: about 0.5 s.
+  ! Grid generation by brute force: in each cycle a digit is added and the grid
+  ! is checked for validity.  If the grid became invalid, the grid generation
+  ! is started all over again.
   subroutine CreateFilledGrid(grid)
     integer, dimension(9, 9), intent(out) :: grid
 
-    real(kind=dp) :: random
-    integer :: row, col
-    integer(4) :: tests
-    logical :: completely_solved
+    real(dp) :: random
+    integer  :: row, col
+    integer  :: tests
+    logical  :: completely_solved
 
+    ! We start with an empty grid:
     grid = 0
 
+    ! We use while loops because the counters can be modified inside the loop:
     row = 1
     do while (row <= 9)
       col = 1
       do while (col <= 9)
         tests = 0
         completely_solved = .false.
+
         do while (.not. completely_solved)
           if (tests > 30) then
-            ! start from the very beginning
-            ! (it were impossible to determine how many cycles one
-            ! has to rewind to identify the erroneous one)
+            ! It is probably impossible to have a valid digit,
+            ! and we therefore restart from the very beginning:
             grid = 0
             tests = 0
             col = 1
             row = 1
           end if
+
           tests = tests + 1
+          ! We add a random digit in the grid:
           call random_number(random)
           grid(row, col) = 1 + int(random * 9_dp)
+          ! and check if it is valid:
           completely_solved = ValidDigit(grid, row, col)
         end do
         col = col + 1
