@@ -25,143 +25,144 @@ module sudoku
 
 contains
 
+  ! Receives a puzzle grid and solves it:
   subroutine Solve_grid(grid)
     integer, dimension(9, 9), intent(inout) :: grid
-    integer, dimension(9, 9) :: grid_0  ! empty grid
-    real(kind=dp) :: random  ! random number
-    integer :: row, col, line_0, row_0, i, j
-    integer :: counter_empty_cells  ! counter of empty/non allocated cells
-    integer, dimension(1:81, 1:3) :: empty_cells  ! list of empty cells
-    ! logical, dimension(0:9)     :: possible
-    integer, dimension(1:9) :: possible_digit  ! list of (still) possible digits
-    integer :: counter_possible_digits
 
-    possible_digit = 0
+    integer, dimension(9, 9) :: grid_0
+    real(dp) :: r   ! Random number
+    integer :: row, col, i, j
+    ! Counter of empty/non allocated cells:
+    integer :: nb_empty
+    ! List of empty cells:
+    integer, dimension(1:81, 1:3) :: empty_cells
+    ! List and number of (still) possible digits:
+    integer, dimension(1:9) :: possible_digit
+    integer :: nb_possible
 
     ! save the initial grid:
     grid_0 = grid
 
-    ! identify the grid coordinates of empty cells in the grid
-    ! in a table of 81 entries
+    ! Identify and store the coordinates of empty cells in the grid
+    ! in the table "empty_cells":
     empty_cells = 0
-    counter_empty_cells = 0
+    nb_empty = 0
     do row = 1, 9
       do col = 1, 9
         if (grid(row, col) == 0) then
-          counter_empty_cells = counter_empty_cells + 1
-          empty_cells(counter_empty_cells, 1) = row
-          empty_cells(counter_empty_cells, 2) = col
+          nb_empty = nb_empty + 1
+          empty_cells(nb_empty, 1) = row
+          empty_cells(nb_empty, 2) = col
         end if
       end do
     end do
 
-    ! iterate over all empty cells:
+    ! Iterate over all empty cells:
+    possible_digit = 0
     i = 1
-    do while (i <= counter_empty_cells)
+    do while (i <= nb_empty)
       ! To accelerate the algorithm, count for each empty cell the digits
-      ! which yet possibly could be inserted in this very cell
-      do j = i, counter_empty_cells
-        line_0 = empty_cells(j, 1)
-        row_0 = empty_cells(j, 2)
-        call list_possible_digits(grid, line_0, row_0, &
-                                  empty_cells(j, 3), possible_digit)
+      ! which could be inserted in that cell:
+      do j = i, nb_empty
+        row = empty_cells(j, 1)
+        col = empty_cells(j, 2)
+        ! The last two arguments have intent(out):
+        call list_possible_digits(grid, row, col, &
+                                & empty_cells(j, 3), possible_digit)
+        ! empty_cells(j, 3) will contain the nb of possible digits for the
+        ! empty cell number j and the array possible_digit(1:9)
+        ! the corresponding digits (but that array is not used for sorting).
       end do
-      ! retrieve the empty cells (which depends on the number of still
-      ! possible digits)
-      call Draw(empty_cells, i, counter_empty_cells)
 
-      ! for cell (line_0,row_0), generate a list of possible digits:
-      line_0 = empty_cells(i, 1)
-      row_0 = empty_cells(i, 2)
+      ! Sort the empty cells:
+      call sort(empty_cells, i, nb_empty)
 
-      call list_possible_digits(grid, line_0, row_0, &
-                                counter_possible_digits, possible_digit)
+      ! For the empty cell i, regenerate a list of possible digits:
+      row = empty_cells(i, 1)
+      col = empty_cells(i, 2)
+      call list_possible_digits(grid, row, col, &
+                              & nb_possible, possible_digit)
 
-      ! if there are multiple possibilities, choose one (by chance) and
+      ! If there are possibilities, choose randomly one and
       ! continue with the next empty cell:
-      if (counter_possible_digits > 1) then
-        call random_number(random)
-        j = 1 + int(random * counter_possible_digits)
-        grid(line_0, row_0) = possible_digit(j)
+      if (nb_possible > 0) then
+        call random_number(r)     ! 0 <= r < 1
+        grid(row, col) = possible_digit(1 + int(r * nb_possible))
         i = i + 1
-        ! if there is only one possibility, use this digit now, and then
-        ! continue with the next empty cell
-      else if (counter_possible_digits == 1) then
-        grid(line_0, row_0) = possible_digit(1)
-        i = i + 1
-        ! start all over again if there is none:
-      else
+      else ! Start all over again
         i = 1
         grid = grid_0
       end if
     end do
   end subroutine Solve_grid
 
-  ! procedure to create a list of allowed digits in the present empty cell:
-  subroutine list_possible_digits(grid, line_0, row_0, &
-                                  counter_possible_digits, possible_digit)
+  ! Procedure to create a list of allowed digits in the present empty cell:
+  subroutine list_possible_digits(grid, row0, col0, &
+                                  nb_possible, possible_digit)
     integer, dimension(9, 9), intent(in) :: grid
-    integer, intent(in) :: line_0, row_0
-    integer, intent(out) :: counter_possible_digits
+    integer, intent(in) :: row0, col0
+    ! These arguments are returned:
+    integer, intent(out) :: nb_possible
     integer, dimension(1:9), intent(out) :: possible_digit
 
     integer :: row, col, cr, lr, j
     logical, dimension(0:9) :: possible  ! Plausibility of each digit
 
     possible = .true.
+
+    ! Digits already present in those row and column are excluded:
     do j = 1, 9
-      possible(grid(j, row_0)) = .false.
-      possible(grid(line_0, j)) = .false.
+      possible(grid(j, col0)) = .false.
+      possible(grid(row0, j)) = .false.
     end do
 
-    lr = 1 + 3 * ((line_0 - 1) / 3)
-    cr = 1 + 3 * ((row_0 - 1) / 3)
+    ! Digits already present in that region are excluded:
+    lr = 1 + 3 * ((row0 - 1) / 3)
+    cr = 1 + 3 * ((col0 - 1) / 3)
     do row = lr, lr + 2
       do col = cr, cr + 2
         possible(grid(row, col)) = .false.
       end do
     end do
 
-    counter_possible_digits = 0
+    nb_possible = 0
     possible_digit = 0
+    ! Count and store the remaining possible digits:
     do j = 1, 9
       if (possible(j)) then
-        counter_possible_digits = counter_possible_digits + 1
-        possible_digit(counter_possible_digits) = j
+        nb_possible = nb_possible + 1
+        possible_digit(nb_possible) = j
       end if
     end do
   end subroutine list_possible_digits
 
-  !****************************************************************
   ! Starting from position p, sort the (still) empty cells by
-  ! increasing number of allowed digits to them.  This is organized
-  ! as a bubble sort.
-  !****************************************************************
-  subroutine Draw(empty_cells, p, n)
+  ! ascending number of allowed digits. We use a bubble sort:
+  subroutine sort(empty_cells, p, n)
     integer, dimension(1:81, 1:3), intent(inout) :: empty_cells
-    integer, intent(in) :: n    ! number of empty lists
-    integer, intent(in) :: p    ! sort, start by position p (p inclusive)
+    integer, intent(in) :: p    ! The sort starts at position p (included)
+    integer, intent(in) :: n    ! Number of empty lists
 
-    integer :: i, j ! loop counters
+    integer :: i
     integer, dimension(1:3) :: col
-    logical :: completely_solved
+    logical :: none_swap
 
-    completely_solved = .false.
-    do while (.not. completely_solved)
-      completely_solved = .true.
-      ! let's compare each cell with its succeeding cell
+    do
+      ! Compare each cell with the next one and swap them if necessary:
+      none_swap = .true.
       do i = p, n - 1
-        j = i + 1
-        if (empty_cells(i, 3) > empty_cells(j, 3)) then
-          ! exchange the two cases of this list:
+        if (empty_cells(i, 3) > empty_cells(i+1, 3)) then
+          ! Swap them:
           col = empty_cells(i, :)
-          empty_cells(i, :) = empty_cells(j, :)
-          empty_cells(j, :) = col
-          completely_solved = .false.
+          empty_cells(i  , :) = empty_cells(i+1, :)
+          empty_cells(i+1, :) = col
+          none_swap = .false.
         end if
       end do
+
+      if (none_swap) exit     ! The bubble sort is finished
     end do
-  end subroutine
+  end subroutine sort
 
   ! Grid generation by brute force: in each cycle a digit is added and checked
   ! for validity.  If the grid became invalid, the grid generation
