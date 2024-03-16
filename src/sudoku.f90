@@ -20,7 +20,6 @@
 !------------------------------------------------------------------------------
 
 module sudoku
-  use iso_fortran_env, only: dp => real64
   implicit none
 
 contains
@@ -30,7 +29,7 @@ contains
     integer, dimension(9, 9), intent(inout) :: grid
 
     integer, dimension(9, 9) :: grid_0
-    real(dp) :: r   ! Random number
+    real    :: r   ! Random number
     integer :: row, col, i, j
     ! Counter of empty/non allocated cells:
     integer :: nb_empty
@@ -170,9 +169,9 @@ contains
   subroutine CreateFilledGrid(grid)
     integer, dimension(9, 9), intent(out) :: grid
 
-    real(dp) :: r
-    integer  :: row, col
-    integer  :: tests
+    real    :: r
+    integer :: row, col
+    integer :: tests
 
     restart:do
       ! We start with an empty grid:
@@ -186,7 +185,7 @@ contains
             tests = tests + 1
             ! We add a random digit in the grid:
             call random_number(r)
-            grid(row, col) = 1 + int(r * 9_dp)
+            grid(row, col) = 1 + int(r * 9)
             ! and check if the Sudoku constraints are OK:
             if (ValidDigit(grid, row, col)) then
               ! Let's continue with other cells:
@@ -233,9 +232,9 @@ contains
     integer, parameter :: n = 1000
     ! To store and compare the n solutions:
     integer, dimension(1:n, 1:9, 1:9) :: solutions
-    real(dp) :: r
-    integer  :: row, col, i
-    logical  :: unique
+    real    :: r
+    integer :: row, col, i
+    logical :: unique
 
     ! Save the initial grid:
     grid_0 = grid
@@ -252,9 +251,9 @@ contains
         ! Choose randomly a non-empty cell:
         do
           call random_number(r)
-          row = 1 + int(r * 9_dp)
+          row = 1 + int(r * 9)
           call random_number(r)
-          col = 1 + int(r * 9_dp)
+          col = 1 + int(r * 9)
 
           if (grid(row, col) /= 0) exit
         end do

@@ -16,16 +16,15 @@
 ! If not, see <http://www.gnu.org/licenses/>.
 !------------------------------------------------------------------------------
 ! Contributed by Vincent Magnin, 2006-11-27; Norwid Behrnd, 2023
-! Last modifications: 2024-03-15
+! Last modifications: 2024-03-16
 !------------------------------------------------------------------------------
 
 program main
-  use iso_fortran_env, only: dp => real64
   use sudoku
 
   implicit none
   integer, dimension(9, 9) :: grid
-  real(kind=dp) :: Start, End  ! monitor the duration of computation
+  real          :: Start, End  ! monitor the duration of computation
   integer       :: choice
   integer       :: remainder   ! number of filled cells when creating a grid
   character(50) :: file        ! file name (including extension .txt)
