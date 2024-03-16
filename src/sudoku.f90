@@ -362,42 +362,45 @@ contains
     integer, dimension(1:9), intent(in) :: vector   ! A row or a column
 
     ! The number of occurrences of each digit:
-    integer, dimension(1:9) :: counter
-    integer :: i
+    integer, dimension(1:9) :: counters
+    integer :: i, d
 
-    counter = 0
+    counters = 0
     do i = 1, 9
-      if (vector(i) /= 0) then
-        counter(vector(i)) = counter(vector(i)) + 1
-        if (counter(vector(i)) > 1) then
+      associate(d => vector(i))
+      if (d /= 0) then
+        counters(d) = counters(d) + 1
+        if (counters(d) > 1) then
           ValidColumOrRow = .false.
           return        ! We leave immediately the function and return false
         end if
       end if
+      end associate
     end do
 
     ValidColumOrRow = .true.
   end function ValidColumOrRow
 
   ! Returns true if each digit in the 3x3 region appears only once.
-  ! We reuse the ValidColumOrRow() function.
   pure logical function ValidZone(region)
     integer, dimension(1:3, 1:3), intent(in) :: region
 
     ! The number of occurrences of each digit:
-    integer, dimension(1:9) :: counter
-    integer :: row, col
+    integer, dimension(1:9) :: counters
+    integer :: row, col, d
 
-    counter = 0
+    counters = 0
     do row = 1, 3
       do col = 1, 3
-        if (region(row, col) /= 0) then
-          counter(region(row, col)) = counter(region(row, col)) + 1
-          if (counter(region(row, col)) > 1) then
+        associate(d => region(row, col))
+        if (d /= 0) then
+          counters(d) = counters(d) + 1
+          if (counters(d) > 1) then
             ValidZone = .false.
             return        ! We leave immediately the function and return false
           end if
         end if
+        end associate
       end do
     end do
 
