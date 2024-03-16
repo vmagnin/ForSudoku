@@ -37,19 +37,19 @@ The program's main interface provides access to all principal functions:
 
 ```shell
  *************************** MENU *****************************************
- 1) Manual input (lines of comma separated 1 - 9, or 0 (unallocated cell).)
+ 1) Manual input (lines of comma separated 1 - 9, or 0 (empty cell).)
  2) Input from a text file.  For permitted patterns, see the documentation.
  3) Save the currently processed grid as a text file.
  4) Check the validity of the grid currently stored in memory.
  5) Display the grid currently stored in memory.
  6) Create a random, already filled Sudoku grid.
  7) Solve the Sudoku grid currently stored in memory.
- 8) Create a partially allocated grid (conjecture of a likely unique solution).
+ 8) Create a puzzle grid (with some probability that the solution is unique).
  9) Quit.
  Select one of them and click `Enter`:
 ```
 
-### option 1, manual entry of a partially filled grid
+### Option 1, manual entry of a partially filled grid (puzzle)
 
 The program can provide a solution for partially filled Sudoku grids.  In this
 mode, sequentially enter cells one by one, starting from the left, as a comma
@@ -78,7 +78,7 @@ and displays it in a form similar to the one below:
 If the input is considered a valid one, use then option `7` to query for a
 solution, i.e. a completely filled grid.
 
-### option 2, file based entry of a partially filled grid
+### Option 2, file based entry of a puzzle
 
 The present form of the program only reliably supports the input of a partially
 filled grid if its own format depicted above.  Folder `check` contains example
@@ -94,7 +94,7 @@ equally contains the corresponding solution of the test input (files
 `test_out_01.txt` and `test_out_02.txt`) in the program's format which match
 the topmost example in the English edition of Wikipedia.
 
-### option 6, generation of a randomly filled grid
+### Option 6, generation of a randomly filled grid
 
 By this option, the program generates a random grid, filled and passing the
 same validity test which is used to check partially filled grids.  Note,
@@ -110,3 +110,5 @@ later](http://www.gnu.org/licenses/gpl.html).
 ## Bibliography
 
 * <https://en.wikipedia.org/wiki/Sudoku>
+* Michael Metcalf. A Sudoku program in Fortran 95. *SIGPLAN Fortran Forum* 25,
+1 (April 2006), 4–7. https://doi.org/10.1145/1124708.1124709
