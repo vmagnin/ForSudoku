@@ -204,18 +204,18 @@ contains
     end do
   end subroutine CreateFilledGrid
 
-  logical function ValidDigit(grid, row, col)
+  ! Returns true if the row, column and region of a cell are all valid:
+  pure logical function ValidDigit(grid, row, col)
     integer, dimension(9, 9), intent(in) :: grid
     integer, intent(in) :: row, col
 
     integer :: i, j
-
     i = (row - 1) / 3
     j = (col - 1) / 3
 
     ValidDigit = ValidColumOrRow(grid(row, 1:9)) .and. &
                  ValidColumOrRow(grid(1:9, col)) .and. &
-                 ValidZone(grid(i * 3 + 1:i * 3 + 3, j * 3 + 1:j * 3 + 3))
+                 ValidZone(grid(i*3+1:i*3+3, j*3+1:j*3+3))
   end function ValidDigit
 
   ! Note: at present it is unknown if there are Sudoku grids with less than
