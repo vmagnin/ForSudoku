@@ -62,17 +62,17 @@ contains
        4, 5, 6, &
        7, 8, 9  &
       ], shape(region), order=[2,1])
-    if (.not.ValidZone(region)) error stop "ValidZone() not working!"
+    if (.not.ValidZone(region)) error stop "ValidZone() not working! (1)"
 
     region(2, 2) = 2
-    if (ValidZone(region)) error stop "ValidZone() not working!"
+    if (ValidZone(region)) error stop "ValidZone() not working! (2)"
     region(1, 1) = 9
-    if (ValidZone(region)) error stop "ValidZone() not working!"
+    if (ValidZone(region)) error stop "ValidZone() not working! (3)"
 
     grid = full_grid
-    if (.not.ValidGrid(grid)) error stop "ValidGrid() not working!"
+    if (.not.ValidGrid(grid)) error stop "ValidGrid() not working! (1)"
     grid(2, 2) = 8
-    if (ValidGrid(grid)) error stop "ValidGrid() not working!"
+    if (ValidGrid(grid)) error stop "ValidGrid() not working! (2)"
   end subroutine unit_tests
 
   subroutine assert_readtest01()

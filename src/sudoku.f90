@@ -384,12 +384,24 @@ contains
   pure logical function ValidZone(region)
     integer, dimension(1:3, 1:3), intent(in) :: region
 
-    integer, dimension(1:9) :: vector
-    vector(1:3) = region(1, 1:3)
-    vector(4:6) = region(2, 1:3)
-    vector(7:9) = region(3, 1:3)
+    ! The number of occurrences of each digit:
+    integer, dimension(1:9) :: counter
+    integer :: row, col
 
-    ValidZone = ValidColumOrRow(vector)
+    counter = 0
+    do row = 1, 3
+      do col = 1, 3
+        if (region(row, col) /= 0) then
+          counter(region(row, col)) = counter(region(row, col)) + 1
+          if (counter(region(row, col)) > 1) then
+            ValidZone = .false.
+            return        ! We leave immediately the function and return false
+          end if
+        end if
+      end do
+    end do
+
+    ValidZone = .true.
   end function ValidZone
 
   ! Returns true if a full grid is valid:
