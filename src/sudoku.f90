@@ -445,27 +445,25 @@ contains
     ValidGrid = .true.
   end function ValidGrid
 
-  !************************************************************
-  ! initialization of a system independent pseudorandom generator
-  !************************************************************
+  !**************************************************************
+  ! System independent initialization of pseudorandom generator
+  !**************************************************************
   subroutine Initialize_Random
     integer, dimension(1:8) :: timeValues
-    integer, allocatable, dimension(:) :: random_seede
+    integer, allocatable, dimension(:) :: seed
     integer :: i, n
 
-    call date_and_time(values=timeValues)
-
-    ! retrieve the integers to store a seed: !? On récupère le nombre d'entiers servant à stocker la random_seede :
     call random_seed(size=n)
-    allocate (random_seede(1:n))
+    allocate (seed(1:n))
 
-    ! use thousandths of a second by the clock:
+    ! Real-time clock:
+    call date_and_time(values=timeValues)
+    ! We use the milliseconds to compute the seeds:
     do i = 1, n
-      random_seede(i) = huge(random_seede(i)) / 1000 * timeValues(8)
+      seed(i) = (huge(seed(i)) / 1000) * timeValues(8) - i
     end do
 
-    ! hand over the seed:
-    call random_seed(put=random_seede(1:n))
+    call random_seed(put=seed(1:n))
   end subroutine Initialize_Random
 
 
