@@ -5,8 +5,8 @@
 # version of gfortran (e.g., release 12.3.0).
 
 default:
-	gfortran -O3 -c ./src/sudoku.f90
-	gfortran -O3 -c ./app/main.f90
+	gfortran -O3 -Wno-array-temporaries -c ./src/sudoku.f90
+	gfortran -O3 -Wno-array-temporaries -c ./app/main.f90
 
 	gfortran sudoku.o main.o -o executable
 

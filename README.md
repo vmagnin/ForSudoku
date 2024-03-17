@@ -29,6 +29,9 @@ optimization flags of your compiler, for example with GFortran:
 $ fpm run --flag "-Ofast -static-libgfortran"
 ```
 
+When using GFortran, you can also add the compiler flag `-Wno-array-temporaries`
+to avoid the corresponding warnings.
+
 Especially if your current interest only aims to use the program, the included
 `Makefile` equally provides you with the executable with no difference down the
 road.
