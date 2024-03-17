@@ -32,6 +32,11 @@ $ fpm run --flag "-Ofast -static-libgfortran"
 When using GFortran, you can also add the compiler flag `-Wno-array-temporaries`
 to avoid the corresponding warnings.
 
+With Intel compilers:
+```shell
+$ fpm run --compiler ifx --flag "-check:noarg_temp_created"
+```
+
 Especially if your current interest only aims to use the program, the included
 `Makefile` equally provides you with the executable with no difference down the
 road.
