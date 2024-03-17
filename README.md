@@ -24,9 +24,9 @@ sudoku                                 done.
 ```
 
 If you want to generate a sudoku with many void cells, it is better to use the
-optimization flags of your compiler, for example:
+optimization flags of your compiler, for example with GFortran:
 ```shell
-$ fpm run --flag "-O3"
+$ fpm run --flag "-Ofast -static-libgfortran"
 ```
 
 Especially if your current interest only aims to use the program, the included

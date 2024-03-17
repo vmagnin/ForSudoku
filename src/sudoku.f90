@@ -447,7 +447,7 @@ contains
   end function valid_grid
 
   !**************************************************************
-  ! System independent initialization of pseudorandom generator
+  ! System independent initialization of pseudo-random generator
   !**************************************************************
   subroutine initialize_random_number_generator
     integer, dimension(1:8) :: time_values
@@ -463,6 +463,10 @@ contains
     do i = 1, n
       seed(i) = (huge(seed(i)) / 1000) * time_values(8) - i
     end do
+
+    ! Uncomment this line if you always need the same pseudo-random sequence
+    ! for debugging or testing:
+    !seed = 0
 
     call random_seed(put=seed(1:n))
   end subroutine initialize_random_number_generator
