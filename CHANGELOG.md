@@ -7,9 +7,12 @@ format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 - Many tests.
+- The function `is_full(grid)` returns true if the grid is full.
 
 ### Changed
 - Code improved, modernized and refactored.
+- If a full valid grid is not in memory, a new one will be automatically
+generated if you want to create a puzzle grid.
 
 ### Removed
 - `Time()` function.

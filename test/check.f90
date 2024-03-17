@@ -6,7 +6,7 @@
 
 program check
   use sudoku, only: read_grid, solve_puzzle, valid_colum_or_row, valid_zone, &
-                  & valid_grid, valid_digit, list_possible_digits
+                  & valid_grid, valid_digit, list_possible_digits, is_full
 
   implicit none
   integer, dimension(9, 9) :: full_ref_grid, ref_puzzle
@@ -82,6 +82,11 @@ contains
     end do
     grid(4, 4) = 1
     if (valid_digit(grid, 4, 4)) error stop "valid_digit() not working! (2)"
+
+    grid = full_ref_grid
+    if (.not.is_full(grid)) error stop "is_full() not working! (1)"
+    grid = ref_puzzle
+    if (is_full(grid)) error stop "is_full() not working! (2)"
 
     block
       integer :: nb_possible

@@ -102,11 +102,17 @@ program main
         write (*, "(A, F12.3, A)") " Computing time: ", finish - start, " s."
 
       case (8)
+        print *, "If a full valid grid is not in memory, we will start from a new one."
         print *, "How many digits in [17, 81] do you want in the puzzle grid?"
-        print *, "Below 28, the computation will become longer!"
+        print *, "(Below 28, the computation will become longer!)"
         read *, remainder
-        call create_filled_grid(grid)
-        print *, "Below, a filled grid:"
+
+        if ((.not.is_full(grid)).or.(.not.valid_grid(grid))) then
+          print *, "No full valid grid is in memory:  a new one will be generated."
+          call create_filled_grid(grid)
+        end if
+
+        print *, "The starting full grid:"
         call display_grid(grid)
         ! grid validation:
         call print_validity(grid, "The grid is valid.", "The grid is invalid: problem to compute a solution!")

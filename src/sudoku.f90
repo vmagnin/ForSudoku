@@ -446,6 +446,17 @@ contains
     valid_grid = .true.
   end function valid_grid
 
+  ! Returns true if the grid is full:
+  pure logical function is_full(grid)
+    integer, dimension(9, 9), intent(in) :: grid
+
+    if (any(grid(:,:) == 0)) then
+      is_full = .false.
+    else
+      is_full = .true.
+    end if
+  end function
+
   !**************************************************************
   ! System independent initialization of pseudo-random generator
   !**************************************************************
