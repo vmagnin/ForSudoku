@@ -36,17 +36,16 @@ road.
 The program's main interface provides access to all principal functions:
 
 ```shell
- *************************** MENU *****************************************
- 1) Manual input (lines of comma separated 1 - 9, or 0 (empty cell).)
- 2) Input from a text file.  For permitted patterns, see the documentation.
+ ******************************** MENU **************************************
+ 1) Manual input (lines of comma separated 1 - 9, or 0 (empty cell)).
+ 2) Input from a text file (for permitted patterns, see the documentation).
  3) Save the currently processed grid as a text file.
  4) Check the validity of the grid currently stored in memory.
  5) Display the grid currently stored in memory.
  6) Create a random, already filled Sudoku grid.
- 7) Solve the Sudoku grid currently stored in memory.
+ 7) Solve the puzzle grid currently stored in memory.
  8) Create a puzzle grid (with some probability that the solution is unique).
  9) Quit.
- Select one of them and click `Enter`:
 ```
 
 ### Option 1, manual entry of a partially filled grid (puzzle)

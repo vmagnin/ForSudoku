@@ -16,7 +16,7 @@
 ! If not, see <http://www.gnu.org/licenses/>.
 !------------------------------------------------------------------------------
 ! Contributed by Vincent Magnin, 2006-11-27; Norwid Behrnd, 2023
-! Last modifications: 2023-09-12, vmagnin 2024-03-16
+! Last modifications: 2023-09-12, vmagnin 2024-03-17
 !------------------------------------------------------------------------------
 
 module sudoku
@@ -25,10 +25,10 @@ module sudoku
 contains
 
   ! Receives a puzzle grid and solves it:
-  subroutine Solve_grid(grid)
+  subroutine solve_puzzle(grid)
     integer, dimension(9, 9), intent(inout) :: grid
 
-    integer, dimension(9, 9) :: grid_0
+    integer, dimension(9, 9) :: grid0
     real    :: r   ! Random number
     integer :: row, col, i, j
     ! Counter of empty/non allocated cells:
@@ -40,7 +40,7 @@ contains
     integer :: nb_possible
 
     ! save the initial grid:
-    grid_0 = grid
+    grid0 = grid
 
     ! Identify and store the coordinates of empty cells in the grid
     ! in the table "empty_cells":
@@ -90,37 +90,37 @@ contains
         i = i + 1
       else ! Start all over again
         i = 1
-        grid = grid_0
+        grid = grid0
       end if
     end do
-  end subroutine Solve_grid
+  end subroutine solve_puzzle
 
   ! Procedure to create a list of allowed digits in the present empty cell:
-  subroutine list_possible_digits(grid, row0, col0, &
+  subroutine list_possible_digits(grid, row, col, &
                                   nb_possible, possible_digit)
     integer, dimension(9, 9), intent(in) :: grid
-    integer, intent(in) :: row0, col0
+    integer, intent(in) :: row, col
     ! These arguments are returned:
     integer, intent(out) :: nb_possible
     integer, dimension(1:9), intent(out) :: possible_digit
 
-    integer :: row, col, cr, lr, j
+    integer :: cr, lr, i, j
     logical, dimension(0:9) :: possible  ! Plausibility of each digit
 
     possible = .true.
 
     ! Digits already present in those row and column are excluded:
     do j = 1, 9
-      possible(grid(j, col0)) = .false.
-      possible(grid(row0, j)) = .false.
+      possible(grid(j, col)) = .false.
+      possible(grid(row, j)) = .false.
     end do
 
     ! Digits already present in that region are excluded:
-    lr = 1 + 3 * ((row0 - 1) / 3)
-    cr = 1 + 3 * ((col0 - 1) / 3)
-    do row = lr, lr + 2
-      do col = cr, cr + 2
-        possible(grid(row, col)) = .false.
+    lr = 1 + 3 * ((row - 1) / 3)
+    cr = 1 + 3 * ((col - 1) / 3)
+    do i = lr, lr + 2
+      do j = cr, cr + 2
+        possible(grid(i, j)) = .false.
       end do
     end do
 
@@ -166,7 +166,7 @@ contains
   ! Grid generation by brute force: in each cycle a digit is added and checked
   ! for validity.  If the grid became invalid, the grid generation
   ! is started all over again.
-  subroutine CreateFilledGrid(grid)
+  subroutine create_filled_grid(grid)
     integer, dimension(9, 9), intent(out) :: grid
 
     real    :: r
@@ -187,7 +187,7 @@ contains
             call random_number(r)
             grid(row, col) = 1 + int(r * 9)
             ! and check if the Sudoku constraints are OK:
-            if (ValidDigit(grid, row, col)) then
+            if (valid_digit(grid, row, col)) then
               ! Let's continue with other cells:
               exit digit
             else
@@ -204,10 +204,10 @@ contains
       ! and have therefore found a valid grid:
       exit
     end do restart
-  end subroutine CreateFilledGrid
+  end subroutine create_filled_grid
 
   ! Returns true if the row, column and region of a cell are all valid:
-  pure logical function ValidDigit(grid, row, col)
+  pure logical function valid_digit(grid, row, col)
     integer, dimension(9, 9), intent(in) :: grid
     integer, intent(in) :: row, col
 
@@ -215,34 +215,36 @@ contains
     i = (row - 1) / 3
     j = (col - 1) / 3
 
-    ValidDigit = ValidColumOrRow(grid(row, 1:9)) .and. &
-                 ValidColumOrRow(grid(1:9, col)) .and. &
-                 ValidZone(grid(i*3+1:i*3+3, j*3+1:j*3+3))
-  end function ValidDigit
+    valid_digit = valid_colum_or_row(grid(row, 1:9)) .and. &
+                  valid_colum_or_row(grid(1:9, col)) .and. &
+                  valid_zone(grid(i*3+1:i*3+3, j*3+1:j*3+3))
+  end function valid_digit
 
   ! Creates a Sudoku puzzle by brute force.
   ! But we are not 100% sure that the solution is unique
   ! (just a high probability).
-  subroutine CreateSudokuGrid(grid, remainder)
+  subroutine create_puzzle(grid, remainder)
     integer, dimension(9, 9), intent(inout) :: grid
     integer, intent(in) :: remainder
 
-    integer, dimension(9, 9) :: grid_0
-    ! Nb of times we try to solve a grid:
+    integer, dimension(9, 9) :: grid0
+    ! Maximum number of times we try to solve a grid:
     integer, parameter :: n = 1000
     ! To store and compare the n solutions:
-    integer, dimension(1:n, 1:9, 1:9) :: solutions
+    integer, dimension(:, :, :), allocatable :: solutions
     real    :: r(2)
     integer :: row, col, i
     logical :: unique
 
+    allocate(solutions(1:n, 1:9, 1:9))
+
     ! Save the initial grid:
-    grid_0 = grid
+    grid0 = grid
 
     print *, "Search of a grid with a probably unique solution..."
 
     do
-      grid = grid_0
+      grid = grid0
       ! Show the advancement of the algorithm:
       write(*, '(".")', advance='no')
 
@@ -265,7 +267,7 @@ contains
       unique = .true.
       solve: do i = 1, n
         solutions(i, :, :) = grid
-        call Solve_grid(solutions(i, :, :))
+        call solve_puzzle(solutions(i, :, :))
 
         ! Is that solution identical to all previous ones?
         if (i >= 2) then
@@ -279,12 +281,12 @@ contains
       if (unique) exit
     end do
     write(*,*)
-  end subroutine CreateSudokuGrid
+  end subroutine create_puzzle
 
   !*****************************************************************************
   ! Input/Output routines
   !*****************************************************************************
-  subroutine Save_grid(grid, filename)
+  subroutine save_grid(grid, filename)
     integer, dimension(9, 9), intent(in) :: grid
     character(*), intent(in) :: filename
 
@@ -302,9 +304,9 @@ contains
     end do
 
     close (fileunit)
-  end subroutine Save_grid
+  end subroutine save_grid
 
-  subroutine Read_grid(grid, filename)
+  subroutine read_grid(grid, filename)
     integer, dimension(9, 9), intent(out) :: grid
     character(*), intent(in) :: filename
 
@@ -330,9 +332,9 @@ contains
     end do
 
     close (fileunit)
-  end subroutine Read_grid
+  end subroutine read_grid
 
-  subroutine Display_grid(grid)
+  subroutine display_grid(grid)
     integer, dimension(9, 9), intent(in) :: grid
 
     integer :: row, col
@@ -343,9 +345,9 @@ contains
         print *, "------+-------+------"
       end if
     end do
-  end subroutine Display_grid
+  end subroutine display_grid
 
-  subroutine Request_grid(grid)
+  subroutine request_grid(grid)
     integer, dimension(9, 9), intent(inout) :: grid
 
     integer :: row, col
@@ -354,13 +356,13 @@ contains
       write (*, "(A, I1, A)") "Enter line ", row, ":"
       read *, (grid(row, col), col=1, 9)
     end do
-  end subroutine Request_grid
+  end subroutine request_grid
 
   !*****************************************************************************
   ! Validation routines
   !*****************************************************************************
   ! Returns true if each digit in the 1D array appears only once:
-  pure logical function ValidColumOrRow(vector)
+  pure logical function valid_colum_or_row(vector)
     integer, dimension(1:9), intent(in) :: vector   ! A row or a column
 
     ! The number of occurrences of each digit:
@@ -373,18 +375,18 @@ contains
       if (d /= 0) then
         counters(d) = counters(d) + 1
         if (counters(d) > 1) then
-          ValidColumOrRow = .false.
+          valid_colum_or_row = .false.
           return        ! We leave immediately the function and return false
         end if
       end if
       end associate
     end do
 
-    ValidColumOrRow = .true.
-  end function ValidColumOrRow
+    valid_colum_or_row = .true.
+  end function valid_colum_or_row
 
   ! Returns true if each digit in the 3x3 region appears only once.
-  pure logical function ValidZone(region)
+  pure logical function valid_zone(region)
     integer, dimension(1:3, 1:3), intent(in) :: region
 
     ! The number of occurrences of each digit:
@@ -398,7 +400,7 @@ contains
         if (d /= 0) then
           counters(d) = counters(d) + 1
           if (counters(d) > 1) then
-            ValidZone = .false.
+            valid_zone = .false.
             return        ! We leave immediately the function and return false
           end if
         end if
@@ -406,27 +408,27 @@ contains
       end do
     end do
 
-    ValidZone = .true.
-  end function ValidZone
+    valid_zone = .true.
+  end function valid_zone
 
   ! Returns true if a full grid is valid:
-  pure logical function ValidGrid(grid)
+  pure logical function valid_grid(grid)
     integer, dimension(9, 9), intent(in) :: grid
 
     integer :: row, col
 
     ! Verification of the 9 lines:
     do row = 1, 9
-      if (.not. ValidColumOrRow(grid(row, 1:9))) then
-        ValidGrid = .false.
+      if (.not. valid_colum_or_row(grid(row, 1:9))) then
+        valid_grid = .false.
         return
       end if
     end do
 
     ! Verification of the 9 columns:
     do col = 1, 9
-      if (.not. ValidColumOrRow(grid(1:9, col))) then
-        ValidGrid = .false.
+      if (.not. valid_colum_or_row(grid(1:9, col))) then
+        valid_grid = .false.
         return
       end if
     end do
@@ -434,21 +436,21 @@ contains
     ! Verification of the 9 regions:
     do row = 1, 7, +3
       do col = 1, 7, +3
-        if (.not. ValidZone(grid(row:row+2, col:col+2))) then
-          ValidGrid = .false.
+        if (.not. valid_zone(grid(row:row+2, col:col+2))) then
+          valid_grid = .false.
           return
         end if
       end do
     end do
 
-    ValidGrid = .true.
-  end function ValidGrid
+    valid_grid = .true.
+  end function valid_grid
 
   !**************************************************************
   ! System independent initialization of pseudorandom generator
   !**************************************************************
-  subroutine Initialize_Random
-    integer, dimension(1:8) :: timeValues
+  subroutine initialize_random_number_generator
+    integer, dimension(1:8) :: time_values
     integer, allocatable, dimension(:) :: seed
     integer :: i, n
 
@@ -456,19 +458,19 @@ contains
     allocate (seed(1:n))
 
     ! Real-time clock:
-    call date_and_time(values=timeValues)
+    call date_and_time(values=time_values)
     ! We use the milliseconds to compute the seeds:
     do i = 1, n
-      seed(i) = (huge(seed(i)) / 1000) * timeValues(8) - i
+      seed(i) = (huge(seed(i)) / 1000) * time_values(8) - i
     end do
 
     call random_seed(put=seed(1:n))
-  end subroutine Initialize_Random
+  end subroutine initialize_random_number_generator
 
 
   subroutine solver(grid, file)
     ! ******************************************************************
-    ! provide a solution for a partially filled grid entered as a file
+    ! Provides a solution for a partially filled grid entered as a file
     !
     ! Concept study for a direct invocation of the executable by the CLI
     ! as, for example, by
@@ -489,11 +491,11 @@ contains
       print *, "The requested file '", trim(file), "' is inaccessible."
     end if
 
-    call Read_grid(grid, file)
+    call read_grid(grid, file)
 
-    if (ValidGrid(grid) .eqv. .true.) then
-      call Solve_grid(grid)
-      call Display_grid(grid)
+    if (valid_grid(grid) .eqv. .true.) then
+      call solve_puzzle(grid)
+      call display_grid(grid)
     else
       print *, "The input by file'", trim(file), "' is an invalid grid."
     end if
