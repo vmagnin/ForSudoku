@@ -111,3 +111,5 @@ later](http://www.gnu.org/licenses/gpl.html).
 * <https://en.wikipedia.org/wiki/Sudoku>
 * Michael Metcalf. A Sudoku program in Fortran 95. *SIGPLAN Fortran Forum* 25,
 1 (April 2006), 4–7. https://doi.org/10.1145/1124708.1124709
+* Other [Fortran sudoku projects](https://github.com/search?q=sudoku%20fortran&type=repositories)
+on GitHub.
