@@ -1,12 +1,13 @@
 ! file:  check.f90
 ! date:  nbehrnd [2023-08-24 Thu]
-! edit:  vmagnin [2024-03-17 Fri]
+! edit:  vmagnin [2024-03-18 Fri]
 
 ! This file contains tests to be launched by `fpm test`.
 
 program check
   use sudoku, only: read_grid, solve_puzzle, valid_colum_or_row, valid_zone, &
-                  & valid_grid, valid_digit, list_possible_digits, is_full
+                  & valid_grid, valid_digit, list_possible_digits, is_full, &
+                  & create_puzzle_with_unique_solution
 
   implicit none
   integer, dimension(9, 9) :: full_ref_grid, ref_puzzle
@@ -51,7 +52,7 @@ contains
   subroutine unit_tests
     integer, dimension(9, 9)     :: grid
     integer, dimension(1:3, 1:3) :: region
-    integer :: i, j
+    integer :: i, j, empty
 
     if (.not.valid_colum_or_row([1,2,3,4,5,6,7,8,9])) error stop "valid_colum_or_row() not working!"
     if (valid_colum_or_row([1,2,3,4,5,6,7,8,1])) error stop "valid_colum_or_row() not working!"
@@ -95,6 +96,12 @@ contains
       if (nb_possible /= 3) error stop "list_possible_digits() not working! (1)"
       if (.not. all(possible_digit == [2, 3, 4, 0, 0, 0, 0, 0, 0])) error stop "list_possible_digits() not working! (2)"
     end block
+
+    grid = full_ref_grid
+    call create_puzzle_with_unique_solution(grid, empty)
+    call solve_puzzle(grid)   ! This fills grid
+    if (any(grid /= full_ref_grid)) error stop "create_puzzle_with_unique_solution() not working! (1)"
+    if ((empty == 0).or.(empty > 81)) error stop "create_puzzle_with_unique_solution() not working! (2)"
   end subroutine unit_tests
 
   subroutine assert_readtest01()

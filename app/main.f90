@@ -16,7 +16,7 @@
 ! If not, see <http://www.gnu.org/licenses/>.
 !------------------------------------------------------------------------------
 ! Contributed by Vincent Magnin, 2006-11-27; Norwid Behrnd, 2023
-! Last modifications: 2024-03-16
+! Last modifications: 2024-03-18
 !------------------------------------------------------------------------------
 
 program main
@@ -27,6 +27,7 @@ program main
   real          :: start, finish  ! To monitor the duration of the computation
   integer       :: choice
   integer       :: remainder      ! Number of filled cells when creating a grid
+  integer       :: empty
   character(50) :: file           ! File name (including extension .txt)
 
   select case (command_argument_count())
@@ -35,7 +36,7 @@ program main
     ! Initialize an explicitly empty grid (empty cells are represented by 0):
     grid = 0
 
-    print *, "sudoku.f90, version 0.9.0, copyright (c) 2006-2024 Vincent Magnin and Norwid Behrnd"
+    print *, "sudoku.f90, version 1.0, copyright (c) 2006-2024 Vincent Magnin and Norwid Behrnd"
 
     do
       print *
@@ -48,7 +49,8 @@ program main
       print *, "6) Create a random, already filled Sudoku grid."
       print *, "7) Solve the puzzle grid currently stored in memory."
       print *, "8) Create a puzzle grid (with some probability that the solution is unique)."
-      print *, "9) Quit."
+      print *, "9) Create a puzzle grid with a unique solution."
+      print *, "0) Quit."
       write(*, '(A)', advance='no') "Type your choice and 'Enter': "
       read *, choice
       print *
@@ -126,6 +128,29 @@ program main
         write (*, "(A, F12.3, A)") " Computing time: ", finish - start, " s."
 
       case (9)
+        print *, "If a full valid grid is not in memory, we will start from a new one."
+        print *, "The number of remaining digits is unknown."
+
+        if ((.not.is_full(grid)).or.(.not.valid_grid(grid))) then
+          print *, "No full valid grid is in memory:  a new one will be generated."
+          call create_filled_grid(grid)
+        end if
+
+        print *, "The starting full grid:"
+        call display_grid(grid)
+        ! grid validation:
+        call print_validity(grid, "The grid is valid.", "The grid is invalid: problem to compute a solution!")
+
+        call cpu_time(start)
+        call create_puzzle_with_unique_solution(grid, empty)
+        print *, "Below a Sudoku puzzle with a unique solution:"
+        call display_grid(grid)
+        print *, "Empty cells: ", empty
+        call print_validity(grid, "Valid grid", "Invalid grid: problem to compute a solution!")
+        call cpu_time(finish)
+        write (*, "(A, F12.3, A)") " Computing time: ", finish - start, " s."
+
+      case (0)
         stop
       end select
     end do

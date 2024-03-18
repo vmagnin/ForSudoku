@@ -53,7 +53,8 @@ The program's main interface provides access to all principal functions:
  6) Create a random, already filled Sudoku grid.
  7) Solve the puzzle grid currently stored in memory.
  8) Create a puzzle grid (with some probability that the solution is unique).
- 9) Quit.
+ 9) Create a puzzle grid with a unique solution.
+ 0) Quit.
 ```
 
 ### Option 1, manual entry of a partially filled grid (puzzle)

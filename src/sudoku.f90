@@ -16,7 +16,7 @@
 ! If not, see <http://www.gnu.org/licenses/>.
 !------------------------------------------------------------------------------
 ! Contributed by Vincent Magnin, 2006-11-27; Norwid Behrnd, 2023
-! Last modifications: 2023-09-12, vmagnin 2024-03-17
+! Last modifications: 2023-09-12, vmagnin 2024-03-18
 !------------------------------------------------------------------------------
 
 module sudoku
@@ -102,7 +102,7 @@ contains
     integer, intent(in) :: row, col
     ! These arguments are returned:
     integer, intent(out) :: nb_possible
-    integer, dimension(1:9), intent(out) :: possible_digit
+    integer, dimension(1:9), optional, intent(out) :: possible_digit
 
     integer :: cr, lr, i, j
     logical, dimension(0:9) :: possible  ! Plausibility of each digit
@@ -125,12 +125,12 @@ contains
     end do
 
     nb_possible = 0
-    possible_digit = 0
+    if (present(possible_digit)) possible_digit = 0
     ! Count and store the remaining possible digits:
     do j = 1, 9
       if (possible(j)) then
         nb_possible = nb_possible + 1
-        possible_digit(nb_possible) = j
+        if (present(possible_digit)) possible_digit(nb_possible) = j
       end if
     end do
   end subroutine list_possible_digits
@@ -219,6 +219,58 @@ contains
                   valid_colum_or_row(grid(1:9, col)) .and. &
                   valid_zone(grid(i*3+1:i*3+3, j*3+1:j*3+3))
   end function valid_digit
+
+  ! Creates a Sudoku puzzle with a unique solution.
+  ! Digits are randomly removed one by one. The process ends when it is not
+  ! possible anymore to remove a digit while keeping a unique solution.
+  ! The number of remaining digits is therefore a priori unknown.
+  subroutine create_puzzle_with_unique_solution(grid, nb_empty)
+    integer, dimension(9, 9), intent(inout) :: grid
+    integer, intent(out) :: nb_empty
+
+    ! List of the cells, numbered from 1 to 81, line by line:
+    integer, dimension(81) :: list
+    real    :: r(2)   ! To draw two random numbers
+    integer :: row, col, n, n1, n2, i, temp, d
+    integer :: nb_possible
+
+    ! List of the cells, numbered from 1 to 81, line by line:
+    list = [(i, i=1,81)]
+
+    ! The list is randomly shuffled:
+    do i = 1, 2*81
+      ! We draw two positions:
+      call random_number(r)     ! 0 <= r < 1
+      n1 = 1 + int(r(1) * 81)
+      n2 = 1 + int(r(2) * 81)
+      ! and swap them in the list:
+      temp     = list(n1)
+      list(n1) = list(n2)
+      list(n2) = temp
+    end do
+
+    nb_empty = 0
+    ! Remove digits one by one:
+    do i = 1, 81
+      ! Number of the cell in the shuffled list:
+      n = list(i)
+      ! Coordinates of the cell in the grid:
+      row = 1 + (n-1) / 9
+      col = 1 + mod(n-1, 9)
+      ! We save then delete the digit in that cell:
+      d = grid(row, col)
+      grid(row, col) = 0
+      ! How many digits are possible at that position?
+      call list_possible_digits(grid, row, col, nb_possible)
+      if (nb_possible > 1) then
+        ! We put back the digit in the cell:
+        grid(row, col) = d
+        ! and we continue with the next cell in the list...
+      else
+        nb_empty = nb_empty + 1
+      end if
+    end do
+  end subroutine create_puzzle_with_unique_solution
 
   ! Creates a Sudoku puzzle by brute force.
   ! But we are not 100% sure that the solution is unique
