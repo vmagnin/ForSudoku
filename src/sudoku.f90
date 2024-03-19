@@ -105,7 +105,7 @@ contains
     integer, dimension(1:9), optional, intent(out) :: possible_digit
 
     integer :: cr, lr, i, j
-    logical, dimension(0:9) :: possible  ! Plausibility of each digit
+    logical, dimension(0:9) :: possible  ! Each digit is either possible or not
 
     possible = .true.
 
@@ -262,6 +262,7 @@ contains
       d = grid(row, col)
       grid(row, col) = 0
       ! How many digits are possible at that position?
+      ! Note: 79% of CPU time is spent in list_possible_digits()
       call list_possible_digits(grid, row, col, nb_possible)
       if (nb_possible > 1) then
         ! We put back the digit in the cell:
