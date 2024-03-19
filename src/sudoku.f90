@@ -237,8 +237,9 @@ contains
     ! List of the cells, numbered from 1 to 81, line by line:
     list = [(i, i=1,81)]
 
-    ! The list is randomly shuffled:
-    do i = 1, 2*81
+    ! The list is randomly shuffled to avoid removing too many neighbours.
+    ! The probability that a position is never drawn is (80/81)^81 ~ 0.107
+    do i = 1, 81
       ! We draw two positions:
       call random_number(r)     ! 0 <= r < 1
       n1 = 1 + int(r(1) * 81)

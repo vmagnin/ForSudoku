@@ -16,14 +16,14 @@
 ! If not, see <http://www.gnu.org/licenses/>.
 !------------------------------------------------------------------------------
 ! Contributed by Vincent Magnin, 2006-11-27; Norwid Behrnd, 2023
-! Last modifications: 2024-03-18
+! Last modifications: 2024-03-19
 !------------------------------------------------------------------------------
 
 program main
   use sudoku
 
   implicit none
-  integer, dimension(9, 9) :: grid
+  integer, dimension(9, 9) :: grid, grid0
   real          :: start, finish  ! To monitor the duration of the computation
   integer       :: choice
   integer       :: remainder      ! Number of filled cells when creating a grid
@@ -36,7 +36,7 @@ program main
     ! Initialize an explicitly empty grid (empty cells are represented by 0):
     grid = 0
 
-    print *, "sudoku.f90, version 1.0, copyright (c) 2006-2024 Vincent Magnin and Norwid Behrnd"
+    print *, "sudoku.f90, version 0.9.0, copyright (c) 2006-2024 Vincent Magnin and Norwid Behrnd"
 
     do
       print *
@@ -48,8 +48,9 @@ program main
       print *, "5) Display the grid currently stored in memory."
       print *, "6) Create a random, already filled Sudoku grid."
       print *, "7) Solve the puzzle grid currently stored in memory."
-      print *, "8) Create a puzzle grid (with some probability that the solution is unique)."
-      print *, "9) Create a puzzle grid with a unique solution."
+      print *, "8) Create a puzzle grid with a unique solution, using the grid in memory."
+      print *, "9) Create a puzzle grid with a unique solution with n given digits."
+      print *, "10) Create a puzzle grid (with some probability that the solution is unique)."
       print *, "0) Quit."
       write(*, '(A)', advance='no') "Type your choice and 'Enter': "
       read *, choice
@@ -80,7 +81,7 @@ program main
         call print_validity(grid, "The grid to process is valid.", "The grid to process is invalid.")
 
       case (5)
-        print *, "Below, the grid to process:"
+        print *, "The grid to process:"
         call display_grid(grid)
         call print_validity(grid, "The grid is valid.", "The grid is invalid.")
 
@@ -97,15 +98,15 @@ program main
         call display_grid(grid)
         call cpu_time(start)
         call solve_puzzle(grid)
-        call print_validity(grid, "Below, the solved grid (validity was verified):", &
+        call print_validity(grid, "The solved grid (validity was verified):", &
                                 & "The initial grid was invalid, impossible to solve...")
         call display_grid(grid)
         call cpu_time(finish)
         write (*, "(A, F12.3, A)") " Computing time: ", finish - start, " s."
 
-      case (8)
+      case (10)
         print *, "If a full valid grid is not in memory, we will start from a new one."
-        print *, "How many digits in [17, 81] do you want in the puzzle grid?"
+        print *, "How many given digits in [17, 81] do you want in the puzzle grid?"
         print *, "(Below 28, the computation will become longer!)"
         read *, remainder
 
@@ -121,15 +122,15 @@ program main
 
         call cpu_time(start)
         call create_puzzle(grid, remainder)
-        print *, "Below a Sudoku puzzle (with probably a unique solution):"
+        print *, "A Sudoku puzzle (with maybe a unique solution):"
         call display_grid(grid)
         call print_validity(grid, "Valid grid", "Invalid grid: problem to compute a solution!")
         call cpu_time(finish)
         write (*, "(A, F12.3, A)") " Computing time: ", finish - start, " s."
 
-      case (9)
+      case (8)
         print *, "If a full valid grid is not in memory, we will start from a new one."
-        print *, "The number of remaining digits is unknown."
+        print *, "The number of given digits is unknown."
 
         if ((.not.is_full(grid)).or.(.not.valid_grid(grid))) then
           print *, "No full valid grid is in memory:  a new one will be generated."
@@ -143,9 +144,30 @@ program main
 
         call cpu_time(start)
         call create_puzzle_with_unique_solution(grid, empty)
-        print *, "Below a Sudoku puzzle with a unique solution:"
+        print *, "A Sudoku puzzle with a unique solution:"
         call display_grid(grid)
         print *, "Empty cells: ", empty
+        call print_validity(grid, "Valid grid", "Invalid grid: problem to compute a solution!")
+        call cpu_time(finish)
+        write (*, "(A, F12.3, A)") " Computing time: ", finish - start, " s."
+
+      case (9)
+        print *, "How many given digits in [17, 81] do you want? (below 33 it will become longer)"
+        read *, remainder
+
+        print *, "Be patient..."
+        call cpu_time(start)
+        call create_filled_grid(grid0)
+
+        do
+          grid = grid0
+          call create_puzzle_with_unique_solution(grid, empty)
+          if (81 - empty == remainder) exit
+        end do
+
+        print *, "Below a Sudoku puzzle with a unique solution:"
+        call display_grid(grid)
+        print '(" Empty cells: ", I0, "    Filled cells: ", I0)', empty,  81-empty
         call print_validity(grid, "Valid grid", "Invalid grid: problem to compute a solution!")
         call cpu_time(finish)
         write (*, "(A, F12.3, A)") " Computing time: ", finish - start, " s."

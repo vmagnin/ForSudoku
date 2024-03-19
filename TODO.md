@@ -1,4 +1,4 @@
 # TODO & Ideas
 
-* Write a `CreateSudokuGrid()` using a recursive algorithm? Would it be usable for very empty grid?
+* Explore parallelization with DO CONCURRENT, coarrays or collective routines...
 * Would OOP bring something?

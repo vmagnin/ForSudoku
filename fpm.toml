@@ -1,6 +1,6 @@
 name = "sudoku"
 description= "Generates and solves sudokus"
-version = "1.0.0"
+version = "0.9.0"
 license    = "GPL-3.0-or-later"
 author = "vmagnin, nbehrnd"
 copyright = "Copyright 2006-2024, vmagnin & nbehrnd"
