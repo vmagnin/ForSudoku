@@ -66,11 +66,9 @@ contains
         row = empty_cells(j, 1)
         col = empty_cells(j, 2)
         ! The last two arguments have intent(out):
-        call list_possible_digits(grid, row, col, &
-                                & empty_cells(j, 3), possible_digit)
+        call list_possible_digits(grid, row, col, empty_cells(j, 3))
         ! empty_cells(j, 3) will contain the nb of possible digits for the
-        ! empty cell number j and the array possible_digit(1:9)
-        ! the corresponding digits (but that array is not used for sorting).
+        ! empty cell number j.
       end do
 
       ! Sort the empty cells:
