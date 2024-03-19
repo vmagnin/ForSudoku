@@ -14,6 +14,8 @@ format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Code improved, modernized and refactored.
 - If a full valid grid is not in memory, a new one will be automatically
 generated if you want to create a puzzle grid.
+- `initialize_random_number_generator()` can now receive a seed from the main
+program (useful for testing and debugging).
 
 ### Removed
 - `Time()` function.

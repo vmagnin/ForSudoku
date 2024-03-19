@@ -32,7 +32,10 @@ program main
 
   select case (command_argument_count())
   case (0)    ! The typical invocation with `fpm run`
-    call initialize_random_number_generator
+    ! Pass 0 as a seed if you always need the same pseudo-random sequence
+    ! for debugging or testing:
+    call initialize_random_number_generator()
+
     ! Initialize an explicitly empty grid (empty cells are represented by 0):
     grid = 0
 

@@ -16,7 +16,7 @@
 ! If not, see <http://www.gnu.org/licenses/>.
 !------------------------------------------------------------------------------
 ! Contributed by Vincent Magnin, 2006-11-27; Norwid Behrnd, 2023
-! Last modifications: 2023-09-12, vmagnin 2024-03-18
+! Last modifications: 2023-09-12, vmagnin 2024-03-19
 !------------------------------------------------------------------------------
 
 module sudoku
@@ -513,24 +513,25 @@ contains
   !**************************************************************
   ! System independent initialization of pseudo-random generator
   !**************************************************************
-  subroutine initialize_random_number_generator
-    integer, dimension(1:8) :: time_values
+  subroutine initialize_random_number_generator(user_seed)
+    integer, optional, intent(in)      :: user_seed
     integer, allocatable, dimension(:) :: seed
+    integer, dimension(1:8)            :: time_values
     integer :: i, n
 
     call random_seed(size=n)
     allocate (seed(1:n))
 
-    ! Real-time clock:
-    call date_and_time(values=time_values)
-    ! We use the milliseconds to compute the seeds:
-    do i = 1, n
-      seed(i) = (huge(seed(i)) / 1000) * time_values(8) - i
-    end do
-
-    ! Uncomment this line if you always need the same pseudo-random sequence
-    ! for debugging or testing:
-    !seed = 0
+    if (present(user_seed)) then
+      seed = user_seed
+    else
+      ! Real-time clock:
+      call date_and_time(values=time_values)
+      ! We use the milliseconds to compute the seeds:
+      do i = 1, n
+        seed(i) = (huge(seed(i)) / 1000) * time_values(8) - i
+      end do
+    end if
 
     call random_seed(put=seed(1:n))
   end subroutine initialize_random_number_generator
