@@ -46,26 +46,29 @@ The program's main interface provides access to all principal functions:
 ```shell
  ******************************** MENU **************************************
  1) Manual input (lines of comma separated 1 - 9, or 0 (empty cell)).
- 2) Input from a text file (for permitted patterns, see the documentation).
- 3) Save the currently processed grid as a text file.
- 4) Check the validity of the grid currently stored in memory.
- 5) Display the grid currently stored in memory.
- 6) Create a random, already filled Sudoku grid.
+ 2) Read a grid from a text file (for permitted patterns, see the doc).
+ 3) Save the current grid in a text file.
+ 4) Check the validity of the current grid.
+ 5) Display the current grid.
+ 6) Create a random full Sudoku grid.
  7) Solve the puzzle grid currently stored in memory.
- 8) Create a puzzle grid with a unique solution, using the grid in memory.
+ 8) Create a puzzle grid with a unique solution, starting from the grid in memory.
  9) Create a puzzle grid with a unique solution with n given digits.
- 10) Create a puzzle grid (with some probability that the solution is unique).
+ 10) Create a puzzle grid, without being 100% sure that the solution is unique.
  0) Quit.
+
 ```
 
-### Option 1, manual entry of a partially filled grid (puzzle)
+### 1) Manual entry of a grid
 
-The program can provide a solution for partially filled Sudoku grids.  In this
-mode, sequentially enter cells one by one, starting from the left, as a comma
-separated line.  Use any number `1` to `9` for known cells.  If the cell in
-your reference pattern is still empty or unknown, enter either `0` (zero,
+In this mode, sequentially enter cells one by one, starting from the left, as a comma separated line.  Use any number `1` to `9` for known cells.  If the cell in your reference pattern is still empty or unknown, enter either `0` (zero,
 recommended), or a blank space instead.  After typing the last cell in the
-current line (which is not followed by a comma), submit the line by `Enter`.
+current line (which is not followed by a comma), submit the line by `Enter`:
+
+```shell
+Enter line 1:
+1,2,3,4,5,6,7,8,9
+```
 
 Upon completion of the input, the program quickly checks if the grid is valid
 and displays it in a form similar to the one below:
@@ -84,32 +87,39 @@ and displays it in a form similar to the one below:
  0 0 0 | 0 8 0 | 0 7 9
 ```
 
-If the input is considered a valid one, use then option `7` to query for a
-solution, i.e. a completely filled grid.
+If the input is considered a valid one, you can then use that grid with the other options.
 
-### Option 2, file based entry of a puzzle
+### 2) Read a grid from a text file
 
-The present form of the program only reliably supports the input of a partially
-filled grid if its own format depicted above.  Folder `check` contains example
+The present form of the program only reliably supports the input of a grid in the format depicted above.  Folder `check` contains example
 files of a partially filled grid (`test_in_01.txt` and `test_in_02.txt`) as a
 reference, and a grid filled with the explicit place holder zeroes to start
 with (`template.txt`) for you.  Then, paste the record into the root of this
-project; only the files which are listed by the program by selection of mode
-`2` can be read and processed.
+project (only the files which are listed by the program by selection of mode
+`2` can be read and processed).
 
-If the input is considered a valid one, use then option `7` to query for a
-solution, i.e. a completely filled grid.  For comparison, folder `check`
-equally contains the corresponding solution of the test input (files
-`test_out_01.txt` and `test_out_02.txt`) in the program's format which match
-the topmost example in the English edition of Wikipedia.
+### 6) Generation of a random full grid
 
-### Option 6, generation of a randomly filled grid
+The program generates a random sudoku by brute force: in each cycle a digit is added and checked for validity. If the grid became invalid, the grid generation is started all over again, until a valid grid is obtained. But the process is very quick.
 
-By this option, the program generates a random grid, filled and passing the
-same validity test which is used to check partially filled grids.  Note,
-similar as either the manual input (option `1`), or the one from a permanent
-record (option `2`), this option equally overwrites the content of the
-program's memory.
+The new grid replaces the previous grid stored in memory.
+
+### 7) Solve a puzzle grid.
+ 
+The puzzle in memory is solved by brute force. But the process is very quick.
+
+### 8) Create a sudoku puzzle with a unique solution
+
+If a full valid grid is not in memory, we will start from a new one. As the algorithm uses random numbers to remove digits in the grid, following validity rules, the final number of given digits is a priori unknown. The process will be generally quick and the obtained puzzle will be most of the time half-empty.
+
+### 9) Create a puzzle with a unique solution with n given digits
+
+You can ask the program any number of given digits in the [17, 81] range, but the computation will become longer below 33 as the algorithm is based on brute force: it launches the previous option until we obtain a puzzle with n given digits.
+
+### 10) Create a puzzle grid (unicity not guaranteed)
+
+You can obtain puzzles with still less given digits with this method, but without guaranty that the solution is unique.
+
 
 ## License
 
@@ -119,6 +129,7 @@ later](http://www.gnu.org/licenses/gpl.html).
 ## Bibliography
 
 * <https://en.wikipedia.org/wiki/Sudoku>
+* <https://en.wikipedia.org/wiki/Mathematics_of_Sudoku>
 * Michael Metcalf. A Sudoku program in Fortran 95. *SIGPLAN Fortran Forum* 25,
 1 (April 2006), 4–7. https://doi.org/10.1145/1124708.1124709
 * Other [Fortran sudoku projects](https://github.com/search?q=sudoku%20fortran&type=repositories)
