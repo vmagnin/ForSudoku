@@ -24,318 +24,6 @@ module sudoku
 
 contains
 
-  ! Receives a puzzle grid and solves it:
-  subroutine solve_puzzle(grid)
-    integer, dimension(9, 9), intent(inout) :: grid
-
-    integer, dimension(9, 9) :: grid0
-    real    :: r   ! Random number
-    integer :: row, col, i, j
-    ! Counter of empty cells:
-    integer :: nb_empty
-    ! List of empty cells:
-    integer, dimension(1:81, 1:3) :: empty_cells
-    ! List and number of possible digits:
-    integer, dimension(1:9) :: possible_digit
-    integer :: nb_possible
-
-    ! Save the initial grid:
-    grid0 = grid
-
-    ! Identify and store the coordinates of empty cells in the grid
-    ! in the table "empty_cells":
-    empty_cells = 0
-    nb_empty = 0
-    do row = 1, 9
-      do col = 1, 9
-        if (grid(row, col) == 0) then
-          nb_empty = nb_empty + 1
-          empty_cells(nb_empty, 1) = row
-          empty_cells(nb_empty, 2) = col
-        end if
-      end do
-    end do
-
-    ! Iterate over all empty cells:
-    possible_digit = 0
-    i = 1
-    do while (i <= nb_empty)
-      ! To accelerate the algorithm, count for each empty cell the digits
-      ! which could be inserted in that cell:
-      do j = i, nb_empty
-        row = empty_cells(j, 1)
-        col = empty_cells(j, 2)
-        ! The last two arguments have intent(out):
-        call list_possible_digits(grid, row, col, empty_cells(j, 3))
-        ! empty_cells(j, 3) will contain the nb of possible digits for the
-        ! empty cell number j.
-      end do
-
-      ! Sort the empty cells:
-      call sort(empty_cells, i, nb_empty)
-
-      ! For the empty cell i, regenerate a list of possible digits:
-      row = empty_cells(i, 1)
-      col = empty_cells(i, 2)
-      call list_possible_digits(grid, row, col, &
-                              & nb_possible, possible_digit)
-
-      ! If there are possibilities, choose randomly one and
-      ! continue with the next empty cell:
-      if (nb_possible > 0) then
-        call random_number(r)     ! 0 <= r < 1
-        grid(row, col) = possible_digit(1 + int(r * nb_possible))
-        i = i + 1
-      else ! Start all over again
-        i = 1
-        grid = grid0
-      end if
-    end do
-  end subroutine solve_puzzle
-
-  ! Procedure to create a list of allowed digits in the present empty cell:
-  subroutine list_possible_digits(grid, row, col, &
-                                  nb_possible, possible_digit)
-    integer, dimension(9, 9), intent(in) :: grid
-    integer, intent(in) :: row, col
-    ! These arguments are returned:
-    integer, intent(out) :: nb_possible
-    integer, dimension(1:9), optional, intent(out) :: possible_digit
-
-    integer :: cr, lr, i, j
-    logical, dimension(0:9) :: possible  ! Each digit is either possible or not
-
-    possible = .true.
-
-    ! Given digits in those row and column are excluded:
-    do j = 1, 9
-      possible(grid(j, col)) = .false.
-      possible(grid(row, j)) = .false.
-    end do
-
-    ! Given digits in that region are excluded:
-    lr = 1 + 3 * ((row - 1) / 3)
-    cr = 1 + 3 * ((col - 1) / 3)
-    do i = lr, lr + 2
-      do j = cr, cr + 2
-        possible(grid(i, j)) = .false.
-      end do
-    end do
-
-    nb_possible = 0
-    if (present(possible_digit)) possible_digit = 0
-    ! Count and store the remaining possible digits:
-    do j = 1, 9
-      if (possible(j)) then
-        nb_possible = nb_possible + 1
-        if (present(possible_digit)) possible_digit(nb_possible) = j
-      end if
-    end do
-  end subroutine list_possible_digits
-
-  ! Starting from position p, sort the list of empty cells by
-  ! ascending number of allowed digits. We use a bubble sort:
-  subroutine sort(empty_cells, p, n)
-    integer, dimension(1:81, 1:3), intent(inout) :: empty_cells
-    integer, intent(in) :: p    ! The sort starts at position p (included)
-    integer, intent(in) :: n    ! Number of empty cells in the list
-
-    integer :: i
-    integer, dimension(1:3) :: col
-    logical :: none_swap
-
-    do
-      ! Compare each cell with the next one and swap them if necessary:
-      none_swap = .true.
-      do i = p, n - 1
-        if (empty_cells(i, 3) > empty_cells(i+1, 3)) then
-          ! Swap them:
-          col = empty_cells(i, :)
-          empty_cells(i  , :) = empty_cells(i+1, :)
-          empty_cells(i+1, :) = col
-          none_swap = .false.
-        end if
-      end do
-
-      if (none_swap) exit     ! The bubble sort is finished
-    end do
-  end subroutine sort
-
-  ! Grid generation by brute force: in each cycle a digit is added and checked
-  ! for validity.  If the grid becomes invalid, the grid generation
-  ! is started all over again.
-  subroutine create_filled_grid(grid)
-    integer, dimension(9, 9), intent(out) :: grid
-
-    real    :: r
-    integer :: row, col
-    integer :: tests
-
-    restart:do
-      ! We start with an empty grid:
-      grid = 0
-
-      try:do row = 1, 9
-        do col = 1, 9
-          tests = 0
-
-          digit: do
-            tests = tests + 1
-            ! We add a random digit in the grid:
-            call random_number(r)
-            grid(row, col) = 1 + int(r * 9)
-            ! and check if the Sudoku constraints are OK:
-            if (valid_digit(grid, row, col)) then
-              ! Let's continue with other cells:
-              exit digit
-            else
-              if (tests > 30) then
-                ! The probability of finding a valid digit is low,
-                ! and we therefore restart a new grid:
-                cycle restart
-              end if
-            end if
-          end do digit
-        end do
-      end do try
-      ! We have left naturally the "try" loop 
-      ! and have therefore found a valid grid:
-      exit
-    end do restart
-  end subroutine create_filled_grid
-
-  ! Returns true if the row, column and region of a digit are all valid:
-  pure logical function valid_digit(grid, row, col)
-    integer, dimension(9, 9), intent(in) :: grid
-    integer, intent(in) :: row, col
-
-    integer :: i, j
-    i = (row - 1) / 3
-    j = (col - 1) / 3
-
-    valid_digit = valid_colum_or_row(grid(row, 1:9)) .and. &
-                  valid_colum_or_row(grid(1:9, col)) .and. &
-                  valid_zone(grid(i*3+1:i*3+3, j*3+1:j*3+3))
-  end function valid_digit
-
-  ! Creates a minimal puzzle.
-  ! Digits are randomly removed one by one. The process ends when it is not
-  ! possible anymore to remove a digit while keeping a unique solution.
-  ! The number of remaining digits is therefore a priori unknown.
-  subroutine create_puzzle_with_unique_solution(grid, nb_empty)
-    integer, dimension(9, 9), intent(inout) :: grid
-    integer, intent(out) :: nb_empty
-
-    ! List of the cells, numbered from 1 to 81, line by line:
-    integer, dimension(81) :: list
-    real    :: r(2)   ! To draw two random numbers
-    integer :: row, col, n, n1, n2, i, temp, d
-    integer :: nb_possible
-
-    ! List of the cells, numbered from 1 to 81, line by line:
-    list = [(i, i=1,81)]
-
-    ! The list is randomly shuffled to avoid removing too many neighbours.
-    ! The probability that a position is never drawn is (80/81)^81 ~ 0.107
-    ! Increasing the upper limit would impede performance.
-    do i = 1, 81
-      ! We draw two positions:
-      call random_number(r)     ! 0 <= r < 1
-      n1 = 1 + int(r(1) * 81)
-      n2 = 1 + int(r(2) * 81)
-      ! and swap them in the list:
-      temp     = list(n1)
-      list(n1) = list(n2)
-      list(n2) = temp
-    end do
-
-    nb_empty = 0
-    ! Remove digits one by one:
-    do i = 1, 81
-      ! Number of the cell in the shuffled list:
-      n = list(i)
-      ! Coordinates of the cell in the grid:
-      row = 1 + (n-1) / 9
-      col = 1 + mod(n-1, 9)
-      ! We save then delete the digit in that cell:
-      d = grid(row, col)
-      grid(row, col) = 0
-      ! How many digits are possible at that position?
-      ! Note: 79% of CPU time is spent in list_possible_digits()
-      call list_possible_digits(grid, row, col, nb_possible)
-      if (nb_possible > 1) then
-        ! We put back the digit in the cell:
-        grid(row, col) = d
-        ! and we continue with the next cell in the list...
-      else
-        nb_empty = nb_empty + 1
-      end if
-    end do
-  end subroutine create_puzzle_with_unique_solution
-
-  ! Creates a puzzle by brute force.
-  ! But we are not 100% sure that the solution is unique
-  ! (just a "high" probability).
-  subroutine create_puzzle(grid, givens)
-    integer, dimension(9, 9), intent(inout) :: grid
-    integer, intent(in) :: givens
-
-    integer, dimension(9, 9) :: grid0
-    ! Maximum number of times we try to solve a grid:
-    integer, parameter :: n = 1000
-    ! To store and compare the n Sudoku solutions:
-    integer, dimension(:, :, :), allocatable :: solutions
-    real    :: r(2)
-    integer :: row, col, i
-    logical :: unique
-
-    allocate(solutions(1:n, 1:9, 1:9))
-
-    ! Save the initial grid:
-    grid0 = grid
-
-    print *, "Search of a grid with a probably unique solution..."
-
-    do
-      grid = grid0
-      ! Show the advancement of the algorithm:
-      write(*, '(".")', advance='no')
-
-      ! Remove digits:
-      do i = 1, 81 - givens
-        ! Choose randomly a cell with a digit:
-        do
-          call random_number(r)
-          row = 1 + int(r(1) * 9)
-          col = 1 + int(r(2) * 9)
-
-          if (grid(row, col) /= 0) exit
-        end do
-        ! Erase the digit in this cell:
-        grid(row, col) = 0
-      end do
-
-      ! The grid is solved up to n times to increase the probability that
-      ! the solution is unique:
-      unique = .true.
-      solve: do i = 1, n
-        solutions(i, :, :) = grid
-        call solve_puzzle(solutions(i, :, :))
-
-        ! Is that solution identical to all previous ones?
-        if (i >= 2) then
-          if (any(solutions(i, :, :) /= solutions(i-1, :, :))) then
-            unique = .false.
-            exit solve
-          end if
-        end if
-      end do solve
-
-      if (unique) exit
-    end do
-    write(*,*)
-  end subroutine create_puzzle
-
   !*****************************************************************************
   ! Input/Output routines
   !*****************************************************************************
@@ -499,6 +187,20 @@ contains
     valid_grid = .true.
   end function valid_grid
 
+  ! Returns true if the row, column and region of a digit are all valid:
+  pure logical function valid_digit(grid, row, col)
+    integer, dimension(9, 9), intent(in) :: grid
+    integer, intent(in) :: row, col
+
+    integer :: i, j
+    i = (row - 1) / 3
+    j = (col - 1) / 3
+
+    valid_digit = valid_colum_or_row(grid(row, 1:9)) .and. &
+                  valid_colum_or_row(grid(1:9, col)) .and. &
+                  valid_zone(grid(i*3+1:i*3+3, j*3+1:j*3+3))
+  end function valid_digit
+
   ! Returns true if the grid is full:
   pure logical function is_full(grid)
     integer, dimension(9, 9), intent(in) :: grid
@@ -510,32 +212,146 @@ contains
     end if
   end function
 
-  !**************************************************************
-  ! System independent initialization of pseudo-random generator
-  !**************************************************************
-  subroutine initialize_random_number_generator(user_seed)
-    integer, optional, intent(in)      :: user_seed
-    integer, allocatable, dimension(:) :: seed
-    integer, dimension(1:8)            :: time_values
-    integer :: i, n
+  ! Procedure to create a list of allowed digits in the present empty cell:
+  subroutine list_possible_digits(grid, row, col, &
+                                  nb_possible, possible_digit)
+    integer, dimension(9, 9), intent(in) :: grid
+    integer, intent(in) :: row, col
+    ! These arguments are returned:
+    integer, intent(out) :: nb_possible
+    integer, dimension(1:9), optional, intent(out) :: possible_digit
 
-    call random_seed(size=n)
-    allocate (seed(1:n))
+    integer :: cr, lr, i, j
+    logical, dimension(0:9) :: possible  ! Each digit is either possible or not
 
-    if (present(user_seed)) then
-      seed = user_seed
-    else
-      ! Real-time clock:
-      call date_and_time(values=time_values)
-      ! We use the milliseconds to compute the seeds:
-      do i = 1, n
-        seed(i) = (huge(seed(i)) / 1000) * time_values(8) - i
+    possible = .true.
+
+    ! Given digits in those row and column are excluded:
+    do j = 1, 9
+      possible(grid(j, col)) = .false.
+      possible(grid(row, j)) = .false.
+    end do
+
+    ! Given digits in that region are excluded:
+    lr = 1 + 3 * ((row - 1) / 3)
+    cr = 1 + 3 * ((col - 1) / 3)
+    do i = lr, lr + 2
+      do j = cr, cr + 2
+        possible(grid(i, j)) = .false.
       end do
-    end if
+    end do
 
-    call random_seed(put=seed(1:n))
-  end subroutine initialize_random_number_generator
+    nb_possible = 0
+    if (present(possible_digit)) possible_digit = 0
+    ! Count and store the remaining possible digits:
+    do j = 1, 9
+      if (possible(j)) then
+        nb_possible = nb_possible + 1
+        if (present(possible_digit)) possible_digit(nb_possible) = j
+      end if
+    end do
+  end subroutine list_possible_digits
 
+  !*****************************************************************************
+  ! Solver routines
+  !*****************************************************************************
+
+  ! Starting from position p, sort the list of empty cells by
+  ! ascending number of allowed digits. We use a bubble sort:
+  subroutine sort(empty_cells, p, n)
+    integer, dimension(1:81, 1:3), intent(inout) :: empty_cells
+    integer, intent(in) :: p    ! The sort starts at position p (included)
+    integer, intent(in) :: n    ! Number of empty cells in the list
+
+    integer :: i
+    integer, dimension(1:3) :: col
+    logical :: none_swap
+
+    do
+      ! Compare each cell with the next one and swap them if necessary:
+      none_swap = .true.
+      do i = p, n - 1
+        if (empty_cells(i, 3) > empty_cells(i+1, 3)) then
+          ! Swap them:
+          col = empty_cells(i, :)
+          empty_cells(i  , :) = empty_cells(i+1, :)
+          empty_cells(i+1, :) = col
+          none_swap = .false.
+        end if
+      end do
+
+      if (none_swap) exit     ! The bubble sort is finished
+    end do
+  end subroutine sort
+
+  ! Receives a puzzle grid and solves it:
+  subroutine solve_puzzle(grid)
+    integer, dimension(9, 9), intent(inout) :: grid
+
+    integer, dimension(9, 9) :: grid0
+    real    :: r   ! Random number
+    integer :: row, col, i, j
+    ! Counter of empty cells:
+    integer :: nb_empty
+    ! List of empty cells:
+    integer, dimension(1:81, 1:3) :: empty_cells
+    ! List and number of possible digits:
+    integer, dimension(1:9) :: possible_digit
+    integer :: nb_possible
+
+    ! Save the initial grid:
+    grid0 = grid
+
+    ! Identify and store the coordinates of empty cells in the grid
+    ! in the table "empty_cells":
+    empty_cells = 0
+    nb_empty = 0
+    do row = 1, 9
+      do col = 1, 9
+        if (grid(row, col) == 0) then
+          nb_empty = nb_empty + 1
+          empty_cells(nb_empty, 1) = row
+          empty_cells(nb_empty, 2) = col
+        end if
+      end do
+    end do
+
+    ! Iterate over all empty cells:
+    possible_digit = 0
+    i = 1
+    do while (i <= nb_empty)
+      ! To accelerate the algorithm, count for each empty cell the digits
+      ! which could be inserted in that cell:
+      do j = i, nb_empty
+        row = empty_cells(j, 1)
+        col = empty_cells(j, 2)
+        ! The last two arguments have intent(out):
+        call list_possible_digits(grid, row, col, empty_cells(j, 3))
+        ! empty_cells(j, 3) will contain the nb of possible digits for the
+        ! empty cell number j.
+      end do
+
+      ! Sort the empty cells:
+      call sort(empty_cells, i, nb_empty)
+
+      ! For the empty cell i, regenerate a list of possible digits:
+      row = empty_cells(i, 1)
+      col = empty_cells(i, 2)
+      call list_possible_digits(grid, row, col, &
+                              & nb_possible, possible_digit)
+
+      ! If there are possibilities, choose randomly one and
+      ! continue with the next empty cell:
+      if (nb_possible > 0) then
+        call random_number(r)     ! 0 <= r < 1
+        grid(row, col) = possible_digit(1 + int(r * nb_possible))
+        i = i + 1
+      else ! Start all over again
+        i = 1
+        grid = grid0
+      end if
+    end do
+  end subroutine solve_puzzle
 
   subroutine solver(grid, file)
     ! ******************************************************************
@@ -570,4 +386,196 @@ contains
     end if
 
   end subroutine solver
+
+  !*****************************************************************************
+  ! Puzzle generators
+  !*****************************************************************************
+
+  ! Grid generation by brute force: in each cycle a digit is added and checked
+  ! for validity.  If the grid becomes invalid, the grid generation
+  ! is started all over again.
+  subroutine create_filled_grid(grid)
+    integer, dimension(9, 9), intent(out) :: grid
+
+    real    :: r
+    integer :: row, col
+    integer :: tests
+
+    restart:do
+      ! We start with an empty grid:
+      grid = 0
+
+      try:do row = 1, 9
+        do col = 1, 9
+          tests = 0
+
+          digit: do
+            tests = tests + 1
+            ! We add a random digit in the grid:
+            call random_number(r)
+            grid(row, col) = 1 + int(r * 9)
+            ! and check if the Sudoku constraints are OK:
+            if (valid_digit(grid, row, col)) then
+              ! Let's continue with other cells:
+              exit digit
+            else
+              if (tests > 30) then
+                ! The probability of finding a valid digit is low,
+                ! and we therefore restart a new grid:
+                cycle restart
+              end if
+            end if
+          end do digit
+        end do
+      end do try
+      ! We have left naturally the "try" loop 
+      ! and have therefore found a valid grid:
+      exit
+    end do restart
+  end subroutine create_filled_grid
+
+  ! Creates a minimal puzzle.
+  ! Digits are randomly removed one by one. The process ends when it is not
+  ! possible anymore to remove a digit while keeping a unique solution.
+  ! The number of remaining digits is therefore a priori unknown.
+  subroutine create_puzzle_with_unique_solution(grid, nb_empty)
+    integer, dimension(9, 9), intent(inout) :: grid
+    integer, intent(out) :: nb_empty
+
+    ! List of the cells, numbered from 1 to 81, line by line:
+    integer, dimension(81) :: list
+    real    :: r(2)   ! To draw two random numbers
+    integer :: row, col, n, n1, n2, i, temp, d
+    integer :: nb_possible
+
+    ! List of the cells, numbered from 1 to 81, line by line:
+    list = [(i, i=1,81)]
+
+    ! The list is randomly shuffled to avoid removing too many neighbours.
+    ! The probability that a position is never drawn is (80/81)^81 ~ 0.107
+    ! Increasing the upper limit would impede performance.
+    do i = 1, 81
+      ! We draw two positions:
+      call random_number(r)     ! 0 <= r < 1
+      n1 = 1 + int(r(1) * 81)
+      n2 = 1 + int(r(2) * 81)
+      ! and swap them in the list:
+      temp     = list(n1)
+      list(n1) = list(n2)
+      list(n2) = temp
+    end do
+
+    nb_empty = 0
+    ! Remove digits one by one:
+    do i = 1, 81
+      ! Number of the cell in the shuffled list:
+      n = list(i)
+      ! Coordinates of the cell in the grid:
+      row = 1 + (n-1) / 9
+      col = 1 + mod(n-1, 9)
+      ! We save then delete the digit in that cell:
+      d = grid(row, col)
+      grid(row, col) = 0
+      ! How many digits are possible at that position?
+      ! Note: 79% of CPU time is spent in list_possible_digits()
+      call list_possible_digits(grid, row, col, nb_possible)
+      if (nb_possible > 1) then
+        ! We put back the digit in the cell:
+        grid(row, col) = d
+        ! and we continue with the next cell in the list...
+      else
+        nb_empty = nb_empty + 1
+      end if
+    end do
+  end subroutine create_puzzle_with_unique_solution
+
+  ! Creates a puzzle by brute force.
+  ! But we are not 100% sure that the solution is unique
+  ! (just a "high" probability).
+  subroutine create_puzzle(grid, givens)
+    integer, dimension(9, 9), intent(inout) :: grid
+    integer, intent(in) :: givens
+
+    integer, dimension(9, 9) :: grid0
+    ! Maximum number of times we try to solve a grid:
+    integer, parameter :: n = 1000
+    ! To store and compare the n Sudoku solutions:
+    integer, dimension(:, :, :), allocatable :: solutions
+    real    :: r(2)
+    integer :: row, col, i
+    logical :: unique
+
+    allocate(solutions(1:n, 1:9, 1:9))
+
+    ! Save the initial grid:
+    grid0 = grid
+
+    print *, "Search of a grid with a probably unique solution..."
+
+    do
+      grid = grid0
+      ! Show the advancement of the algorithm:
+      write(*, '(".")', advance='no')
+
+      ! Remove digits:
+      do i = 1, 81 - givens
+        ! Choose randomly a cell with a digit:
+        do
+          call random_number(r)
+          row = 1 + int(r(1) * 9)
+          col = 1 + int(r(2) * 9)
+
+          if (grid(row, col) /= 0) exit
+        end do
+        ! Erase the digit in this cell:
+        grid(row, col) = 0
+      end do
+
+      ! The grid is solved up to n times to increase the probability that
+      ! the solution is unique:
+      unique = .true.
+      solve: do i = 1, n
+        solutions(i, :, :) = grid
+        call solve_puzzle(solutions(i, :, :))
+
+        ! Is that solution identical to all previous ones?
+        if (i >= 2) then
+          if (any(solutions(i, :, :) /= solutions(i-1, :, :))) then
+            unique = .false.
+            exit solve
+          end if
+        end if
+      end do solve
+
+      if (unique) exit
+    end do
+    write(*,*)
+  end subroutine create_puzzle
+
+  !**************************************************************
+  ! System independent initialization of pseudo-random generator
+  !**************************************************************
+  subroutine initialize_random_number_generator(user_seed)
+    integer, optional, intent(in)      :: user_seed
+    integer, allocatable, dimension(:) :: seed
+    integer, dimension(1:8)            :: time_values
+    integer :: i, n
+
+    call random_seed(size=n)
+    allocate (seed(1:n))
+
+    if (present(user_seed)) then
+      seed = user_seed
+    else
+      ! Real-time clock:
+      call date_and_time(values=time_values)
+      ! We use the milliseconds to compute the seeds:
+      do i = 1, n
+        seed(i) = (huge(seed(i)) / 1000) * time_values(8) - i
+      end do
+    end if
+
+    call random_seed(put=seed(1:n))
+  end subroutine initialize_random_number_generator
+
 end module sudoku
