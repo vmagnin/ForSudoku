@@ -1,11 +1,11 @@
-name = "sudoku"
+name = "ForSudoku"
 description= "Generates and solves sudokus"
 version = "0.9.0"
 license    = "GPL-3.0-or-later"
 author = "vmagnin, nbehrnd"
 copyright = "Copyright 2006-2024, vmagnin & nbehrnd"
-maintainer = "https://github.com/vmagnin/sudoku/issues"
-homepage   = "https://github.com/vmagnin/sudoku"
+maintainer = "https://github.com/vmagnin/ForSudoku/issues"
+homepage   = "https://github.com/vmagnin/ForSudoku"
 categories = ["games"]
 keywords   = ["Fortran", "fpm", "sudoku"]
 

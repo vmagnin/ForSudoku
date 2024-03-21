@@ -6,11 +6,13 @@ format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [sudoku dev] 2024-03
 
 ### Added
+- A logo in the `logo/` directory.
 - Many tests.
 - The function `is_full(grid)` returns true if the grid is full.
 - Subroutine `create_puzzle_with_unique_solution(grid, nb_empty)`
 
 ### Changed
+- The repository was renamed `https://github.com/vmagnin/ForSudoku` (instead of `sudoko`).
 - Code improved, modernized and refactored.
 - If a full valid grid is not in memory, a new one will be automatically
 generated if you want to create a puzzle grid.

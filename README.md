@@ -1,3 +1,5 @@
+![](logo/ForSudoku_logo.svg)
+
 # A Fortran sudoku generator and solver
 
 ## Requirements and dependencies

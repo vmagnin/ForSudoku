@@ -1,4 +1,4 @@
-! This file is part of the sudoku Fortran project.
+! This file is part of the ForSudoku Fortran project.
 ! Copyright (C) 2006-2024 Vincent Magnin & Norwid Behrnd
 !
 ! This is free software; you can redistribute it and/or modify
@@ -39,7 +39,7 @@ program main
     ! Initialize an explicitly empty grid (empty cells are represented by 0):
     grid = 0
 
-    print *, "sudoku.f90, version 0.9.0, copyright (c) 2006-2024 Vincent Magnin and Norwid Behrnd"
+    print *, "ForSudoku 0.9.0, copyright (c) 2006-2024 Vincent Magnin and Norwid Behrnd"
 
     do
       print *
