@@ -133,7 +133,8 @@ later](http://www.gnu.org/licenses/gpl.html). The logo files are under CC-BY-SA 
 * <https://en.wikipedia.org/wiki/Sudoku>
 * <https://en.wikipedia.org/wiki/Glossary_of_Sudoku>
 * <https://en.wikipedia.org/wiki/Mathematics_of_Sudoku>
-* Jean-Paul Delahaye, ["The Science behind Sudoku"](https://www.cs.virginia.edu/~robins/The_Science_Behind_SudoKu.pdf), Scientific American,  Vol. 294, No. 6, pp. 80-87, June 2006.
+* Jean-Paul Delahaye, ["The Science behind Sudoku"](https://www.cs.virginia.edu/~robins/The_Science_Behind_SudoKu.pdf), *Scientific American,*  Vol. 294, No. 6, pp. 80-87, June 2006, DOI:10.1038/scientificamerican0606-80. This is the English translation of:
+    * Jean-Paul Delahaye, ["Le tsunami du Sudoku"](https://cristal.univ-lille.fr/profil/jdelahay/pls:2005:136.pdf), *Pour la Science,* n°338, p. 144-149, décembre 2005.
 * Michael Metcalf. A Sudoku program in Fortran 95. *SIGPLAN Fortran Forum* 25,
 1 (April 2006), 4–7. https://doi.org/10.1145/1124708.1124709
 * Other [Fortran sudoku projects](https://github.com/search?q=sudoku%20fortran&type=repositories)
