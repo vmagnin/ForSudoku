@@ -20,6 +20,7 @@ You can update your project with `git remote set-url origin git@github.com:vmagn
 generated if you want to create a puzzle grid.
 - `initialize_random_number_generator()` can now receive a seed from the main
 program (useful for testing and debugging).
+- `test/check.f90`: `assert_readtest01()` and `assert_readtest02` factorized in one `assert_readtest()` subroutine.
 
 ### Removed
 - `Time()` function.

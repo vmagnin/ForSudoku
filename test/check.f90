@@ -43,8 +43,8 @@ program check
   !&>
 
   call unit_tests()
-  call assert_readtest01()
-  call assert_readtest02()
+  call assert_readtest("test_in_01.txt")
+  call assert_readtest("test_in_02.txt")
   call assert_wikipedia_solution()
 
 contains
@@ -104,7 +104,8 @@ contains
     if ((empty == 0).or.(empty > 81)) error stop "create_puzzle_with_unique_solution() not working! (2)"
   end subroutine unit_tests
 
-  subroutine assert_readtest01()
+  subroutine assert_readtest(filename)
+    character(*), intent(in) :: filename
     ! Read a Sudoku puzzle
     integer :: reference_grid(9, 9), grid_from_file(9, 9)
     integer :: i, j
@@ -114,7 +115,7 @@ contains
 
     reference_grid = ref_puzzle
 
-    call read_grid(grid_from_file, "./test/test_in_01.txt")
+    call read_grid(grid_from_file, "./test/"//filename)
     grid_from_file = transpose(grid_from_file)
 
     outer: do i = 1, 9
@@ -130,43 +131,11 @@ contains
     end do outer
 
     if (array_equality .eqv. .false.) then
-      print *, "Reading check on `test_in_01.txt` failed."
+      print *, "Reading check on "//filename//" failed."
     else
-      print *, "Reading check on `test_in_01.txt` was successful."
+      print *, "Reading check on "//filename//" was successful."
     end if
-  end subroutine assert_readtest01
-
-  subroutine assert_readtest02()
-    ! Read a Sudoku puzzle
-    integer :: reference_grid(9, 9), grid_from_file(9, 9)
-    integer :: i, j
-    logical :: array_equality
-
-    array_equality = .true.
-
-    reference_grid = ref_puzzle
-
-    call read_grid(grid_from_file, "./test/test_in_02.txt")
-    grid_from_file = transpose(grid_from_file)
-
-    outer: do i = 1, 9
-      inner: do j = 1, 9
-        if (reference_grid(i, j) /= grid_from_file(i, j)) then
-          array_equality = .false.
-          print *, "At i : ", i, "j : ", j, &
-            "reference_grid : ", reference_grid(i, j), &
-            "differs from grid_from_file :", grid_from_file(i, j)
-          exit outer
-        end if
-      end do inner
-    end do outer
-
-    if (array_equality .eqv. .false.) then
-      print *, "Reading check on `test_in_02.txt` failed."
-    else
-      print *, "Reading check on `test_in_02.txt` was successful."
-    end if
-  end subroutine assert_readtest02
+  end subroutine assert_readtest
 
   subroutine assert_wikipedia_solution()
     ! See the reference grids on https://en.wikipedia.org/wiki/Sudoku
