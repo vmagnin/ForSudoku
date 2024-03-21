@@ -97,7 +97,8 @@ files of a puzzle (`test_in_01.txt` and `test_in_02.txt`) as a
 reference, and a `template.txt` grid filled with zeroes to start your own grid.
 
 Paste the needed files into the root of the project (only the files
-listed by the program when selecting option `2` can be read and processed).
+listed by the program when selecting option `2` can be read and processed). On
+a Unix-like OS, you can also create links in the root of the project.
 
 ### 6) Generation of a completed Sudoku grid
 
