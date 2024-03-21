@@ -14,14 +14,14 @@ You need:
 ## Running the program
 
 The recommended approach to yield and launch an executable of the program is to
-use the interface `fpm` provides:
+use `fpm`:
 
 ```shell
 $ fpm run
 sudoku.f90                             done.
-libsudoku.a                            done.
+libForSudoku.a                         done.
 main.f90                               done.
-sudoku                                 done.
+ForSudoku                              done.
 [100%] Project compiled successfully.
 ```
 
@@ -52,13 +52,12 @@ The program's main interface provides access to all principal functions:
  3) Save the current grid in a text file.
  4) Check the validity of the current grid.
  5) Display the current grid.
- 6) Create a random full Sudoku grid.
+ 6) Create a random completed Sudoku grid.
  7) Solve the puzzle grid currently stored in memory.
- 8) Create a puzzle grid with a unique solution, starting from the grid in memory.
- 9) Create a puzzle grid with a unique solution with n given digits.
- 10) Create a puzzle grid, without being 100% sure that the solution is unique.
+ 8) Create a minimal puzzle, starting from the grid in memory.
+ 9) Create a minimal puzzle with exactly n given digits.
+ 10) Create a puzzle grid (solution not guaranteed to be unique).
  0) Quit.
-
 ```
 
 ### 1) Manual entry of a grid
@@ -94,15 +93,15 @@ If the input is considered a valid one, you can then use that grid with the othe
 ### 2) Read a grid from a text file
 
 The present form of the program only reliably supports the input of a grid in the format depicted above.  Folder `check` contains example
-files of a partially filled grid (`test_in_01.txt` and `test_in_02.txt`) as a
-reference, and a grid filled with the explicit place holder zeroes to start
-with (`template.txt`) for you.  Then, paste the record into the root of this
-project (only the files which are listed by the program by selection of mode
-`2` can be read and processed).
+files of a puzzle (`test_in_01.txt` and `test_in_02.txt`) as a
+reference, and a `template.txt` grid filled with zeroes to start your own grid.
 
-### 6) Generation of a random full grid
+Paste the needed files into the root of the project (only the files
+listed by the program when selecting option `2` can be read and processed).
 
-The program generates a random sudoku by brute force: in each cycle a digit is added and checked for validity. If the grid became invalid, the grid generation is started all over again, until a valid grid is obtained. But the process is very quick.
+### 6) Generation of a completed Sudoku grid
+
+The program generates a random completed Sudoku by brute force: in each cycle a digit is added and checked for validity. If the grid became invalid, the grid generation is started all over again, until a valid grid is obtained. But the process is very quick.
 
 The new grid replaces the previous grid stored in memory.
 
@@ -110,15 +109,15 @@ The new grid replaces the previous grid stored in memory.
  
 The puzzle in memory is solved by brute force. But the process is very quick.
 
-### 8) Create a sudoku puzzle with a unique solution
+### 8) Create a minimal puzzle
 
-If a full valid grid is not in memory, we will start from a new one. As the algorithm uses random numbers to remove digits in the grid, following validity rules, the final number of given digits is a priori unknown. The process will be generally quick and the obtained puzzle will be most of the time half-empty.
+If a completed valid grid is not in memory, we will start from a new one. As the algorithm uses random numbers to remove digits in the grid, following validity rules, the final number of given digits is a priori unknown. The process will be generally quick and the obtained puzzle will be most of the time half-empty.
 
-### 9) Create a puzzle with a unique solution with n given digits
+### 9) Create a minimal puzzle with n given digits
 
 You can ask the program any number of given digits in the [17, 81] range, but the computation will become longer below 33 as the algorithm is based on brute force: it launches the previous option until we obtain a puzzle with n given digits.
 
-### 10) Create a puzzle grid (unicity not guaranteed)
+### 10) Create a puzzle grid (not guaranteed to have a unique solution)
 
 You can obtain puzzles with still less given digits with this method, but without guaranty that the solution is unique.
 
@@ -126,12 +125,14 @@ You can obtain puzzles with still less given digits with this method, but withou
 ## License
 
 This project is licensed under the [GNU General Public License version 3 or
-later](http://www.gnu.org/licenses/gpl.html).
+later](http://www.gnu.org/licenses/gpl.html). The logo files are under CC-BY-SA 4.0.
 
 ## Bibliography
 
 * <https://en.wikipedia.org/wiki/Sudoku>
+* <https://en.wikipedia.org/wiki/Glossary_of_Sudoku>
 * <https://en.wikipedia.org/wiki/Mathematics_of_Sudoku>
+* Jean-Paul Delahaye, ["The Science behind Sudoku"](https://www.cs.virginia.edu/~robins/The_Science_Behind_SudoKu.pdf), Scientific American,  Vol. 294, No. 6, pp. 80-87, June 2006.
 * Michael Metcalf. A Sudoku program in Fortran 95. *SIGPLAN Fortran Forum* 25,
 1 (April 2006), 4–7. https://doi.org/10.1145/1124708.1124709
 * Other [Fortran sudoku projects](https://github.com/search?q=sudoku%20fortran&type=repositories)

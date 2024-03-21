@@ -1,6 +1,6 @@
 ! file:  check.f90
 ! date:  nbehrnd [2023-08-24 Thu]
-! edit:  vmagnin [2024-03-18 Fri]
+! edit:  vmagnin [2024-03-21 Fri]
 
 ! This file contains tests to be launched by `fpm test`.
 
@@ -12,7 +12,7 @@ program check
   implicit none
   integer, dimension(9, 9) :: full_ref_grid, ref_puzzle
 
-  ! Wikipedia's complete Sudoku grid:
+  ! Wikipedia's completed Sudoku grid:
   !&<
   full_ref_grid(:, 1) = [5, 3, 4,  6, 7, 8,  9, 1, 2]
   full_ref_grid(:, 2) = [6, 7, 2,  1, 9, 5,  3, 4, 8]
@@ -27,7 +27,7 @@ program check
   full_ref_grid(:, 9) = [3, 4, 5,  2, 8, 6,  1, 7, 9]
   !&>
 
-  ! An incomplete Sudoku grid with implicitly empty cases:
+  ! A Sudoku puzzle:
   !&<
   ref_puzzle(:, 1) = [5, 3, 0,  0, 7, 0,  0, 0, 0]
   ref_puzzle(:, 2) = [6, 0, 0,  1, 9, 5,  0, 0, 0]
@@ -105,7 +105,7 @@ contains
   end subroutine unit_tests
 
   subroutine assert_readtest01()
-    ! Read an incomplete Sudoku grid with implicitly empty cases
+    ! Read a Sudoku puzzle
     integer :: reference_grid(9, 9), grid_from_file(9, 9)
     integer :: i, j
     logical :: array_equality
@@ -137,7 +137,7 @@ contains
   end subroutine assert_readtest01
 
   subroutine assert_readtest02()
-    ! Read an incomplete Sudoku grid with explicitly empty cases
+    ! Read a Sudoku puzzle
     integer :: reference_grid(9, 9), grid_from_file(9, 9)
     integer :: i, j
     logical :: array_equality
@@ -176,12 +176,12 @@ contains
 
     array_equality = .true.
 
-    ! Wikipedia's incomplete Sudoku grid:
+    ! Wikipedia's Sudoku puzzle:
     grid_a = ref_puzzle
 
     call solve_puzzle(grid_a) ! This fills (hence modifies) grid_a
 
-    ! Wikipedia's complete Sudoku grid
+    ! Wikipedia's completed Sudoku grid:
     grid_b = full_ref_grid
 
     ! Comparison of computed solution with Wikipedia's reference solution:

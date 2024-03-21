@@ -16,7 +16,7 @@
 ! If not, see <http://www.gnu.org/licenses/>.
 !------------------------------------------------------------------------------
 ! Contributed by Vincent Magnin, 2006-11-27; Norwid Behrnd, 2023
-! Last modifications: 2023-09-12, vmagnin 2024-03-19
+! Last modifications: 2023-09-12, vmagnin 2024-03-21
 !------------------------------------------------------------------------------
 
 module sudoku
@@ -31,15 +31,15 @@ contains
     integer, dimension(9, 9) :: grid0
     real    :: r   ! Random number
     integer :: row, col, i, j
-    ! Counter of empty/non allocated cells:
+    ! Counter of empty cells:
     integer :: nb_empty
     ! List of empty cells:
     integer, dimension(1:81, 1:3) :: empty_cells
-    ! List and number of (still) possible digits:
+    ! List and number of possible digits:
     integer, dimension(1:9) :: possible_digit
     integer :: nb_possible
 
-    ! save the initial grid:
+    ! Save the initial grid:
     grid0 = grid
 
     ! Identify and store the coordinates of empty cells in the grid
@@ -107,13 +107,13 @@ contains
 
     possible = .true.
 
-    ! Digits already present in those row and column are excluded:
+    ! Given digits in those row and column are excluded:
     do j = 1, 9
       possible(grid(j, col)) = .false.
       possible(grid(row, j)) = .false.
     end do
 
-    ! Digits already present in that region are excluded:
+    ! Given digits in that region are excluded:
     lr = 1 + 3 * ((row - 1) / 3)
     cr = 1 + 3 * ((col - 1) / 3)
     do i = lr, lr + 2
@@ -133,12 +133,12 @@ contains
     end do
   end subroutine list_possible_digits
 
-  ! Starting from position p, sort the (still) empty cells by
+  ! Starting from position p, sort the list of empty cells by
   ! ascending number of allowed digits. We use a bubble sort:
   subroutine sort(empty_cells, p, n)
     integer, dimension(1:81, 1:3), intent(inout) :: empty_cells
     integer, intent(in) :: p    ! The sort starts at position p (included)
-    integer, intent(in) :: n    ! Number of empty lists
+    integer, intent(in) :: n    ! Number of empty cells in the list
 
     integer :: i
     integer, dimension(1:3) :: col
@@ -162,7 +162,7 @@ contains
   end subroutine sort
 
   ! Grid generation by brute force: in each cycle a digit is added and checked
-  ! for validity.  If the grid became invalid, the grid generation
+  ! for validity.  If the grid becomes invalid, the grid generation
   ! is started all over again.
   subroutine create_filled_grid(grid)
     integer, dimension(9, 9), intent(out) :: grid
@@ -204,7 +204,7 @@ contains
     end do restart
   end subroutine create_filled_grid
 
-  ! Returns true if the row, column and region of a cell are all valid:
+  ! Returns true if the row, column and region of a digit are all valid:
   pure logical function valid_digit(grid, row, col)
     integer, dimension(9, 9), intent(in) :: grid
     integer, intent(in) :: row, col
@@ -218,7 +218,7 @@ contains
                   valid_zone(grid(i*3+1:i*3+3, j*3+1:j*3+3))
   end function valid_digit
 
-  ! Creates a Sudoku puzzle with a unique solution.
+  ! Creates a minimal puzzle.
   ! Digits are randomly removed one by one. The process ends when it is not
   ! possible anymore to remove a digit while keeping a unique solution.
   ! The number of remaining digits is therefore a priori unknown.
@@ -237,6 +237,7 @@ contains
 
     ! The list is randomly shuffled to avoid removing too many neighbours.
     ! The probability that a position is never drawn is (80/81)^81 ~ 0.107
+    ! Increasing the upper limit would impede performance.
     do i = 1, 81
       ! We draw two positions:
       call random_number(r)     ! 0 <= r < 1
@@ -272,17 +273,17 @@ contains
     end do
   end subroutine create_puzzle_with_unique_solution
 
-  ! Creates a Sudoku puzzle by brute force.
+  ! Creates a puzzle by brute force.
   ! But we are not 100% sure that the solution is unique
-  ! (just a high probability).
-  subroutine create_puzzle(grid, remainder)
+  ! (just a "high" probability).
+  subroutine create_puzzle(grid, givens)
     integer, dimension(9, 9), intent(inout) :: grid
-    integer, intent(in) :: remainder
+    integer, intent(in) :: givens
 
     integer, dimension(9, 9) :: grid0
     ! Maximum number of times we try to solve a grid:
     integer, parameter :: n = 1000
-    ! To store and compare the n solutions:
+    ! To store and compare the n Sudoku solutions:
     integer, dimension(:, :, :), allocatable :: solutions
     real    :: r(2)
     integer :: row, col, i
@@ -301,8 +302,8 @@ contains
       write(*, '(".")', advance='no')
 
       ! Remove digits:
-      do i = 1, 81 - remainder
-        ! Choose randomly a non-empty cell:
+      do i = 1, 81 - givens
+        ! Choose randomly a cell with a digit:
         do
           call random_number(r)
           row = 1 + int(r(1) * 9)
@@ -314,8 +315,8 @@ contains
         grid(row, col) = 0
       end do
 
-      ! The grid is solved up to n times to evaluate the probability that
-      ! the solution be unique:
+      ! The grid is solved up to n times to increase the probability that
+      ! the solution is unique:
       unique = .true.
       solve: do i = 1, n
         solutions(i, :, :) = grid
@@ -538,7 +539,7 @@ contains
 
   subroutine solver(grid, file)
     ! ******************************************************************
-    ! Provides a solution for a partially filled grid entered as a file
+    ! Provides a solution for a puzzle entered as a file
     !
     ! Concept study for a direct invocation of the executable by the CLI
     ! as, for example, by

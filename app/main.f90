@@ -16,7 +16,7 @@
 ! If not, see <http://www.gnu.org/licenses/>.
 !------------------------------------------------------------------------------
 ! Contributed by Vincent Magnin, 2006-11-27; Norwid Behrnd, 2023
-! Last modifications: 2024-03-20
+! Last modifications: 2024-03-21
 !------------------------------------------------------------------------------
 
 program main
@@ -26,7 +26,7 @@ program main
   integer, dimension(9, 9) :: grid, grid0
   real          :: start, finish  ! To monitor the duration of the computation
   integer       :: choice
-  integer       :: remainder      ! Number of filled cells when creating a grid
+  integer       :: givens      ! Number of givens when creating a grid
   integer       :: empty
   character(50) :: file           ! File name (including extension .txt)
 
@@ -49,11 +49,11 @@ program main
       print *, "3) Save the current grid in a text file."
       print *, "4) Check the validity of the current grid."
       print *, "5) Display the current grid."
-      print *, "6) Create a random full Sudoku grid."
+      print *, "6) Create a random completed Sudoku grid."
       print *, "7) Solve the puzzle grid currently stored in memory."
-      print *, "8) Create a puzzle grid with a unique solution, starting from the grid in memory."
-      print *, "9) Create a puzzle grid with a unique solution with n given digits."
-      print *, "10) Create a puzzle grid (unicity not guaranteed)."
+      print *, "8) Create a minimal puzzle, starting from the grid in memory."
+      print *, "9) Create a minimal puzzle with exactly n given digits."
+      print *, "10) Create a puzzle grid (solution not guaranteed to be unique)."
       print *, "0) Quit."
       write(*, '(A)', advance='no') "Type your choice and 'Enter': "
       read *, choice
@@ -117,14 +117,14 @@ program main
           call create_filled_grid(grid)
         end if
 
-        print *, "The starting full sudoku grid:"
+        print *, "The starting completed Sudoku grid:"
         call display_grid(grid)
         ! grid validation (useless, but by security):
         call print_validity(grid, "The grid is valid.", "The grid is invalid: problem to compute a solution!")
 
         call cpu_time(start)
         call create_puzzle_with_unique_solution(grid, empty)
-        print *, "A Sudoku puzzle with a unique solution:"
+        print *, "A minimal puzzle (no more digit can be removed):"
         call display_grid(grid)
         print *, "Empty cells: ", empty
         call print_validity(grid, "Valid grid", "Invalid grid: problem to compute a solution!")
@@ -133,8 +133,8 @@ program main
 
       case (9)
         print *, "How many given digits in [17, 81] do you want? (below 33 it will become longer)"
-        read *, remainder
-        if (remainder < 33) print *, "Be patient..."
+        read *, givens
+        if (givens < 33) print *, "Be patient..."
 
         call cpu_time(start)
         call create_filled_grid(grid0)
@@ -144,10 +144,10 @@ program main
           grid = grid0
           ! grid has intent(inout):
           call create_puzzle_with_unique_solution(grid, empty)
-          if (81 - empty == remainder) exit
+          if (81 - empty == givens) exit
         end do
 
-        print *, "This is a Sudoku puzzle with a unique solution:"
+        print *, "This is a minimal puzzle (no more digit can be removed):"
         call display_grid(grid)
         print '(" Empty cells: ", I0, "    Filled cells: ", I0)', empty,  81-empty
         call print_validity(grid, "Valid grid", "Invalid grid: problem to compute a solution!")
@@ -158,7 +158,7 @@ program main
         print *, "If a full valid grid is not in memory, we will start from a new one."
         print *, "How many given digits in [17, 81] do you want in the puzzle grid?"
         print *, "(Below 28, the computation will become longer!)"
-        read *, remainder
+        read *, givens
 
         if ((.not.is_full(grid)).or.(.not.valid_grid(grid))) then
           print *, "No full valid grid is in memory:  a new one will be generated."
@@ -171,8 +171,8 @@ program main
         call print_validity(grid, "The grid is valid.", "The grid is invalid: problem to compute a solution!")
 
         call cpu_time(start)
-        call create_puzzle(grid, remainder)
-        print *, "A Sudoku puzzle (but not sure that the solution is unique):"
+        call create_puzzle(grid, givens)
+        print *, "A puzzle (but not sure that the solution is unique):"
         call display_grid(grid)
         call print_validity(grid, "Valid grid", "Invalid grid: problem to compute a solution!")
         call cpu_time(finish)
