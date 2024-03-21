@@ -12,6 +12,7 @@ format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Subroutine `create_puzzle_with_unique_solution(grid, nb_empty)`
 - More files containing grids in the `test` directory:
     - `16_givens_but_2_solutions.txt`
+    - `77_givens_but_2_solutions.txt`
     - `a_puzzle_with_17_givens.txt`
     - `strangely_familiar.txt`
 
