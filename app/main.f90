@@ -16,7 +16,7 @@
 ! If not, see <http://www.gnu.org/licenses/>.
 !------------------------------------------------------------------------------
 ! Contributed by Vincent Magnin, 2006-11-27; Norwid Behrnd, 2023
-! Last modifications: 2024-03-21
+! Last modifications: 2024-03-22
 !------------------------------------------------------------------------------
 
 program main
@@ -183,9 +183,9 @@ program main
       end select
     end do
 
-  case (1) ! accessible only by direct invocation of the executable
+  case (1) ! Launch the CLI solver if a filename is provided:
     call get_command_argument(1, file)
-    call solver(grid, file)
+    call cli_solver(grid, file)
 
   case default
     print *, "Parameters: enter either one, or none."

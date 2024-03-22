@@ -23,6 +23,7 @@ You can update your project with `git remote set-url origin git@github.com:vmagn
 - The messages, comments and names are now following the Sudoku glossary.
 - If a full valid grid is not in memory, a new one will be automatically
 generated if you want to create a puzzle grid.
+- The CLI solver `solver(grid, file)` was renamed `cli_solver(grid, file)`.
 - `initialize_random_number_generator()` can now receive a seed from the main
 program (useful for testing and debugging).
 - `test/check.f90`: `assert_readtest01()` and `assert_readtest02` factorized in one `assert_readtest()` subroutine.

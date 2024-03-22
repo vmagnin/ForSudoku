@@ -107,8 +107,14 @@ The program generates a random completed Sudoku by brute force: in each cycle a 
 The new grid replaces the previous grid stored in memory.
 
 ### 7) Solve a puzzle grid.
- 
+
 The puzzle in memory is solved by brute force. But the process is very quick.
+
+It is also possible to pass the filename on the command line. For example, if you have used the makefile, you can solve a puzzle by typing something like:
+
+```shell
+$ ./executable 77_givens_but_2_solutions.txt
+```
 
 ### 8) Create a minimal puzzle
 

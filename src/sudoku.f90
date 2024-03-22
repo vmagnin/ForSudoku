@@ -16,7 +16,7 @@
 ! If not, see <http://www.gnu.org/licenses/>.
 !------------------------------------------------------------------------------
 ! Contributed by Vincent Magnin, 2006-11-27; Norwid Behrnd, 2023
-! Last modifications: 2023-09-12, vmagnin 2024-03-21
+! Last modifications: 2023-09-12, vmagnin 2024-03-22
 !------------------------------------------------------------------------------
 
 module sudoku
@@ -353,12 +353,9 @@ contains
     end do
   end subroutine solve_puzzle
 
-  subroutine solver(grid, file)
+  subroutine cli_solver(grid, file)
     ! ******************************************************************
-    ! Provides a solution for a puzzle entered as a file
-    !
-    ! Concept study for a direct invocation of the executable by the CLI
-    ! as, for example, by
+    ! Provides a solution for a puzzle passed by CLI:
     !
     ! ```shell
     ! $ ./executable test_in_02.txt
@@ -366,26 +363,25 @@ contains
     !
     ! ******************************************************************
     integer, dimension(9, 9), intent(inout) :: grid
-    character(len=50), intent(in) :: file
+    character(*), intent(in) :: file
 
     logical :: presence
     presence = .false.
-
     inquire (file=file, exist=presence)
+
     if (presence .eqv. .false.) then
-      print *, "The requested file '", trim(file), "' is inaccessible."
-    end if
-
-    call read_grid(grid, file)
-
-    if (valid_grid(grid) .eqv. .true.) then
-      call solve_puzzle(grid)
-      call display_grid(grid)
+      print *, "ERROR: the requested file '", file, "' is inaccessible."
     else
-      print *, "The input by file'", trim(file), "' is an invalid grid."
-    end if
+      call read_grid(grid, file)
 
-  end subroutine solver
+      if (valid_grid(grid) .eqv. .true.) then
+        call solve_puzzle(grid)
+        call display_grid(grid)
+      else
+        print *, "The input file'", file, "' is an invalid grid."
+      end if
+    end if
+  end subroutine cli_solver
 
   !*****************************************************************************
   ! Puzzle generators
