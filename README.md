@@ -92,13 +92,9 @@ If the input is considered a valid one, you can then use that grid with the othe
 
 ### 2) Read a grid from a text file
 
-The present form of the program only reliably supports the input of a grid in the format depicted above.  Folder `check` contains example
-files of a puzzle (`test_in_01.txt` and `test_in_02.txt`) as a
-reference, and a `template.txt` grid filled with zeroes to start your own grid.
+If the file to read is not in the root directory of the project, type the relative path, for example `test/a_puzzle_with_17_givens.txt`. The folder `test/` also contains a few grids for testing. And you can create your own grid starting from `test/template.txt` file (a grid filled with zeroes).
 
-Paste the needed files into the root of the project (only the files
-listed by the program when selecting option `2` can be read and processed). On
-a Unix-like OS, you can also create links in the root of the project.
+The present form of the program only reliably supports the input of a grid in the format depicted above.
 
 ### 6) Generation of a completed Sudoku grid
 

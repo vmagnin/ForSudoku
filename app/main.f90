@@ -69,7 +69,7 @@ program main
       case (2)
         print *, "Enter the file name of the grid to read (including .txt extension):"
         call execute_command_line("dir *.txt")
-        read *, file
+        read (*, '(A)') file
         call read_grid(grid, trim(file))
         call display_grid(grid)
         call print_validity(grid, "The Sudoku is valid.", "The Sudoku is invalid.")
