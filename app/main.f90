@@ -39,7 +39,7 @@ program main
     ! Initialize an explicitly empty grid (empty cells are represented by 0):
     grid = 0
 
-    print *, "ForSudoku 0.9.0, copyright (c) 2006-2024 Vincent Magnin and Norwid Behrnd"
+    print *, "ForSudoku 1.0.0, copyright (c) 2006-2024 Vincent Magnin and Norwid Behrnd"
 
     do
       print *

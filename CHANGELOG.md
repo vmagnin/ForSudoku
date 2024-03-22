@@ -3,7 +3,7 @@
 All notable changes to the gtk-fortran project are documented in this file. The
 format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [sudoku dev] 2024-03
+## [ForSudoku 1.0.0] 2024-03-22
 
 ### Added
 - A logo in the `logo/` directory.
@@ -15,6 +15,7 @@ format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
     - `77_givens_but_2_solutions.txt`
     - `a_puzzle_with_17_givens.txt`
     - `strangely_familiar.txt`
+- More references in the `README.md`.
 
 ### Changed
 - The repository was renamed `https://github.com/vmagnin/ForSudoku` (instead of `sudoko`). 
@@ -28,11 +29,14 @@ generated if you want to create a puzzle grid.
 program (useful for testing and debugging).
 - `test/check.f90`: `assert_readtest01()` and `assert_readtest02` factorized in one `assert_readtest()` subroutine.
 
+### Fixed
+- A problem when reading a file path with option 2) of the menu. You can now type a relative path.
+
 ### Removed
 - `Time()` function.
 
 
-## [sudoku 0.8.1] 2023-07-22
+## [ForSudoku 0.8.1] 2023-07-22
 
 - To accommodate users not familiar with the fpm based setup of the program,
   and more interested in the use of the program rather than a contribution to
@@ -45,6 +49,6 @@ program (useful for testing and debugging).
   Fortran source code, as well as testing of the procedures implemented.
 
 
-## [sudoku 0.8] 2006-11-27
+## [ForSudoku 0.8] 2006-11-27
 
 - The original version.
