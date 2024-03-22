@@ -110,10 +110,16 @@ The new grid replaces the previous grid stored in memory.
 
 The puzzle in memory is solved by brute force. But the process is very quick.
 
-It is also possible to pass the filename on the command line. For example, if you have used the makefile, you can solve a puzzle by typing something like:
+It is also possible to pass the filename of the puzzle to solve on the command line. With fpm you can type for example from the root directory of the project:
 
 ```shell
-$ ./executable 77_givens_but_2_solutions.txt
+$ fpm run -- test/a_puzzle_with_17_givens.txt
+```
+
+If you have used the makefile, you can type:
+
+```shell
+$ ./executable test/a_puzzle_with_17_givens.txt
 ```
 
 ### 8) Create a minimal puzzle
