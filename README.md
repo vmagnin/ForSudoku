@@ -127,6 +127,21 @@ You can ask the program any number of given digits in the [17, 81] range, but th
 
 You can obtain puzzles with still less given digits with this method, but without guaranty that the solution is unique.
 
+## Development
+
+You can use those GFortran flags:
+
+```shell
+$ fpm build --verbose --flag "-std=f2018 -pedantic -Wall -Wextra"
+```
+
+In `app/main.f90`, you should pass 0 as a seed at the top of the file:
+
+```fortran
+call initialize_random_number_generator(0)
+```
+
+You will then obtain the same pseudo-random sequence at each run, which is more comfortable for debugging, testing or optimizing the CPU time.
 
 ## License
 

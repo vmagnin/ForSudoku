@@ -3,6 +3,12 @@
 All notable changes to the gtk-fortran project are documented in this file. The
 format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [ForSudoku dev]
+
+### Added
+- A `Development` section in the `README.md`.
+
+
 ## [ForSudoku 1.0.0] 2024-03-22
 
 ### Added
