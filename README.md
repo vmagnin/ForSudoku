@@ -13,8 +13,7 @@ You need:
 
 ## Running the program
 
-The recommended approach to yield and launch an executable of the program is to
-use `fpm`:
+The recommended approach is to use `fpm`:
 
 ```shell
 $ fpm run
@@ -25,22 +24,21 @@ ForSudoku                              done.
 [100%] Project compiled successfully.
 ```
 
-If you want to generate a sudoku with many void cells, it is better to use the
+If you want to generate a sudoku with less than 33 givens, it is better to use the
 optimization flags of your compiler, for example with GFortran:
 ```shell
 $ fpm run --flag "-Ofast -static-libgfortran"
 ```
 
 When using GFortran, you can also add the compiler flag `-Wno-array-temporaries`
-to avoid the corresponding warnings.
+to avoid the corresponding warnings. 
 
 With Intel compilers:
 ```shell
 $ fpm run --compiler ifx --flag "-check:noarg_temp_created"
 ```
 
-Especially if your current interest only aims to use the program, the included
-`Makefile` equally provides you with the executable with no difference down the
+The `Makefile` equally provides you with the `executable` with no difference down the
 road.
 
 The program's main interface provides access to all principal functions:
@@ -62,8 +60,7 @@ The program's main interface provides access to all principal functions:
 
 ### 1) Manual entry of a grid
 
-In this mode, sequentially enter cells one by one, starting from the left, as a comma separated line.  Use any number `1` to `9` for known cells.  If the cell in your reference pattern is still empty or unknown, enter either `0` (zero,
-recommended), or a blank space instead.  After typing the last cell in the
+In this mode, sequentially enter cells one by one, starting from the left, as a comma separated line.  Use any number `1` to `9` for known cells.  For empty cells, enter either `0` (recommended), or a blank space instead.  After typing the last cell in the
 current line (which is not followed by a comma), submit the line by `Enter`:
 
 ```shell
@@ -72,7 +69,7 @@ Enter line 1:
 ```
 
 Upon completion of the input, the program quickly checks if the grid is valid
-and displays it in a form similar to the one below:
+and displays it in such a format:
 
 ```shell
  5 3 0 | 0 7 0 | 0 0 0
@@ -120,11 +117,11 @@ $ ./executable test/a_puzzle_with_17_givens.txt
 
 ### 8) Create a minimal puzzle
 
-If a completed valid grid is not in memory, we will start from a new one. As the algorithm uses random numbers to remove digits in the grid, following validity rules, the final number of given digits is a priori unknown. The process will be generally quick and the obtained puzzle will be most of the time half-empty.
+If a completed valid grid is not in memory, we will start from a new one. As the algorithm uses random numbers to remove digits in the grid, following validity rules, the final number of given digits is a priori unknown. The obtained puzzle will be typically half-empty (and quick in that case), or more empty if you are lucky.
 
 ### 9) Create a minimal puzzle with n given digits
 
-You can ask the program any number of given digits in the [17, 81] range, but the computation will become longer below 33 as the algorithm is based on brute force: it launches the previous option until we obtain a puzzle with n given digits.
+You can ask the program any number of given digits in the [17, 81] range, but the computation will become longer below 33 as the algorithm is based on brute force: it launches the previous option until we obtain a puzzle with exactly n given digits.
 
 ### 10) Create a puzzle grid (not guaranteed to have a unique solution)
 
