@@ -506,7 +506,7 @@ contains
     ! Save the initial grid:
     grid0 = grid
 
-    print *, "Search of a grid with a probably unique solution..."
+    print *, "Search of a puzzle (without guaranty for a unique solution)..."
 
     do
       grid = grid0

@@ -53,7 +53,7 @@ program main
       print *, "7) Solve the puzzle grid currently stored in memory."
       print *, "8) Create a minimal puzzle, starting from the grid in memory."
       print *, "9) Create a minimal puzzle with exactly n given digits."
-      print *, "10) Create a puzzle grid (solution not guaranteed to be unique)."
+      print *, "10) Create a puzzle grid (without guaranty for a unique solution)."
       print *, "0) Quit."
       write(*, '(A)', advance='no') "Type your choice and 'Enter': "
       read *, choice

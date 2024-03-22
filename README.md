@@ -56,7 +56,7 @@ The program's main interface provides access to all principal functions:
  7) Solve the puzzle grid currently stored in memory.
  8) Create a minimal puzzle, starting from the grid in memory.
  9) Create a minimal puzzle with exactly n given digits.
- 10) Create a puzzle grid (solution not guaranteed to be unique).
+ 10) Create a puzzle grid (without guaranty for a unique solution).
  0) Quit.
 ```
 
