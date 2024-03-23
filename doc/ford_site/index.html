@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Sudoku generation and solving CLI program, written in Fortran">
+    <meta name="author" content="vmagnin, nbehrnd" >
+    <link rel="icon" href="./favicon.png">
+
+    <title> ForSudoku </title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link href="./css/pygments.css" rel="stylesheet">
+    <link href="./css/font-awesome.min.css" rel="stylesheet">
+    <link href="./css/local.css" rel="stylesheet">
+      <link  href="./tipuesearch/tipuesearch.css" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="./js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="./index.html">ForSudoku </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="sourcefile/sudoku.f90.html">Source File</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="./lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="./lists/procedures.html">Procedures</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="./search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+      <!-- Main component for a primary marketing message or call to action -->
+      <div class="p-5 mb-4 bg-light border rounded-3" id="jumbotron">
+        <p>Sudoku generation and solving CLI program, written in Fortran</p>
+	<p> Find us on&hellip;</p>
+        <p>
+          <a class="btn btn-lg btn-primary" href="https://github.com/vmagnin/ForSudoku" role="button">GitHub</a>
+        </p>
+      </div>
+
+      <div class="row" id='text'>
+        <div class=col-md-8>
+          <h1>ForSudoku</h1>
+          <div class="toc">
+<ul>
+<li><a href="#a-fortran-sudoku-generator-and-solver">A Fortran sudoku generator and solver</a><ul>
+<li><a href="#requirements-and-dependencies">Requirements and dependencies</a></li>
+<li><a href="#running-the-program">Running the program</a><ul>
+<li><a href="#1-manual-entry-of-a-grid">1) Manual entry of a grid</a></li>
+<li><a href="#2-read-a-grid-from-a-text-file">2) Read a grid from a text file</a></li>
+<li><a href="#6-generation-of-a-completed-sudoku-grid">6) Generation of a completed Sudoku grid</a></li>
+<li><a href="#7-solve-a-puzzle-grid">7) Solve a puzzle grid.</a></li>
+<li><a href="#8-create-a-minimal-puzzle">8) Create a minimal puzzle</a></li>
+<li><a href="#9-create-a-minimal-puzzle-with-n-given-digits">9) Create a minimal puzzle with n given digits</a></li>
+<li><a href="#10-create-a-puzzle-grid-not-guaranteed-to-have-a-unique-solution">10) Create a puzzle grid (not guaranteed to have a unique solution)</a></li>
+</ul>
+</li>
+<li><a href="#development">Development</a></li>
+<li><a href="#license">License</a></li>
+<li><a href="#bibliography">Bibliography</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<p><img alt="" src="logo/ForSudoku_logo.svg"></p>
+<h1 id="a-fortran-sudoku-generator-and-solver">A Fortran sudoku generator and solver</h1>
+<h2 id="requirements-and-dependencies">Requirements and dependencies</h2>
+<p>You need:</p>
+<ul>
+<li>a modern Fortran compiler, for example GFortran or the Intel ifort/ifx
+  compilers. See the <a href="https://fortran-lang.org/compilers/">Fortran-lang.org compilers
+  page</a> for other compilers.</li>
+<li>The Fortran Package Manager <a href="https://fpm.fortran-lang.org/">fpm</a>.</li>
+</ul>
+<h2 id="running-the-program">Running the program</h2>
+<p>The recommended approach is to use <code>fpm</code>:</p>
+<div class="codehilite"><pre><span></span><code>$<span class="w"> </span>fpm<span class="w"> </span>run
+sudoku.f90<span class="w">                             </span><span class="k">done</span>.
+libForSudoku.a<span class="w">                         </span><span class="k">done</span>.
+main.f90<span class="w">                               </span><span class="k">done</span>.
+ForSudoku<span class="w">                              </span><span class="k">done</span>.
+<span class="o">[</span><span class="m">100</span>%<span class="o">]</span><span class="w"> </span>Project<span class="w"> </span>compiled<span class="w"> </span>successfully.
+</code></pre></div>
+
+<p>If you want to generate a sudoku with less than 33 givens, it is better to use the
+optimization flags of your compiler, for example with GFortran:</p>
+<div class="codehilite"><pre><span></span><code>$<span class="w"> </span>fpm<span class="w"> </span>run<span class="w"> </span>--flag<span class="w"> </span><span class="s2">&quot;-Ofast -static-libgfortran&quot;</span>
+</code></pre></div>
+
+<p>When using GFortran, you can also add the compiler flag <code>-Wno-array-temporaries</code>
+to avoid the corresponding warnings. </p>
+<p>With Intel compilers:</p>
+<div class="codehilite"><pre><span></span><code>$<span class="w"> </span>fpm<span class="w"> </span>run<span class="w"> </span>--compiler<span class="w"> </span>ifx<span class="w"> </span>--flag<span class="w"> </span><span class="s2">&quot;-check:noarg_temp_created&quot;</span>
+</code></pre></div>
+
+<p>The <code>Makefile</code> equally provides you with the <code>executable</code> with no difference down the
+road.</p>
+<p>The program&rsquo;s main interface provides access to all principal functions:</p>
+<div class="codehilite"><pre><span></span><code><span class="w"> </span>********************************<span class="w"> </span>MENU<span class="w"> </span>**************************************
+<span class="w"> </span><span class="m">1</span><span class="o">)</span><span class="w"> </span>Manual<span class="w"> </span>input<span class="w"> </span><span class="o">(</span>lines<span class="w"> </span>of<span class="w"> </span>comma<span class="w"> </span>separated<span class="w"> </span><span class="m">1</span><span class="w"> </span>-<span class="w"> </span><span class="m">9</span>,<span class="w"> </span>or<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="o">(</span>empty<span class="w"> </span>cell<span class="o">))</span>.
+<span class="w"> </span><span class="m">2</span><span class="o">)</span><span class="w"> </span>Read<span class="w"> </span>a<span class="w"> </span>grid<span class="w"> </span>from<span class="w"> </span>a<span class="w"> </span>text<span class="w"> </span>file<span class="w"> </span><span class="o">(</span><span class="k">for</span><span class="w"> </span>permitted<span class="w"> </span>patterns,<span class="w"> </span>see<span class="w"> </span>the<span class="w"> </span>doc<span class="o">)</span>.
+<span class="w"> </span><span class="m">3</span><span class="o">)</span><span class="w"> </span>Save<span class="w"> </span>the<span class="w"> </span>current<span class="w"> </span>grid<span class="w"> </span><span class="k">in</span><span class="w"> </span>a<span class="w"> </span>text<span class="w"> </span>file.
+<span class="w"> </span><span class="m">4</span><span class="o">)</span><span class="w"> </span>Check<span class="w"> </span>the<span class="w"> </span>validity<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>current<span class="w"> </span>grid.
+<span class="w"> </span><span class="m">5</span><span class="o">)</span><span class="w"> </span>Display<span class="w"> </span>the<span class="w"> </span>current<span class="w"> </span>grid.
+<span class="w"> </span><span class="m">6</span><span class="o">)</span><span class="w"> </span>Create<span class="w"> </span>a<span class="w"> </span>random<span class="w"> </span>completed<span class="w"> </span>Sudoku<span class="w"> </span>grid.
+<span class="w"> </span><span class="m">7</span><span class="o">)</span><span class="w"> </span>Solve<span class="w"> </span>the<span class="w"> </span>puzzle<span class="w"> </span>grid<span class="w"> </span>currently<span class="w"> </span>stored<span class="w"> </span><span class="k">in</span><span class="w"> </span>memory.
+<span class="w"> </span><span class="m">8</span><span class="o">)</span><span class="w"> </span>Create<span class="w"> </span>a<span class="w"> </span>minimal<span class="w"> </span>puzzle,<span class="w"> </span>starting<span class="w"> </span>from<span class="w"> </span>the<span class="w"> </span>grid<span class="w"> </span><span class="k">in</span><span class="w"> </span>memory.
+<span class="w"> </span><span class="m">9</span><span class="o">)</span><span class="w"> </span>Create<span class="w"> </span>a<span class="w"> </span>minimal<span class="w"> </span>puzzle<span class="w"> </span>with<span class="w"> </span>exactly<span class="w"> </span>n<span class="w"> </span>given<span class="w"> </span>digits.
+<span class="w"> </span><span class="m">10</span><span class="o">)</span><span class="w"> </span>Create<span class="w"> </span>a<span class="w"> </span>puzzle<span class="w"> </span>grid<span class="w"> </span><span class="o">(</span>without<span class="w"> </span>guaranty<span class="w"> </span><span class="k">for</span><span class="w"> </span>a<span class="w"> </span>unique<span class="w"> </span>solution<span class="o">)</span>.
+<span class="w"> </span><span class="m">0</span><span class="o">)</span><span class="w"> </span>Quit.
+</code></pre></div>
+
+<h3 id="1-manual-entry-of-a-grid">1) Manual entry of a grid</h3>
+<p>In this mode, sequentially enter cells one by one, starting from the left, as a comma separated line.  Use any number <code>1</code> to <code>9</code> for known cells.  For empty cells, enter either <code>0</code> (recommended), or a blank space instead.  After typing the last cell in the
+current line (which is not followed by a comma), submit the line by <code>Enter</code>:</p>
+<div class="codehilite"><pre><span></span><code>Enter<span class="w"> </span>line<span class="w"> </span><span class="m">1</span>:
+<span class="m">1</span>,2,3,4,5,6,7,8,9
+</code></pre></div>
+
+<p>Upon completion of the input, the program quickly checks if the grid is valid
+and displays it in such a format:</p>
+<div class="codehilite"><pre><span></span><code><span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">7</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span>
+<span class="w"> </span><span class="m">6</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="m">9</span><span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span>
+<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">9</span><span class="w"> </span><span class="m">8</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">6</span><span class="w"> </span><span class="m">0</span>
+<span class="w"> </span>------+-------+------
+<span class="w"> </span><span class="m">8</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">6</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">3</span>
+<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">8</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">1</span>
+<span class="w"> </span><span class="m">7</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">6</span>
+<span class="w"> </span>------+-------+------
+<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">6</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="m">8</span><span class="w"> </span><span class="m">0</span>
+<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="m">9</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">5</span>
+<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">8</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">7</span><span class="w"> </span><span class="m">9</span>
+</code></pre></div>
+
+<p>If the input is considered a valid one, you can then use that grid with the other options.</p>
+<h3 id="2-read-a-grid-from-a-text-file">2) Read a grid from a text file</h3>
+<p>If the file to read is not in the root directory of the project, type the relative path, for example <code>test/a_puzzle_with_17_givens.txt</code>. The folder <code>test/</code> also contains a few grids for testing. And you can create your own grid starting from <code>test/template.txt</code> file (a grid filled with zeroes).</p>
+<p>The present form of the program only reliably supports the input of a grid in the format depicted above.</p>
+<h3 id="6-generation-of-a-completed-sudoku-grid">6) Generation of a completed Sudoku grid</h3>
+<p>The program generates a random completed Sudoku by brute force: in each cycle a digit is added and checked for validity. If the grid became invalid, the grid generation is started all over again, until a valid grid is obtained. But the process is very quick.</p>
+<p>The new grid replaces the previous grid stored in memory.</p>
+<h3 id="7-solve-a-puzzle-grid">7) Solve a puzzle grid.</h3>
+<p>The puzzle in memory is solved by brute force. But the process is very quick.</p>
+<p>It is also possible to pass the filename of the puzzle to solve on the command line. With fpm you can type for example from the root directory of the project:</p>
+<div class="codehilite"><pre><span></span><code>$<span class="w"> </span>fpm<span class="w"> </span>run<span class="w"> </span>--<span class="w"> </span>test/a_puzzle_with_17_givens.txt
+</code></pre></div>
+
+<p>If you have used the makefile, you can type:</p>
+<div class="codehilite"><pre><span></span><code>$<span class="w"> </span>./executable<span class="w"> </span>test/a_puzzle_with_17_givens.txt
+</code></pre></div>
+
+<h3 id="8-create-a-minimal-puzzle">8) Create a minimal puzzle</h3>
+<p>If a completed valid grid is not in memory, we will start from a new one. As the algorithm uses random numbers to remove digits in the grid, following validity rules, the final number of given digits is a priori unknown. The obtained puzzle will be typically half-empty (and quick in that case), or more empty if you are lucky.</p>
+<h3 id="9-create-a-minimal-puzzle-with-n-given-digits">9) Create a minimal puzzle with n given digits</h3>
+<p>You can ask the program any number of given digits in the [17, 81] range, but the computation will become longer below 33 as the algorithm is based on brute force: it launches the previous option until we obtain a puzzle with exactly n given digits.</p>
+<h3 id="10-create-a-puzzle-grid-not-guaranteed-to-have-a-unique-solution">10) Create a puzzle grid (not guaranteed to have a unique solution)</h3>
+<p>You can obtain puzzles with still less given digits with this method, but without guaranty that the solution is unique.</p>
+<h2 id="development">Development</h2>
+<p>You can use those GFortran flags:</p>
+<div class="codehilite"><pre><span></span><code>$<span class="w"> </span>fpm<span class="w"> </span>build<span class="w"> </span>--verbose<span class="w"> </span>--flag<span class="w"> </span><span class="s2">&quot;-std=f2018 -pedantic -Wall -Wextra&quot;</span>
+</code></pre></div>
+
+<p>In <code>app/main.f90</code>, you should pass 0 as a seed at the top of the file:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">call </span><span class="n">initialize_random_number_generator</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</code></pre></div>
+
+<p>You will then obtain the same pseudo-random sequence at each run, which is more comfortable for debugging, testing or optimizing the CPU time.</p>
+<h2 id="license">License</h2>
+<p>This project is licensed under the <a href="http://www.gnu.org/licenses/gpl.html">GNU General Public License version 3 or
+later</a>. The logo files are under CC-BY-SA 4.0.</p>
+<h2 id="bibliography">Bibliography</h2>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Sudoku">https://en.wikipedia.org/wiki/Sudoku</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Glossary_of_Sudoku">https://en.wikipedia.org/wiki/Glossary_of_Sudoku</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Mathematics_of_Sudoku">https://en.wikipedia.org/wiki/Mathematics_of_Sudoku</a></li>
+<li>Jean-Paul Delahaye, <a href="https://www.cs.virginia.edu/~robins/The_Science_Behind_SudoKu.pdf">&ldquo;The Science behind Sudoku&rdquo;</a>, <em>Scientific American,</em>  Vol. 294, No. 6, pp. 80-87, June 2006, DOI:10.1038/scientificamerican0606-80. This is the English translation of:<ul>
+<li>Jean-Paul Delahaye, <a href="https://cristal.univ-lille.fr/profil/jdelahay/pls:2005:136.pdf">&ldquo;Le tsunami du Sudoku&rdquo;</a>, <em>Pour la Science,</em> n°338, p. 144-149, décembre 2005.</li>
+</ul>
+</li>
+<li>Michael Metcalf. A Sudoku program in Fortran 95. <em>SIGPLAN Fortran Forum</em> 25,
+1 (April 2006), 4–7. https://doi.org/10.1145/1124708.1124709</li>
+<li>Other <a href="https://github.com/search?q=sudoku%20fortran&amp;type=repositories">Fortran sudoku projects</a>
+on GitHub.</li>
+</ul>
+        </div>
+          <div class="col-md-4">
+	        <div class="card card-body bg-light">
+              <h2 class="card-title">Developer Info</h2>
+              <h4 class="card-text">vmagnin, nbehrnd</h4>
+              <p class="card-text"></p>
+                <div class="text-center"><div class="btn-group" role="group">
+                      <a class="btn btn-lg btn-primary" href="https://github.com/vmagnin"><i class="fa fa-github fa-lg"></i></a>
+                </div></div>
+            </div>
+          </div>
+      </div>
+        <div class="row">
+          <hr>
+          <div class="col-xs-6 col-sm-4">
+            <div>
+              <h3>Source Files</h3>
+              <ul><li><a href='sourcefile/sudoku.f90.html'>sudoku.f90</a></li></ul>
+            </div>
+            <div>
+              <ul>
+                <li><a href="./lists/files.html"><em>All source files&hellip;</em></a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-xs-6 col-sm-4">
+            <div>
+              <h3>Modules</h3>
+              <ul><li><a href='module/sudoku.html'>sudoku</a></li></ul>
+            </div>
+            <div>
+              <ul>
+                <li><a href="./lists/modules.html"><em>All modules&hellip;</em></a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-xs-6 col-sm-4">
+            <div>
+              <h3>Procedures</h3>
+              <ul><li><a href='proc/cli_solver.html'>cli_solver</a></li><li><a href='proc/create_filled_grid.html'>create_filled_grid</a></li><li><a href='proc/create_puzzle.html'>create_puzzle</a></li><li><a href='proc/create_puzzle_with_unique_solution.html'>create_puzzle_with_unique_solution</a></li><li><a href='proc/display_grid.html'>display_grid</a></li><li><a href='proc/initialize_random_number_generator.html'>initialize_random_number_generator</a></li><li><a href='proc/is_full.html'>is_full</a></li><li><a href='proc/list_possible_digits.html'>list_possible_digits</a></li><li><a href='proc/read_grid.html'>read_grid</a></li><li><a href='proc/request_grid.html'>request_grid</a></li></ul>
+            </div>
+            <div>
+              <ul>
+                <li><a href="./lists/procedures.html"><em>All procedures&hellip;</em></a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col"><p>ForSudoku was developed by vmagnin, nbehrnd<br>&copy; 2024 GPL
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2024-03-23 16:34              </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+
+    <!-- Bootstrap core JavaScript -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
+
+    <!-- MathJax JavaScript
+             ================================================== -->
+             <!-- Placed at the end of the document so the pages load faster -->
+        <script type="text/x-mathjax-config">
+          MathJax.Hub.Config({
+          TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+          jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+          extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+          });
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+          <script src="./tipuesearch/tipuesearch_content.js"></script>
+          <script src="./tipuesearch/tipuesearch_set.js"></script>
+          <script src="./tipuesearch/tipuesearch.js"></script>
+
+  </body>
+</html>

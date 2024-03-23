@@ -6,6 +6,7 @@ format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [ForSudoku dev]
 
 ### Added
+- A FORD documentation by @fedebenelli
 - A `Development` section in the `README.md`.
 - `pure` attribute for `list_possible_digits()` and `sort()`.
 

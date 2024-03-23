@@ -1,0 +1,540 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Sudoku generation and solving CLI program, written in Fortran">
+    <meta name="author" content="vmagnin, nbehrnd" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>All Procedures &ndash; ForSudoku
+</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/local.css" rel="stylesheet">
+      <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">ForSudoku </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="sourcefile/sudoku.f90.html">Source File</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12" id='text'>
+			 <h1>Procedures</h1>
+			 <table class="table table-striped">
+			 <thead><tr><th>Procedure</th><th>Location</th><th>Procedure Type</th><th>Description</th></tr></thead>
+			 <tbody>
+			   <tr>
+                 <td><a href='../proc/cli_solver.html'>cli_solver</a></td>
+                 <td><a href='../module/sudoku.html'>sudoku</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Provides a solution for a puzzle passed by CLI:</p><a href="../proc/cli_solver.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/create_filled_grid.html'>create_filled_grid</a></td>
+                 <td><a href='../module/sudoku.html'>sudoku</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Puzzle generators</p><a href="../proc/create_filled_grid.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/create_puzzle.html'>create_puzzle</a></td>
+                 <td><a href='../module/sudoku.html'>sudoku</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Creates a puzzle by brute force.
+But we are not 100% sure that the solution is unique
+(just a &ldquo;high&rdquo; probability).</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/create_puzzle_with_unique_solution.html'>create_puzzle_with_unique_solution</a></td>
+                 <td><a href='../module/sudoku.html'>sudoku</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Creates a minimal puzzle.
+Digits are randomly removed one by one. The process ends when it is not
+possible anymore to remove a digit while keeping a unique solution.
+The number of remaining digits is therefore a priori unknown.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/display_grid.html'>display_grid</a></td>
+                 <td><a href='../module/sudoku.html'>sudoku</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Display a grid on the terminal.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/initialize_random_number_generator.html'>initialize_random_number_generator</a></td>
+                 <td><a href='../module/sudoku.html'>sudoku</a></td>
+                 <td>Subroutine</td>
+                 <td><p>System independent initialization of pseudo-random generator</p><a href="../proc/initialize_random_number_generator.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/is_full.html'>is_full</a></td>
+                 <td><a href='../module/sudoku.html'>sudoku</a></td>
+                 <td>Function</td>
+                 <td><p>Returns true if the grid is full.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/list_possible_digits.html'>list_possible_digits</a></td>
+                 <td><a href='../module/sudoku.html'>sudoku</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Procedure to create a list of allowed digits in the present empty cell.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/read_grid.html'>read_grid</a></td>
+                 <td><a href='../module/sudoku.html'>sudoku</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Read a grid from a provided the path to a file</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/request_grid.html'>request_grid</a></td>
+                 <td><a href='../module/sudoku.html'>sudoku</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/save_grid.html'>save_grid</a></td>
+                 <td><a href='../module/sudoku.html'>sudoku</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Input/Output routines</p><a href="../proc/save_grid.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/solve_puzzle.html'>solve_puzzle</a></td>
+                 <td><a href='../module/sudoku.html'>sudoku</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Receives a puzzle grid and solves it.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/sort.html'>sort</a></td>
+                 <td><a href='../module/sudoku.html'>sudoku</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Solver routines</p><a href="../proc/sort.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/valid_colum_or_row.html'>valid_colum_or_row</a></td>
+                 <td><a href='../module/sudoku.html'>sudoku</a></td>
+                 <td>Function</td>
+                 <td><p>Validation routines</p><a href="../proc/valid_colum_or_row.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/valid_digit.html'>valid_digit</a></td>
+                 <td><a href='../module/sudoku.html'>sudoku</a></td>
+                 <td>Function</td>
+                 <td><p>Returns true if the row, column and region of a digit are all valid:</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/valid_grid.html'>valid_grid</a></td>
+                 <td><a href='../module/sudoku.html'>sudoku</a></td>
+                 <td>Function</td>
+                 <td><p>Check if the whole grid is valid.</p><a href="../proc/valid_grid.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/valid_zone.html'>valid_zone</a></td>
+                 <td><a href='../module/sudoku.html'>sudoku</a></td>
+                 <td>Function</td>
+                 <td><p>Validation of a zone/region.</p><a href="../proc/valid_zone.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			 </tbody></table>
+             <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: call~~graph~~CallGraph Pages: 1 -->
+<svg id="callgraphCallGraph" width="683pt" height="347pt"
+ viewBox="0.00 0.00 683.00 347.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="call~~graph~~CallGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 343)">
+<title>call~~graph~~CallGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-343 679,-343 679,4 -4,4"/>
+<!-- proc~cli_solver -->
+<g id="call~~graph~~CallGraph_node1" class="node">
+<title>proc~cli_solver</title>
+<g id="a_call~~graph~~CallGraph_node1"><a xlink:href="../proc/cli_solver.html" xlink:title="sudoku::cli_solver">
+<polygon fill="#d9534f" stroke="#d9534f" points="163,-171 66,-171 66,-147 163,-147 163,-171"/>
+<text text-anchor="middle" x="114.5" y="-156.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">sudoku::cli_solver</text>
+</a>
+</g>
+</g>
+<!-- proc~display_grid -->
+<g id="call~~graph~~CallGraph_node5" class="node">
+<title>proc~display_grid</title>
+<g id="a_call~~graph~~CallGraph_node5"><a xlink:href="../proc/display_grid.html" xlink:title="sudoku::display_grid">
+<polygon fill="#d9534f" stroke="#d9534f" points="433,-234 323,-234 323,-210 433,-210 433,-234"/>
+<text text-anchor="middle" x="378" y="-219.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">sudoku::display_grid</text>
+</a>
+</g>
+</g>
+<!-- proc~cli_solver&#45;&gt;proc~display_grid -->
+<g id="call~~graph~~CallGraph_edge1" class="edge">
+<title>proc~cli_solver&#45;&gt;proc~display_grid</title>
+<path fill="none" stroke="#000000" d="M163.14,-164.09C183.82,-167.24 208.05,-172.22 229,-180 246.36,-186.45 247.64,-194.53 265,-201 279.98,-206.58 296.66,-210.73 312.48,-213.8"/>
+<polygon fill="#000000" stroke="#000000" points="312.25,-217.32 322.72,-215.66 313.51,-210.43 312.25,-217.32"/>
+</g>
+<!-- proc~read_grid -->
+<g id="call~~graph~~CallGraph_node9" class="node">
+<title>proc~read_grid</title>
+<g id="a_call~~graph~~CallGraph_node9"><a xlink:href="../proc/read_grid.html" xlink:title="sudoku::read_grid">
+<polygon fill="#d9534f" stroke="#d9534f" points="427.5,-192 328.5,-192 328.5,-168 427.5,-168 427.5,-192"/>
+<text text-anchor="middle" x="378" y="-177.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">sudoku::read_grid</text>
+</a>
+</g>
+</g>
+<!-- proc~cli_solver&#45;&gt;proc~read_grid -->
+<g id="call~~graph~~CallGraph_edge2" class="edge">
+<title>proc~cli_solver&#45;&gt;proc~read_grid</title>
+<path fill="none" stroke="#000000" d="M163.16,-162.83C206.8,-166.33 271.54,-171.53 318.34,-175.29"/>
+<polygon fill="#000000" stroke="#000000" points="318.09,-178.78 328.34,-176.09 318.65,-171.8 318.09,-178.78"/>
+</g>
+<!-- proc~solve_puzzle -->
+<g id="call~~graph~~CallGraph_node12" class="node">
+<title>proc~solve_puzzle</title>
+<g id="a_call~~graph~~CallGraph_node12"><a xlink:href="../proc/solve_puzzle.html" xlink:title="sudoku::solve_puzzle">
+<polygon fill="#d9534f" stroke="#d9534f" points="435.5,-108 320.5,-108 320.5,-84 435.5,-84 435.5,-108"/>
+<text text-anchor="middle" x="378" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">sudoku::solve_puzzle</text>
+</a>
+</g>
+</g>
+<!-- proc~cli_solver&#45;&gt;proc~solve_puzzle -->
+<g id="call~~graph~~CallGraph_edge3" class="edge">
+<title>proc~cli_solver&#45;&gt;proc~solve_puzzle</title>
+<path fill="none" stroke="#000000" d="M154.6,-146.99C184.62,-138.02 227.2,-125.84 265,-117 279.56,-113.6 295.28,-110.37 310.21,-107.52"/>
+<polygon fill="#000000" stroke="#000000" points="311.21,-110.89 320.39,-105.61 309.92,-104.01 311.21,-110.89"/>
+</g>
+<!-- proc~valid_grid -->
+<g id="call~~graph~~CallGraph_node16" class="node">
+<title>proc~valid_grid</title>
+<g id="a_call~~graph~~CallGraph_node16"><a xlink:href="../proc/valid_grid.html" xlink:title="sudoku::valid_grid">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="427.5,-66 328.5,-66 328.5,-42 427.5,-42 427.5,-66"/>
+<text text-anchor="middle" x="378" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">sudoku::valid_grid</text>
+</a>
+</g>
+</g>
+<!-- proc~cli_solver&#45;&gt;proc~valid_grid -->
+<g id="call~~graph~~CallGraph_edge4" class="edge">
+<title>proc~cli_solver&#45;&gt;proc~valid_grid</title>
+<path fill="none" stroke="#000000" d="M163.1,-147.29C184.47,-140.6 209.26,-130.75 229,-117 249.18,-102.95 243.71,-87.3 265,-75 281.04,-65.73 300.33,-60.44 318.35,-57.45"/>
+<polygon fill="#000000" stroke="#000000" points="319.1,-60.87 328.49,-55.97 318.09,-53.95 319.1,-60.87"/>
+</g>
+<!-- proc~create_filled_grid -->
+<g id="call~~graph~~CallGraph_node2" class="node">
+<title>proc~create_filled_grid</title>
+<g id="a_call~~graph~~CallGraph_node2"><a xlink:href="../proc/create_filled_grid.html" xlink:title="sudoku::create_filled_grid">
+<polygon fill="#d9534f" stroke="#d9534f" points="182,-24 47,-24 47,0 182,0 182,-24"/>
+<text text-anchor="middle" x="114.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">sudoku::create_filled_grid</text>
+</a>
+</g>
+</g>
+<!-- proc~valid_digit -->
+<g id="call~~graph~~CallGraph_node15" class="node">
+<title>proc~valid_digit</title>
+<g id="a_call~~graph~~CallGraph_node15"><a xlink:href="../proc/valid_digit.html" xlink:title="sudoku::valid_digit">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="428,-24 328,-24 328,0 428,0 428,-24"/>
+<text text-anchor="middle" x="378" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">sudoku::valid_digit</text>
+</a>
+</g>
+</g>
+<!-- proc~create_filled_grid&#45;&gt;proc~valid_digit -->
+<g id="call~~graph~~CallGraph_edge5" class="edge">
+<title>proc~create_filled_grid&#45;&gt;proc~valid_digit</title>
+<path fill="none" stroke="#000000" d="M182.16,-12C223.92,-12 277.27,-12 317.58,-12"/>
+<polygon fill="#000000" stroke="#000000" points="317.8,-15.5 327.8,-12 317.8,-8.5 317.8,-15.5"/>
+</g>
+<!-- proc~create_puzzle -->
+<g id="call~~graph~~CallGraph_node3" class="node">
+<title>proc~create_puzzle</title>
+<g id="a_call~~graph~~CallGraph_node3"><a xlink:href="../proc/create_puzzle.html" xlink:title="sudoku::create_puzzle">
+<polygon fill="#d9534f" stroke="#d9534f" points="174.5,-108 54.5,-108 54.5,-84 174.5,-84 174.5,-108"/>
+<text text-anchor="middle" x="114.5" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">sudoku::create_puzzle</text>
+</a>
+</g>
+</g>
+<!-- proc~create_puzzle&#45;&gt;proc~solve_puzzle -->
+<g id="call~~graph~~CallGraph_edge6" class="edge">
+<title>proc~create_puzzle&#45;&gt;proc~solve_puzzle</title>
+<path fill="none" stroke="#000000" d="M174.51,-96C214.87,-96 268.43,-96 310.33,-96"/>
+<polygon fill="#000000" stroke="#000000" points="310.45,-99.5 320.45,-96 310.45,-92.5 310.45,-99.5"/>
+</g>
+<!-- proc~create_puzzle_with_unique_solution -->
+<g id="call~~graph~~CallGraph_node4" class="node">
+<title>proc~create_puzzle_with_unique_solution</title>
+<g id="a_call~~graph~~CallGraph_node4"><a xlink:href="../proc/create_puzzle_with_unique_solution.html" xlink:title="sudoku::create_puzzle_with_unique_solution">
+<polygon fill="#d9534f" stroke="#d9534f" points="491,-150 265,-150 265,-126 491,-126 491,-150"/>
+<text text-anchor="middle" x="378" y="-135.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">sudoku::create_puzzle_with_unique_solution</text>
+</a>
+</g>
+</g>
+<!-- proc~list_possible_digits -->
+<g id="call~~graph~~CallGraph_node8" class="node">
+<title>proc~list_possible_digits</title>
+<g id="a_call~~graph~~CallGraph_node8"><a xlink:href="../proc/list_possible_digits.html" xlink:title="sudoku::list_possible_digits">
+<polygon fill="#d9534f" stroke="#d9534f" points="672,-150 530,-150 530,-126 672,-126 672,-150"/>
+<text text-anchor="middle" x="601" y="-135.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">sudoku::list_possible_digits</text>
+</a>
+</g>
+</g>
+<!-- proc~create_puzzle_with_unique_solution&#45;&gt;proc~list_possible_digits -->
+<g id="call~~graph~~CallGraph_edge7" class="edge">
+<title>proc~create_puzzle_with_unique_solution&#45;&gt;proc~list_possible_digits</title>
+<path fill="none" stroke="#000000" d="M491.12,-138C500.67,-138 510.2,-138 519.43,-138"/>
+<polygon fill="#000000" stroke="#000000" points="519.71,-141.5 529.71,-138 519.71,-134.5 519.71,-141.5"/>
+</g>
+<!-- proc~initialize_random_number_generator -->
+<g id="call~~graph~~CallGraph_node6" class="node">
+<title>proc~initialize_random_number_generator</title>
+<g id="a_call~~graph~~CallGraph_node6"><a xlink:href="../proc/initialize_random_number_generator.html" xlink:title="sudoku::initialize_random_number_generator">
+<polygon fill="#d9534f" stroke="#d9534f" points="229,-213 0,-213 0,-189 229,-189 229,-213"/>
+<text text-anchor="middle" x="114.5" y="-198.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">sudoku::initialize_random_number_generator</text>
+</a>
+</g>
+</g>
+<!-- proc~is_full -->
+<g id="call~~graph~~CallGraph_node7" class="node">
+<title>proc~is_full</title>
+<g id="a_call~~graph~~CallGraph_node7"><a xlink:href="../proc/is_full.html" xlink:title="sudoku::is_full">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="154.5,-255 74.5,-255 74.5,-231 154.5,-231 154.5,-255"/>
+<text text-anchor="middle" x="114.5" y="-240.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">sudoku::is_full</text>
+</a>
+</g>
+</g>
+<!-- proc~request_grid -->
+<g id="call~~graph~~CallGraph_node10" class="node">
+<title>proc~request_grid</title>
+<g id="a_call~~graph~~CallGraph_node10"><a xlink:href="../proc/request_grid.html" xlink:title="sudoku::request_grid">
+<polygon fill="#d9534f" stroke="#d9534f" points="171,-297 58,-297 58,-273 171,-273 171,-297"/>
+<text text-anchor="middle" x="114.5" y="-282.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">sudoku::request_grid</text>
+</a>
+</g>
+</g>
+<!-- proc~save_grid -->
+<g id="call~~graph~~CallGraph_node11" class="node">
+<title>proc~save_grid</title>
+<g id="a_call~~graph~~CallGraph_node11"><a xlink:href="../proc/save_grid.html" xlink:title="sudoku::save_grid">
+<polygon fill="#d9534f" stroke="#d9534f" points="164.5,-339 64.5,-339 64.5,-315 164.5,-315 164.5,-339"/>
+<text text-anchor="middle" x="114.5" y="-324.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">sudoku::save_grid</text>
+</a>
+</g>
+</g>
+<!-- proc~solve_puzzle&#45;&gt;proc~list_possible_digits -->
+<g id="call~~graph~~CallGraph_edge8" class="edge">
+<title>proc~solve_puzzle&#45;&gt;proc~list_possible_digits</title>
+<path fill="none" stroke="#000000" d="M435.7,-106.57C453.41,-109.89 473.02,-113.58 491,-117 502.83,-119.25 515.38,-121.65 527.6,-124"/>
+<polygon fill="#000000" stroke="#000000" points="527.28,-127.5 537.76,-125.95 528.6,-120.63 527.28,-127.5"/>
+</g>
+<!-- proc~sort -->
+<g id="call~~graph~~CallGraph_node13" class="node">
+<title>proc~sort</title>
+<g id="a_call~~graph~~CallGraph_node13"><a xlink:href="../proc/sort.html" xlink:title="sudoku::sort">
+<polygon fill="#d9534f" stroke="#d9534f" points="636.5,-108 565.5,-108 565.5,-84 636.5,-84 636.5,-108"/>
+<text text-anchor="middle" x="601" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">sudoku::sort</text>
+</a>
+</g>
+</g>
+<!-- proc~solve_puzzle&#45;&gt;proc~sort -->
+<g id="call~~graph~~CallGraph_edge9" class="edge">
+<title>proc~solve_puzzle&#45;&gt;proc~sort</title>
+<path fill="none" stroke="#000000" d="M435.63,-96C472.71,-96 520.52,-96 555.01,-96"/>
+<polygon fill="#000000" stroke="#000000" points="555.26,-99.5 565.26,-96 555.26,-92.5 555.26,-99.5"/>
+</g>
+<!-- proc~valid_colum_or_row -->
+<g id="call~~graph~~CallGraph_node14" class="node">
+<title>proc~valid_colum_or_row</title>
+<g id="a_call~~graph~~CallGraph_node14"><a xlink:href="../proc/valid_colum_or_row.html" xlink:title="sudoku::valid_colum_or_row">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="675,-66 527,-66 527,-42 675,-42 675,-66"/>
+<text text-anchor="middle" x="601" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">sudoku::valid_colum_or_row</text>
+</a>
+</g>
+</g>
+<!-- proc~valid_digit&#45;&gt;proc~valid_colum_or_row -->
+<g id="call~~graph~~CallGraph_edge10" class="edge">
+<title>proc~valid_digit&#45;&gt;proc~valid_colum_or_row</title>
+<path fill="none" stroke="#000000" d="M428.08,-21.15C447.66,-24.81 470.4,-29.08 491,-33 502.83,-35.25 515.38,-37.65 527.6,-40"/>
+<polygon fill="#000000" stroke="#000000" points="527.28,-43.5 537.76,-41.95 528.6,-36.63 527.28,-43.5"/>
+</g>
+<!-- proc~valid_zone -->
+<g id="call~~graph~~CallGraph_node17" class="node">
+<title>proc~valid_zone</title>
+<g id="a_call~~graph~~CallGraph_node17"><a xlink:href="../proc/valid_zone.html" xlink:title="sudoku::valid_zone">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="653,-24 549,-24 549,0 653,0 653,-24"/>
+<text text-anchor="middle" x="601" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">sudoku::valid_zone</text>
+</a>
+</g>
+</g>
+<!-- proc~valid_digit&#45;&gt;proc~valid_zone -->
+<g id="call~~graph~~CallGraph_edge11" class="edge">
+<title>proc~valid_digit&#45;&gt;proc~valid_zone</title>
+<path fill="none" stroke="#000000" d="M428.05,-12C460.69,-12 503.81,-12 538.71,-12"/>
+<polygon fill="#000000" stroke="#000000" points="538.79,-15.5 548.79,-12 538.79,-8.5 538.79,-15.5"/>
+</g>
+<!-- proc~valid_grid&#45;&gt;proc~valid_colum_or_row -->
+<g id="call~~graph~~CallGraph_edge12" class="edge">
+<title>proc~valid_grid&#45;&gt;proc~valid_colum_or_row</title>
+<path fill="none" stroke="#000000" d="M427.77,-54C453.93,-54 486.87,-54 516.93,-54"/>
+<polygon fill="#000000" stroke="#000000" points="516.99,-57.5 526.99,-54 516.99,-50.5 516.99,-57.5"/>
+</g>
+<!-- proc~valid_grid&#45;&gt;proc~valid_zone -->
+<g id="call~~graph~~CallGraph_edge13" class="edge">
+<title>proc~valid_grid&#45;&gt;proc~valid_zone</title>
+<path fill="none" stroke="#000000" d="M427.52,-44.96C447.23,-41.27 470.2,-36.95 491,-33 506.53,-30.05 523.3,-26.83 538.92,-23.82"/>
+<polygon fill="#000000" stroke="#000000" points="539.84,-27.21 548.99,-21.88 538.51,-20.34 539.84,-27.21"/>
+</g>
+</g>
+</svg>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CallGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CallGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="641pt" height="29pt"
+ viewBox="0.00 0.00 641.00 29.32" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1.09 1.09) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 695.5,-28 695.5,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="64,-24 0,-24 0,0 64,0 64,-24"/>
+<text text-anchor="middle" x="32" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="136,-24 82,-24 82,0 136,0 136,-24"/>
+<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="209.5,-24 154.5,-24 154.5,0 209.5,0 209.5,-24"/>
+<text text-anchor="middle" x="182" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Type Bound Procedure -->
+<g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="350,-24 228,-24 228,0 350,0 350,-24"/>
+<text text-anchor="middle" x="289" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="504,-24 368,-24 368,0 504,0 504,-24"/>
+<text text-anchor="middle" x="436" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node6" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="576,-24 522,-24 522,0 576,0 576,-24"/>
+<text text-anchor="middle" x="549" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node7" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="691.5,-24 594.5,-24 594.5,0 691.5,0 691.5,-24"/>
+<text text-anchor="middle" x="643" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col"><p>ForSudoku was developed by vmagnin, nbehrnd<br>&copy; 2024 GPL
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2024-03-23 16:34              </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+
+    <!-- Bootstrap core JavaScript -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
+
+    <!-- MathJax JavaScript
+             ================================================== -->
+             <!-- Placed at the end of the document so the pages load faster -->
+        <script type="text/x-mathjax-config">
+          MathJax.Hub.Config({
+          TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+          jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+          extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+          });
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+          <script src="../tipuesearch/tipuesearch_content.js"></script>
+          <script src="../tipuesearch/tipuesearch_set.js"></script>
+          <script src="../tipuesearch/tipuesearch.js"></script>
+
+  </body>
+</html>
