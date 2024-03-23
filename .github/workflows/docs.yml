@@ -22,7 +22,7 @@ jobs:
 
     - name: Build Developer Documentation
       run: |
-        ford ford.md
+        ford ford.yml
 
     - name: Upload Documentation
       uses: actions/upload-artifact@v2
