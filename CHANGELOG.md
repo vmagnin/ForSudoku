@@ -7,6 +7,7 @@ format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 - A `Development` section in the `README.md`.
+- `pure` attribute for `list_possible_digits()` and `sort()`.
 
 
 ## [ForSudoku 1.0.0] 2024-03-22

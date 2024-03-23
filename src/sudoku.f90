@@ -16,7 +16,7 @@
 ! If not, see <http://www.gnu.org/licenses/>.
 !------------------------------------------------------------------------------
 ! Contributed by Vincent Magnin, 2006-11-27; Norwid Behrnd, 2023
-! Last modifications: 2023-09-12, vmagnin 2024-03-22
+! Last modifications: 2023-09-12, vmagnin 2024-03-23
 !------------------------------------------------------------------------------
 
 module sudoku
@@ -213,7 +213,7 @@ contains
   end function
 
   ! Procedure to create a list of allowed digits in the present empty cell:
-  subroutine list_possible_digits(grid, row, col, &
+  pure subroutine list_possible_digits(grid, row, col, &
                                   nb_possible, possible_digit)
     integer, dimension(9, 9), intent(in) :: grid
     integer, intent(in) :: row, col
@@ -258,7 +258,7 @@ contains
 
   ! Starting from position p, sort the list of empty cells by
   ! ascending number of allowed digits. We use a bubble sort:
-  subroutine sort(empty_cells, p, n)
+  pure subroutine sort(empty_cells, p, n)
     integer, dimension(1:81, 1:3), intent(inout) :: empty_cells
     integer, intent(in) :: p    ! The sort starts at position p (included)
     integer, intent(in) :: n    ! Number of empty cells in the list
