@@ -1,25 +1,31 @@
-! This file is part of the ForSudoku Fortran project.
-! Copyright (C) 2006-2024 Vincent Magnin & Norwid Behrnd
-!
-! This is free software; you can redistribute it and/or modify
-! it under the terms of the GNU General Public License as published by
-! the Free Software Foundation; either version 3, or (at your option)
-! any later version.
-!
-! This software is distributed in the hope that it will be useful,
-! but WITHOUT ANY WARRANTY; without even the implied warranty of
-! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-! GNU General Public License for more details.
-!
-! You should have received a copy of the GNU General Public License along with
-! this program; see the files LICENSE and LICENSE_EXCEPTION respectively.
-! If not, see <http://www.gnu.org/licenses/>.
-!------------------------------------------------------------------------------
-! Contributed by Vincent Magnin, 2006-11-27; Norwid Behrnd, 2023
-! Last modifications: 2023-09-12, vmagnin 2024-03-23
-!------------------------------------------------------------------------------
+!! This file is part of the ForSudoku Fortran project.
+!! Copyright (C) 2006-2024 Vincent Magnin & Norwid Behrnd
+!!
+!! This is free software; you can redistribute it and/or modify
+!! it under the terms of the GNU General Public License as published by
+!! the Free Software Foundation; either version 3, or (at your option)
+!! any later version.
+!!
+!! This software is distributed in the hope that it will be useful,
+!! but WITHOUT ANY WARRANTY; without even the implied warranty of
+!! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+!! GNU General Public License for more details.
+!!
+!! You should have received a copy of the GNU General Public License along with
+!! this program; see the files LICENSE and LICENSE_EXCEPTION respectively.
+!! If not, see <http://www.gnu.org/licenses/>.
+!!------------------------------------------------------------------------------
+!! Contributed by Vincent Magnin, 2006-11-27; Norwid Behrnd, 2023
+!! Last modifications: 2023-09-12, vmagnin 2024-03-23
+!!------------------------------------------------------------------------------
 
 module sudoku
+  !! Sudoku module
+  !!
+  !! @author: Vincent Magnin and Norwid Behrnd
+  !!
+  !! This module contains a set of procedures to generate sudokus grids and
+  !! solve them.
   implicit none
 
 contains
@@ -28,6 +34,7 @@ contains
   ! Input/Output routines
   !*****************************************************************************
   subroutine save_grid(grid, filename)
+    !! Input/Output routines
     integer, dimension(9, 9), intent(in) :: grid
     character(*), intent(in) :: filename
 
@@ -48,8 +55,9 @@ contains
   end subroutine save_grid
 
   subroutine read_grid(grid, filename)
-    integer, dimension(9, 9), intent(out) :: grid
-    character(*), intent(in) :: filename
+    !! Read a grid from a provided the path to a file
+    integer, dimension(9, 9), intent(out) :: grid !! Output grid
+    character(*), intent(in) :: filename !! File path
 
     character(len=2) :: pipe1, pipe2   ! to read the pipe/the vertical bar
     integer :: row
@@ -76,6 +84,7 @@ contains
   end subroutine read_grid
 
   subroutine display_grid(grid)
+    !! Display a grid on the terminal.
     integer, dimension(9, 9), intent(in) :: grid
 
     integer :: row, col
@@ -102,9 +111,11 @@ contains
   !*****************************************************************************
   ! Validation routines
   !*****************************************************************************
-  ! Returns true if each digit in the 1D array appears only once:
   pure logical function valid_colum_or_row(vector)
-    integer, dimension(1:9), intent(in) :: vector   ! A row or a column
+    !! Validation of either a row or a column.
+    !!
+    !! Returns true if each digit in the 1D array appears only once
+    integer, dimension(1:9), intent(in) :: vector !! A row or a column
 
     ! The number of occurrences of each digit:
     integer, dimension(1:9) :: counters
@@ -126,9 +137,11 @@ contains
     valid_colum_or_row = .true.
   end function valid_colum_or_row
 
-  ! Returns true if each digit in the 3x3 region appears only once.
   pure logical function valid_zone(region)
-    integer, dimension(1:3, 1:3), intent(in) :: region
+    !! Validation of a zone/region.
+    !!
+    !! Returns true if each digit in the 3x3 region appears only once.
+    integer, dimension(1:3, 1:3), intent(in) :: region !! Sudoku's subregion
 
     ! The number of occurrences of each digit:
     integer, dimension(1:9) :: counters
@@ -152,9 +165,11 @@ contains
     valid_zone = .true.
   end function valid_zone
 
-  ! Returns true if a full grid is valid:
   pure logical function valid_grid(grid)
-    integer, dimension(9, 9), intent(in) :: grid
+    !! Check if the whole grid is valid.
+    !!
+    !! Returns true if a full grid is valid.
+    integer, dimension(9, 9), intent(in) :: grid !! Sudoku grid.
 
     integer :: row, col
 
@@ -187,10 +202,11 @@ contains
     valid_grid = .true.
   end function valid_grid
 
-  ! Returns true if the row, column and region of a digit are all valid:
   pure logical function valid_digit(grid, row, col)
-    integer, dimension(9, 9), intent(in) :: grid
-    integer, intent(in) :: row, col
+    !! Returns true if the row, column and region of a digit are all valid:
+    integer, dimension(9, 9), intent(in) :: grid !! Sudoky grid.
+    integer, intent(in) :: row !! Row number of the region.
+    integer, intent(in) :: col !! Column number of the region.
 
     integer :: i, j
     i = (row - 1) / 3
@@ -201,9 +217,9 @@ contains
                   valid_zone(grid(i*3+1:i*3+3, j*3+1:j*3+3))
   end function valid_digit
 
-  ! Returns true if the grid is full:
   pure logical function is_full(grid)
-    integer, dimension(9, 9), intent(in) :: grid
+    !! Returns true if the grid is full.
+    integer, dimension(9, 9), intent(in) :: grid !! Sudoky grid.
 
     if (any(grid(:,:) == 0)) then
       is_full = .false.
@@ -212,11 +228,12 @@ contains
     end if
   end function
 
-  ! Procedure to create a list of allowed digits in the present empty cell:
   pure subroutine list_possible_digits(grid, row, col, &
                                   nb_possible, possible_digit)
-    integer, dimension(9, 9), intent(in) :: grid
-    integer, intent(in) :: row, col
+    !! Procedure to create a list of allowed digits in the present empty cell.
+    integer, dimension(9, 9), intent(in) :: grid !! Sudoku grid
+    integer, intent(in) :: row !! Row number
+    integer, intent(in) :: col !! Column number
     ! These arguments are returned:
     integer, intent(out) :: nb_possible
     integer, dimension(1:9), optional, intent(out) :: possible_digit
@@ -256,12 +273,12 @@ contains
   ! Solver routines
   !*****************************************************************************
 
-  ! Starting from position p, sort the list of empty cells by
-  ! ascending number of allowed digits. We use a bubble sort:
   pure subroutine sort(empty_cells, p, n)
-    integer, dimension(1:81, 1:3), intent(inout) :: empty_cells
-    integer, intent(in) :: p    ! The sort starts at position p (included)
-    integer, intent(in) :: n    ! Number of empty cells in the list
+    !! Starting from position p, sort the list of empty cells by
+    !! ascending number of allowed digits. We use a bubble sort algorithm
+    integer, dimension(1:81, 1:3), intent(inout) :: empty_cells !!
+    integer, intent(in) :: p !! The sort starts at position p (included)
+    integer, intent(in) :: n !! Number of empty cells in the list
 
     integer :: i
     integer, dimension(1:3) :: col
@@ -284,9 +301,10 @@ contains
     end do
   end subroutine sort
 
-  ! Receives a puzzle grid and solves it:
   subroutine solve_puzzle(grid)
+    !! Receives a puzzle grid and solves it.
     integer, dimension(9, 9), intent(inout) :: grid
+      !! Input problem grid and returns solved grid.
 
     integer, dimension(9, 9) :: grid0
     real    :: r   ! Random number
@@ -354,16 +372,13 @@ contains
   end subroutine solve_puzzle
 
   subroutine cli_solver(grid, file)
-    ! ******************************************************************
-    ! Provides a solution for a puzzle passed by CLI:
-    !
-    ! ```shell
-    ! $ ./executable test_in_02.txt
-    ! ```
-    !
-    ! ******************************************************************
-    integer, dimension(9, 9), intent(inout) :: grid
-    character(*), intent(in) :: file
+    !! Provides a solution for a puzzle passed by CLI:
+    !!
+    !! ```shell
+    !! $ ./executable test_in_02.txt
+    !! ```
+    integer, dimension(9, 9), intent(inout) :: grid !! Sudoku Grid
+    character(*), intent(in) :: file !! Filepath
 
     logical :: presence
     presence = .false.
@@ -387,11 +402,11 @@ contains
   ! Puzzle generators
   !*****************************************************************************
 
-  ! Grid generation by brute force: in each cycle a digit is added and checked
-  ! for validity.  If the grid becomes invalid, the grid generation
-  ! is started all over again.
   subroutine create_filled_grid(grid)
-    integer, dimension(9, 9), intent(out) :: grid
+    !! Grid generation by brute force: in each cycle a digit is added and
+    !! checked for validity.  If the grid becomes invalid, the grid generation
+    !! is started all over again.
+    integer, dimension(9, 9), intent(out) :: grid !! Sudoku grid
 
     real    :: r
     integer :: row, col
@@ -430,11 +445,11 @@ contains
     end do restart
   end subroutine create_filled_grid
 
-  ! Creates a minimal puzzle.
-  ! Digits are randomly removed one by one. The process ends when it is not
-  ! possible anymore to remove a digit while keeping a unique solution.
-  ! The number of remaining digits is therefore a priori unknown.
   subroutine create_puzzle_with_unique_solution(grid, nb_empty)
+    !! Creates a minimal puzzle.
+    !! Digits are randomly removed one by one. The process ends when it is not
+    !! possible anymore to remove a digit while keeping a unique solution.
+    !! The number of remaining digits is therefore a priori unknown.
     integer, dimension(9, 9), intent(inout) :: grid
     integer, intent(out) :: nb_empty
 
@@ -485,12 +500,12 @@ contains
     end do
   end subroutine create_puzzle_with_unique_solution
 
-  ! Creates a puzzle by brute force.
-  ! But we are not 100% sure that the solution is unique
-  ! (just a "high" probability).
   subroutine create_puzzle(grid, givens)
-    integer, dimension(9, 9), intent(inout) :: grid
-    integer, intent(in) :: givens
+    !! Creates a puzzle by brute force.
+    !! But we are not 100% sure that the solution is unique
+    !! (just a "high" probability).
+    integer, dimension(9, 9), intent(inout) :: grid !! Sudoku grid.
+    integer, intent(in) :: givens !! Number of given digits in the puzzle.
 
     integer, dimension(9, 9) :: grid0
     ! Maximum number of times we try to solve a grid:
@@ -552,6 +567,7 @@ contains
   ! System independent initialization of pseudo-random generator
   !**************************************************************
   subroutine initialize_random_number_generator(user_seed)
+    !! Initialize random number generator with a seed.
     integer, optional, intent(in)      :: user_seed
     integer, allocatable, dimension(:) :: seed
     integer, dimension(1:8)            :: time_values
