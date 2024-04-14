@@ -18,9 +18,9 @@ The recommended approach is to use `fpm`:
 ```shell
 $ fpm run
 sudoku.f90                             done.
-libForSudoku.a                         done.
+libforsudoku.a                         done.
 main.f90                               done.
-ForSudoku                              done.
+forsudoku                              done.
 [100%] Project compiled successfully.
 ```
 
