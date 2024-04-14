@@ -10,6 +10,8 @@ format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - A `Development` section in the `README.md`.
 - `pure` attribute for `list_possible_digits()` and `sort()`.
 
+### Changed
+- `fpm.toml`: the name is now lowercase, a good practice to avoid problems in case the library part would be used as a fpm dependency.
 
 ## [ForSudoku 1.0.0] 2024-03-22
 
